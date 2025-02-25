@@ -114,14 +114,16 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
         throw new Error('Not authenticated');
       }
 
+      const opportunityData = {
+        ...formData,
+        attachments: attachments as unknown as Json,
+        type: formData.type as OpportunityType
+      };
+
       if (opportunity) {
         const { error } = await supabase
           .from('opportunities')
-          .update({
-            ...formData,
-            type: formData.type as OpportunityType,
-            attachments
-          })
+          .update(opportunityData)
           .eq('id', opportunity.id);
 
         if (error) throw error;
@@ -129,12 +131,7 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
       } else {
         const { error } = await supabase
           .from('opportunities')
-          .insert([{
-            ...formData,
-            created_by: user.id,
-            type: formData.type as OpportunityType,
-            attachments
-          }]);
+          .insert([{ ...opportunityData, created_by: user.id }]);
 
         if (error) throw error;
         toast.success('Opportunity created successfully!');
