@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 
+type OpportunityType = 'scholarship' | 'job';
+
 interface OpportunityFormProps {
   opportunity?: any;
   onSuccess: () => void;
@@ -14,7 +16,7 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
     organization: '',
     description: '',
     deadline: '',
-    type: 'scholarship'
+    type: 'scholarship' as OpportunityType
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,7 +27,7 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
         organization: opportunity.organization,
         description: opportunity.description,
         deadline: opportunity.deadline,
-        type: opportunity.type
+        type: opportunity.type as OpportunityType
       });
     }
   }, [opportunity]);
@@ -44,7 +46,10 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
       if (opportunity) {
         const { error } = await supabase
           .from('opportunities')
-          .update(formData)
+          .update({
+            ...formData,
+            type: formData.type as OpportunityType
+          })
           .eq('id', opportunity.id);
 
         if (error) throw error;
@@ -52,7 +57,11 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
       } else {
         const { error } = await supabase
           .from('opportunities')
-          .insert([{ ...formData, created_by: user.id }]);
+          .insert([{
+            ...formData,
+            created_by: user.id,
+            type: formData.type as OpportunityType
+          }]);
 
         if (error) throw error;
         toast.success('Opportunity created successfully!');
@@ -118,7 +127,7 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
           <label className="block text-sm font-medium text-gray-700">Type</label>
           <select
             value={formData.type}
-            onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as 'scholarship' | 'job' }))}
+            onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as OpportunityType }))}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
             <option value="scholarship">Scholarship</option>
