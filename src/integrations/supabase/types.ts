@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       opportunities: {
         Row: {
+          attachments: Json | null
           created_at: string | null
           created_by: string | null
           deadline: string
@@ -22,6 +23,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          attachments?: Json | null
           created_at?: string | null
           created_by?: string | null
           deadline: string
@@ -33,6 +35,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          attachments?: Json | null
           created_at?: string | null
           created_by?: string | null
           deadline?: string

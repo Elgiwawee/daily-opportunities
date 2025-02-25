@@ -1,5 +1,13 @@
 
 import { motion } from 'framer-motion';
+import { Image, Video } from 'lucide-react';
+
+interface Attachment {
+  name: string;
+  url: string;
+  type: 'image' | 'video';
+  path: string;
+}
 
 interface OpportunityCardProps {
   title: string;
@@ -7,6 +15,7 @@ interface OpportunityCardProps {
   deadline: string;
   type: 'scholarship' | 'job';
   description: string;
+  attachments?: Attachment[];
 }
 
 const OpportunityCard = ({
@@ -15,6 +24,7 @@ const OpportunityCard = ({
   deadline,
   type,
   description,
+  attachments = [],
 }: OpportunityCardProps) => {
   return (
     <motion.div
@@ -25,6 +35,16 @@ const OpportunityCard = ({
       transition={{ duration: 0.3 }}
       className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100"
     >
+      {attachments.length > 0 && attachments[0].type === 'image' && (
+        <div className="aspect-video w-full overflow-hidden">
+          <img
+            src={attachments[0].url}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -40,6 +60,29 @@ const OpportunityCard = ({
         <h3 className="text-xl font-semibold mb-2 text-gray-900">{title}</h3>
         <p className="text-sm text-gray-600 mb-3">{organization}</p>
         <p className="text-gray-700 line-clamp-3">{description}</p>
+        
+        {attachments.length > 0 && (
+          <div className="mt-4 flex items-center gap-2">
+            <span className="text-sm text-gray-500">Attachments:</span>
+            <div className="flex items-center gap-1">
+              {attachments.map((attachment, index) => (
+                <a
+                  key={index}
+                  href={attachment.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  {attachment.type === 'image' ? (
+                    <Image className="w-4 h-4" />
+                  ) : (
+                    <Video className="w-4 h-4" />
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
         
         <div className="mt-4">
           <button className="text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors">
