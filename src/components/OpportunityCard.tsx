@@ -1,6 +1,7 @@
 
 import { motion } from 'framer-motion';
 import { Image, Video } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface Attachment {
   name: string;
@@ -10,6 +11,7 @@ interface Attachment {
 }
 
 interface OpportunityCardProps {
+  id: string;
   title: string;
   organization: string;
   deadline: string;
@@ -19,6 +21,7 @@ interface OpportunityCardProps {
 }
 
 const OpportunityCard = ({
+  id,
   title,
   organization,
   deadline,
@@ -85,9 +88,12 @@ const OpportunityCard = ({
         )}
         
         <div className="mt-4">
-          <button className="text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors">
+          <Link
+            to={`/opportunity/${id}`}
+            className="text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors"
+          >
             Learn More →
-          </button>
+          </Link>
         </div>
       </div>
     </motion.div>
