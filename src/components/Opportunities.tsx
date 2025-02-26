@@ -1,41 +1,74 @@
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Opportunity {
+  id: string;
+  title: string;
+  organization: string;
+  deadline: string;
+  type: 'scholarship' | 'job';
+  description: string;
+  attachments?: any[];
+  created_at: string;
+}
 
 const Opportunities = () => {
-  const scholarships = [
-    {
-      title: "Global Excellence Scholarship",
-      organization: "International Education Fund",
-      deadline: "March 15, 2024",
-      type: "scholarship" as const,
-      description: "Full-ride scholarship for outstanding students pursuing graduate studies in any field.",
-    },
-    {
-      title: "Tech Innovation Grant",
-      organization: "Future Technologies Foundation",
-      deadline: "April 1, 2024",
-      type: "scholarship" as const,
-      description: "Supporting next-generation leaders in computer science and engineering.",
-    },
-  ];
+  const [scholarships, setScholarships] = useState<Opportunity[]>([]);
+  const [jobs, setJobs] = useState<Opportunity[]>([]);
 
-  const jobs = [
-    {
-      title: "Senior Software Engineer",
-      organization: "Tech Innovations Inc.",
-      deadline: "Open until filled",
-      type: "job" as const,
-      description: "Leading development team in creating cutting-edge web applications.",
-    },
-    {
-      title: "Product Manager",
-      organization: "Global Solutions Ltd.",
-      deadline: "March 30, 2024",
-      type: "job" as const,
-      description: "Shape the future of our digital products and lead cross-functional teams.",
-    },
-  ];
+  useEffect(() => {
+    // Initial fetch of opportunities
+    fetchOpportunities();
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('opportunities-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all changes (insert, update, delete)
+          schema: 'public',
+          table: 'opportunities'
+        },
+        (payload) => {
+          console.log('Real-time change:', payload);
+          // Refresh the opportunities list when any change occurs
+          fetchOpportunities();
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchOpportunities = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        const scholarshipsData = data.filter(item => item.type === 'scholarship');
+        const jobsData = data.filter(item => item.type === 'job');
+        
+        setScholarships(scholarshipsData);
+        setJobs(jobsData);
+      }
+    } catch (error) {
+      console.error('Error fetching opportunities:', error);
+    }
+  };
 
   return (
     <div className="py-24 bg-gray-50">
@@ -59,8 +92,8 @@ const Opportunities = () => {
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {scholarships.map((scholarship, index) => (
-              <OpportunityCard key={index} {...scholarship} />
+            {scholarships.map((scholarship) => (
+              <OpportunityCard key={scholarship.id} {...scholarship} />
             ))}
           </div>
         </div>
@@ -84,8 +117,8 @@ const Opportunities = () => {
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {jobs.map((job, index) => (
-              <OpportunityCard key={index} {...job} />
+            {jobs.map((job) => (
+              <OpportunityCard key={job.id} {...job} />
             ))}
           </div>
         </div>

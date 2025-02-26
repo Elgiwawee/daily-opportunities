@@ -116,7 +116,7 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
 
       const opportunityData = {
         ...formData,
-        attachments: attachments as unknown as Json,
+        attachments,
         type: formData.type as OpportunityType
       };
 
