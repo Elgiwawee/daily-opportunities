@@ -1,9 +1,17 @@
 
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import { toast } from "sonner";
+
+interface Attachment {
+  name: string;
+  url: string;
+  type: 'image' | 'video';
+  path: string;
+}
 
 interface Opportunity {
   id: string;
@@ -12,17 +20,13 @@ interface Opportunity {
   deadline: string;
   type: 'scholarship' | 'job';
   description: string;
-  attachments?: Array<{
-    name: string;
-    url: string;
-    type: 'image' | 'video';
-    path: string;
-  }>;
+  attachments: Attachment[];
   created_at: string;
 }
 
 const OpportunityDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -36,9 +40,17 @@ const OpportunityDetails = () => {
           .single();
 
         if (error) throw error;
-        setOpportunity(data);
+        
+        // Convert JSON attachments to the correct type
+        const formattedData = {
+          ...data,
+          attachments: data.attachments || []
+        } as Opportunity;
+        
+        setOpportunity(formattedData);
       } catch (error) {
         console.error('Error fetching opportunity:', error);
+        toast.error('Error loading opportunity');
       } finally {
         setLoading(false);
       }
@@ -46,6 +58,37 @@ const OpportunityDetails = () => {
 
     fetchOpportunity();
   }, [id]);
+
+  const handleDelete = async () => {
+    if (!opportunity || !window.confirm('Are you sure you want to delete this opportunity?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('opportunities')
+        .delete()
+        .eq('id', opportunity.id);
+
+      if (error) throw error;
+
+      // If there are attachments, delete them from storage
+      if (opportunity.attachments?.length > 0) {
+        const paths = opportunity.attachments.map(attachment => attachment.path);
+        const { error: storageError } = await supabase.storage
+          .from('opportunity-attachments')
+          .remove(paths);
+
+        if (storageError) throw storageError;
+      }
+
+      toast.success('Opportunity deleted successfully');
+      navigate('/');
+    } catch (error: any) {
+      console.error('Error deleting opportunity:', error);
+      toast.error(error.message || 'Error deleting opportunity');
+    }
+  };
 
   if (loading) {
     return (
@@ -78,10 +121,19 @@ const OpportunityDetails = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <Link to="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-500 mb-8">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to opportunities
-        </Link>
+        <div className="flex justify-between items-center mb-8">
+          <Link to="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-500">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to opportunities
+          </Link>
+          <button
+            onClick={handleDelete}
+            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete Opportunity
+          </button>
+        </div>
 
         <div className="bg-white shadow-sm rounded-lg overflow-hidden">
           {opportunity.attachments?.length > 0 && opportunity.attachments[0].type === 'image' && (
