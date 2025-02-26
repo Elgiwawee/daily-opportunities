@@ -31,7 +31,7 @@ const Navbar = () => {
             transition={{ delay: 0.2 }}
             className="flex-shrink-0"
           >
-            <a href="/" className="text-xl font-semibold">
+            <a href="/" className="text-xl font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Daily Opportunities
             </a>
           </motion.div>
@@ -44,7 +44,7 @@ const Navbar = () => {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
-                className="text-gray-700 hover:text-gray-900 transition-colors px-3 py-2 text-sm font-medium"
+                className="text-gray-700 hover:text-indigo-600 transition-colors px-3 py-2 text-sm font-medium"
               >
                 {item}
               </motion.a>
@@ -54,7 +54,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 hover:text-gray-900 p-2"
+              className="text-gray-700 hover:text-indigo-600 p-2"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -62,20 +62,19 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMobileMenuOpen && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="md:hidden bg-white/95 backdrop-blur-md"
+          className="md:hidden bg-white/95 backdrop-blur-md shadow-lg"
         >
           <div className="px-2 pt-2 pb-3 space-y-1">
             {['Home', 'Scholarships', 'Jobs', 'About'].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md text-base font-medium"
+                className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-md text-base font-medium transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item}

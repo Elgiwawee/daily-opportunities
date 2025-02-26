@@ -92,7 +92,7 @@ const OpportunityDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="animate-pulse">Loading...</div>
@@ -103,12 +103,12 @@ const OpportunityDetails = () => {
 
   if (!opportunity) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900">Opportunity not found</h2>
-            <Link to="/" className="text-indigo-600 hover:text-indigo-500 mt-4 inline-block">
+            <Link to="/" className="text-indigo-600 hover:text-indigo-700 mt-4 inline-block">
               Return to home
             </Link>
           </div>
@@ -118,24 +118,24 @@ const OpportunityDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="flex justify-between items-center mb-8">
-          <Link to="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-500">
+          <Link to="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-700">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to opportunities
           </Link>
           <button
             onClick={handleDelete}
-            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md hover:from-red-600 hover:to-red-700 transition-colors shadow-md hover:shadow-lg"
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete Opportunity
           </button>
         </div>
 
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100">
           {opportunity.attachments?.length > 0 && opportunity.attachments[0].type === 'image' && (
             <div className="aspect-video w-full overflow-hidden">
               <img
@@ -148,26 +148,30 @@ const OpportunityDetails = () => {
 
           <div className="p-8">
             <div className="flex items-center justify-between mb-6">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              <span className={`px-4 py-1.5 rounded-full text-sm font-medium ${
                 opportunity.type === 'scholarship' 
-                  ? 'bg-purple-50 text-purple-700' 
-                  : 'bg-emerald-50 text-emerald-700'
+                  ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white' 
+                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white'
               }`}>
                 {opportunity.type === 'scholarship' ? 'Scholarship' : 'Job Opening'}
               </span>
               <span className="text-sm text-gray-500">Deadline: {opportunity.deadline}</span>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{opportunity.title}</h1>
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-4">
+              {opportunity.title}
+            </h1>
             <p className="text-lg text-gray-600 mb-6">{opportunity.organization}</p>
             
             <div className="prose max-w-none">
-              <p className="whitespace-pre-wrap">{opportunity.description}</p>
+              <p className="whitespace-pre-wrap text-gray-700">{opportunity.description}</p>
             </div>
 
             {opportunity.attachments && opportunity.attachments.length > 0 && (
-              <div className="mt-8 border-t pt-8">
-                <h2 className="text-xl font-semibold mb-4">Attachments</h2>
+              <div className="mt-8 border-t border-gray-100 pt-8">
+                <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                  Attachments
+                </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {opportunity.attachments.map((attachment, index) => (
                     <a
@@ -178,7 +182,7 @@ const OpportunityDetails = () => {
                       className="block group"
                     >
                       {attachment.type === 'image' ? (
-                        <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
+                        <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-lg transition-shadow">
                           <img
                             src={attachment.url}
                             alt={attachment.name}
@@ -186,7 +190,7 @@ const OpportunityDetails = () => {
                           />
                         </div>
                       ) : (
-                        <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
                           <video
                             src={attachment.url}
                             className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"

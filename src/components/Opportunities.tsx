@@ -71,7 +71,7 @@ const Opportunities = () => {
   };
 
   return (
-    <div className="py-24 bg-gray-50">
+    <div className="py-24 bg-gradient-to-b from-purple-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-20" id="scholarships">
           <motion.div
@@ -80,10 +80,10 @@ const Opportunities = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="text-sm font-medium text-gray-600 mb-2 block">
+            <span className="text-sm font-medium text-indigo-600 mb-2 block">
               Educational Opportunities
             </span>
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
               Featured Scholarships
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -105,10 +105,10 @@ const Opportunities = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="text-sm font-medium text-gray-600 mb-2 block">
+            <span className="text-sm font-medium text-indigo-600 mb-2 block">
               Career Opportunities
             </span>
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
               Latest Job Openings
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
