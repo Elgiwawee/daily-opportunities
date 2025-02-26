@@ -13,13 +13,24 @@ interface Attachment {
   path: string;
 }
 
+interface OpportunityData {
+  id?: string;
+  title: string;
+  organization: string;
+  description: string;
+  deadline: string;
+  type: OpportunityType;
+  attachments?: Attachment[];
+  created_by?: string;
+}
+
 interface OpportunityFormProps {
-  opportunity?: any;
+  opportunity?: OpportunityData;
   onSuccess: () => void;
 }
 
 const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Omit<OpportunityData, 'attachments' | 'created_by'>>({
     title: '',
     organization: '',
     description: '',
@@ -37,7 +48,7 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
         organization: opportunity.organization,
         description: opportunity.description,
         deadline: opportunity.deadline,
-        type: opportunity.type as OpportunityType,
+        type: opportunity.type,
       });
       setAttachments(opportunity.attachments || []);
     }
@@ -114,13 +125,13 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
         throw new Error('Not authenticated');
       }
 
-      const opportunityData = {
+      const opportunityData: OpportunityData = {
         ...formData,
         attachments,
-        type: formData.type as OpportunityType
+        created_by: user.id
       };
 
-      if (opportunity) {
+      if (opportunity?.id) {
         const { error } = await supabase
           .from('opportunities')
           .update(opportunityData)
@@ -131,7 +142,7 @@ const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
       } else {
         const { error } = await supabase
           .from('opportunities')
-          .insert([{ ...opportunityData, created_by: user.id }]);
+          .insert([opportunityData]);
 
         if (error) throw error;
         toast.success('Opportunity created successfully!');
