@@ -4,6 +4,13 @@ import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
 import { supabase } from '@/integrations/supabase/client';
 
+interface Attachment {
+  name: string;
+  url: string;
+  type: 'image' | 'video';
+  path: string;
+}
+
 interface Opportunity {
   id: string;
   title: string;
@@ -11,7 +18,7 @@ interface Opportunity {
   deadline: string;
   type: 'scholarship' | 'job';
   description: string;
-  attachments?: any[];
+  attachments: Attachment[] | any; // Making it more flexible for different data types
   created_at: string;
 }
 
@@ -22,7 +29,7 @@ const Opportunities = () => {
   useEffect(() => {
     // Initial fetch of opportunities
     fetchOpportunities();
-
+    
     // Set up real-time subscription
     const channel = supabase
       .channel('opportunities-changes')
@@ -59,11 +66,17 @@ const Opportunities = () => {
       }
 
       if (data) {
-        const scholarshipsData = data.filter(item => item.type === 'scholarship');
-        const jobsData = data.filter(item => item.type === 'job');
+        const scholarshipsData = data.filter(item => item.type === 'scholarship').map(item => ({
+          ...item,
+          attachments: item.attachments || [] // Ensure attachments is always an array
+        }));
+        const jobsData = data.filter(item => item.type === 'job').map(item => ({
+          ...item,
+          attachments: item.attachments || [] // Ensure attachments is always an array
+        }));
         
-        setScholarships(scholarshipsData);
-        setJobs(jobsData);
+        setScholarships(scholarshipsData as Opportunity[]);
+        setJobs(jobsData as Opportunity[]);
       }
     } catch (error) {
       console.error('Error fetching opportunities:', error);
