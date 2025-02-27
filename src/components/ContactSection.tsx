@@ -80,7 +80,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-900">Phone</h4>
-                  <p className="text-gray-600 mt-1">+1 (555) 123-4567</p>
+                  <p className="text-gray-600 mt-1">+234 7040930552</p>
                 </div>
               </div>
 
@@ -100,7 +100,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-900">Office</h4>
-                  <p className="text-gray-600 mt-1">123 Opportunity Avenue<br />San Francisco, CA 94105</p>
+                  <p className="text-gray-600 mt-1">NO. 11, Sabuwar Abuja,<br />Giwa L.G Kaduna State, Nigeria</p>
                 </div>
               </div>
             </div>
