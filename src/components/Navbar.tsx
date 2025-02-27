@@ -37,7 +37,7 @@ const Navbar = () => {
           </motion.div>
           
           <div className="hidden md:flex items-center space-x-8">
-            {['Home', 'Scholarships', 'Jobs', 'About'].map((item, index) => (
+            {['Home', 'Scholarships', 'Jobs', 'About', 'Contact'].map((item, index) => (
               <motion.a
                 key={item}
                 href={`#${item.toLowerCase()}`}
@@ -70,7 +70,7 @@ const Navbar = () => {
           className="md:hidden bg-white/95 backdrop-blur-md shadow-lg"
         >
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {['Home', 'Scholarships', 'Jobs', 'About'].map((item) => (
+            {['Home', 'Scholarships', 'Jobs', 'About', 'Contact'].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}

@@ -2,6 +2,8 @@
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import Opportunities from '../components/Opportunities';
+import AboutSection from '../components/AboutSection';
+import ContactSection from '../components/ContactSection'; 
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -10,6 +12,8 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <Opportunities />
+      <AboutSection />
+      <ContactSection />
       <div className="fixed bottom-4 right-4">
         <Link
           to="/auth"

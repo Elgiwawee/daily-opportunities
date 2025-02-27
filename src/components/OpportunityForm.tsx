@@ -1,10 +1,54 @@
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon, Upload } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Image, Video, Upload, Trash, Plus } from 'lucide-react';
+import { supabase } from "@/integrations/supabase/client";
+import { v4 as uuidv4 } from "uuid";
+import { Json } from "@/integrations/supabase/types";
 
-type OpportunityType = 'scholarship' | 'job';
+const formSchema = z.object({
+  title: z.string().min(2, {
+    message: "Title must be at least 2 characters.",
+  }),
+  organization: z.string().min(2, {
+    message: "Organization must be at least 2 characters.",
+  }),
+  description: z.string().min(10, {
+    message: "Description must be at least 10 characters.",
+  }),
+  deadline: z.date({
+    required_error: "A deadline is required.",
+  }),
+  type: z.enum(["scholarship", "job"], {
+    required_error: "You need to select an opportunity type.",
+  }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface Attachment {
   name: string;
@@ -13,283 +57,307 @@ interface Attachment {
   path: string;
 }
 
-interface OpportunityData {
-  id?: string;
-  title: string;
-  organization: string;
-  description: string;
-  deadline: string;
-  type: OpportunityType;
-  attachments?: Attachment[];
-  created_by?: string;
+interface OpportunityData extends FormValues {
+  attachments: Attachment[];
 }
 
-interface OpportunityFormProps {
-  opportunity?: OpportunityData;
-  onSuccess: () => void;
-}
+export function OpportunityForm() {
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
-const OpportunityForm = ({ opportunity, onSuccess }: OpportunityFormProps) => {
-  const [formData, setFormData] = useState<Omit<OpportunityData, 'attachments' | 'created_by'>>({
-    title: '',
-    organization: '',
-    description: '',
-    deadline: '',
-    type: 'scholarship' as OpportunityType,
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      organization: "",
+      description: "",
+      type: "scholarship",
+    },
   });
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
 
-  useEffect(() => {
-    if (opportunity) {
-      setFormData({
-        title: opportunity.title,
-        organization: opportunity.organization,
-        description: opportunity.description,
-        deadline: opportunity.deadline,
-        type: opportunity.type,
-      });
-      setAttachments(opportunity.attachments || []);
-    }
-  }, [opportunity]);
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    setIsUploading(true);
-    const newAttachments: Attachment[] = [];
+  const onSubmit = async (values: FormValues) => {
+    setUploading(true);
 
     try {
-      for (const file of Array.from(files)) {
-        const fileType = file.type.startsWith('image/') ? 'image' : 'video';
-        if (!['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'].includes(file.type)) {
-          toast.error(`Unsupported file type: ${file.type}`);
-          continue;
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        toast.error("You must be logged in to create an opportunity");
+        return;
+      }
+
+      const attachments: Attachment[] = [];
+
+      // Upload files if there are any
+      if (files.length > 0) {
+        for (const file of files) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${uuidv4()}.${fileExt}`;
+          const filePath = `${fileName}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('opportunity-attachments')
+            .upload(filePath, file);
+
+          if (uploadError) {
+            throw uploadError;
+          }
+
+          const { data } = supabase.storage
+            .from('opportunity-attachments')
+            .getPublicUrl(filePath);
+
+          const fileType = file.type.startsWith('image/') ? 'image' : 'video';
+
+          attachments.push({
+            name: file.name,
+            url: data.publicUrl,
+            type: fileType,
+            path: filePath
+          });
         }
-
-        const filePath = `${crypto.randomUUID()}-${file.name}`;
-        const { error: uploadError, data } = await supabase.storage
-          .from('opportunity-attachments')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('opportunity-attachments')
-          .getPublicUrl(filePath);
-
-        newAttachments.push({
-          name: file.name,
-          url: publicUrl,
-          type: fileType,
-          path: filePath
-        });
       }
 
-      setAttachments(prev => [...prev, ...newAttachments]);
-      toast.success('Files uploaded successfully!');
-    } catch (error: any) {
-      toast.error(error.message || 'Error uploading files');
-    } finally {
-      setIsUploading(false);
-      // Clear the input
-      e.target.value = '';
-    }
-  };
-
-  const handleRemoveAttachment = async (attachment: Attachment) => {
-    try {
-      const { error } = await supabase.storage
-        .from('opportunity-attachments')
-        .remove([attachment.path]);
-
-      if (error) throw error;
-
-      setAttachments(prev => prev.filter(a => a.path !== attachment.path));
-      toast.success('File removed successfully!');
-    } catch (error: any) {
-      toast.error(error.message || 'Error removing file');
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('Not authenticated');
-      }
-
+      // Create the opportunity data with attachments
       const opportunityData: OpportunityData = {
-        ...formData,
-        attachments,
-        created_by: user.id
+        ...values,
+        attachments
       };
 
-      if (opportunity?.id) {
-        const { error } = await supabase
-          .from('opportunities')
-          .update(opportunityData)
-          .eq('id', opportunity.id);
+      // Convert attachments to a JSON-compatible format
+      const jsonAttachments = attachments as unknown as Json;
 
-        if (error) throw error;
-        toast.success('Opportunity updated successfully!');
-      } else {
-        const { error } = await supabase
-          .from('opportunities')
-          .insert([opportunityData]);
+      // Insert into the database
+      const { error } = await supabase
+        .from('opportunities')
+        .insert({
+          title: opportunityData.title,
+          organization: opportunityData.organization,
+          description: opportunityData.description,
+          deadline: opportunityData.deadline.toISOString().split('T')[0],
+          type: opportunityData.type,
+          attachments: jsonAttachments,
+          created_by: sessionData.session.user.id
+        });
 
-        if (error) throw error;
-        toast.success('Opportunity created successfully!');
+      if (error) {
+        throw error;
       }
 
-      onSuccess();
+      toast.success("Opportunity created successfully!");
+      // Reset the form
+      form.reset({
+        title: "",
+        organization: "",
+        description: "",
+        type: "scholarship",
+      });
+      setFiles([]);
+
     } catch (error: any) {
-      toast.error(error.message || 'Error saving opportunity');
+      console.error("Error creating opportunity:", error);
+      toast.error(error.message || "Failed to create opportunity");
     } finally {
-      setIsSubmitting(false);
+      setUploading(false);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
+      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white shadow-sm rounded-lg p-6 mb-8">
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Title</label>
-          <input
-            type="text"
-            required
-            value={formData.title}
-            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Organization</label>
-          <input
-            type="text"
-            required
-            value={formData.organization}
-            onChange={(e) => setFormData(prev => ({ ...prev, organization: e.target.value }))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            required
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            rows={4}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Deadline</label>
-          <input
-            type="text"
-            required
-            value={formData.deadline}
-            onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            placeholder="e.g., March 15, 2024"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Type</label>
-          <select
-            value={formData.type}
-            onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as OpportunityType }))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          >
-            <option value="scholarship">Scholarship</option>
-            <option value="job">Job Opening</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
-          <div className="space-y-4">
-            {attachments.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {attachments.map((attachment, index) => (
-                  <div key={index} className="relative group">
-                    <div className="aspect-video rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
-                      {attachment.type === 'image' ? (
-                        <img
-                          src={attachment.url}
-                          alt={attachment.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <video
-                          src={attachment.url}
-                          className="w-full h-full object-cover"
-                          controls
-                        />
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveAttachment(attachment)}
-                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash className="w-4 h-4" />
-                    </button>
-                    <p className="mt-1 text-xs text-gray-500 truncate">{attachment.name}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div className="flex items-center space-x-4">
-              <label className="flex items-center justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
-                <div className="flex flex-col items-center space-y-2">
-                  {isUploading ? (
-                    <div className="text-sm text-gray-600">Uploading...</div>
-                  ) : (
-                    <>
-                      <Plus className="w-6 h-6 text-gray-600" />
-                      <div className="flex flex-col items-center">
-                        <span className="font-medium text-gray-600">Add files</span>
-                        <span className="text-xs text-gray-500">Images or Videos</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/gif,video/mp4,video/webm"
-                  multiple
-                  className="hidden"
-                  onChange={handleFileUpload}
-                  disabled={isUploading}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter opportunity title" {...field} />
+              </FormControl>
+              <FormDescription>
+                A clear, concise title for the opportunity
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="organization"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Organization</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter organization name" {...field} />
+              </FormControl>
+              <FormDescription>
+                The name of the company or institution
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Enter opportunity details"
+                  className="resize-y min-h-32"
+                  {...field}
                 />
-              </label>
-            </div>
+              </FormControl>
+              <FormDescription>
+                Detailed information about the opportunity
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="deadline"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Deadline</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date < new Date(new Date().setHours(0, 0, 0, 0))
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                The deadline for applying to this opportunity
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Opportunity Type</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="scholarship" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Scholarship</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="job" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Job Opening</FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="space-y-3">
+          <FormLabel>Attachments</FormLabel>
+          <div className="flex items-center justify-center w-full">
+            <label
+              htmlFor="dropzone-file"
+              className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+            >
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <Upload className="w-8 h-8 mb-3 text-gray-500" />
+                <p className="mb-2 text-sm text-gray-500">
+                  <span className="font-semibold">Click to upload</span> or drag
+                  and drop
+                </p>
+                <p className="text-xs text-gray-500">
+                  Images or supporting documents
+                </p>
+              </div>
+              <input
+                id="dropzone-file"
+                type="file"
+                className="hidden"
+                multiple
+                onChange={handleFileChange}
+              />
+            </label>
           </div>
+          {files.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-sm font-medium mb-2">Selected Files:</h4>
+              <ul className="space-y-2">
+                {files.map((file, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
+                  >
+                    <span className="text-sm truncate max-w-[250px]">
+                      {file.name}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(index)}
+                    >
+                      Remove
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={isSubmitting || isUploading}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
-          >
-            {isSubmitting ? 'Saving...' : opportunity ? 'Update Opportunity' : 'Create Opportunity'}
-          </button>
-        </div>
-      </div>
-    </form>
+        <Button type="submit" disabled={uploading}>
+          {uploading ? "Creating..." : "Create Opportunity"}
+        </Button>
+      </form>
+    </Form>
   );
-};
-
-export default OpportunityForm;
+}
