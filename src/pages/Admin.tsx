@@ -70,7 +70,13 @@ const Admin = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {showForm && (
-          <OpportunityForm />
+          <OpportunityForm
+            opportunity={editingOpportunity}
+            onSuccess={() => {
+              setShowForm(false);
+              setEditingOpportunity(null);
+            }}
+          />
         )}
         
         <OpportunityTable
