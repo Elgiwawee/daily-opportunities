@@ -1,8 +1,9 @@
-
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 
 interface Attachment {
   name: string;
@@ -23,8 +24,9 @@ interface Opportunity {
 }
 
 const Opportunities = () => {
-  const [scholarships, setScholarships] = useState<Opportunity[]>([]);
-  const [jobs, setJobs] = useState<Opportunity[]>([]);
+  const [featuredOpportunities, setFeaturedOpportunities] = useState<Opportunity[]>([]);
+  const [otherOpportunities, setOtherOpportunities] = useState<Opportunity[]>([]);
+  const [visibleCount, setVisibleCount] = useState(6);
 
   useEffect(() => {
     // Initial fetch of opportunities
@@ -66,75 +68,68 @@ const Opportunities = () => {
       }
 
       if (data) {
-        const scholarshipsData = data.filter(item => item.type === 'scholarship').map(item => ({
-          ...item,
-          attachments: item.attachments || [] // Ensure attachments is always an array
-        }));
-        const jobsData = data.filter(item => item.type === 'job').map(item => ({
+        // Process all opportunities
+        const processedData = data.map(item => ({
           ...item,
           attachments: item.attachments || [] // Ensure attachments is always an array
         }));
         
-        setScholarships(scholarshipsData as Opportunity[]);
-        setJobs(jobsData as Opportunity[]);
+        // First 3 items are featured
+        const featured = processedData.slice(0, 3);
+        // Rest of the items
+        const others = processedData.slice(3);
+        
+        setFeaturedOpportunities(featured as Opportunity[]);
+        setOtherOpportunities(others as Opportunity[]);
       }
     } catch (error) {
       console.error('Error fetching opportunities:', error);
     }
   };
 
+  const loadMore = () => {
+    setVisibleCount(prevCount => prevCount + 6);
+  };
+
   return (
-    <div className="py-24 bg-gradient-to-b from-purple-50 to-white">
+    <div className="py-8 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-20" id="scholarships">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <span className="text-sm font-medium text-indigo-600 mb-2 block">
-              Educational Opportunities
-            </span>
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              Featured Scholarships
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Discover scholarships that can help fund your educational journey and achieve your academic goals.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {scholarships.map((scholarship) => (
-              <OpportunityCard key={scholarship.id} {...scholarship} />
+        {/* Featured Section */}
+        <div className="mb-12">
+          <div className="bg-gray-800 text-white py-2 px-4 inline-block mb-6">
+            <h2 className="text-lg font-bold">RECOMMENDED</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredOpportunities.map((opportunity) => (
+              <OpportunityCard 
+                key={opportunity.id} 
+                {...opportunity} 
+                featured={true} 
+              />
             ))}
           </div>
         </div>
 
-        <div className="mt-20" id="jobs">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <span className="text-sm font-medium text-indigo-600 mb-2 block">
-              Career Opportunities
-            </span>
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              Latest Job Openings
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Find your next career opportunity with leading companies across various industries.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {jobs.map((job) => (
-              <OpportunityCard key={job.id} {...job} />
-            ))}
-          </div>
+        {/* Other Opportunities */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {otherOpportunities.slice(0, visibleCount).map((opportunity) => (
+            <OpportunityCard key={opportunity.id} {...opportunity} />
+          ))}
         </div>
+
+        {/* Load More Button */}
+        {otherOpportunities.length > visibleCount && (
+          <div className="flex justify-center mt-10">
+            <Button 
+              onClick={loadMore}
+              variant="outline"
+              className="border border-gray-300 hover:bg-gray-100 text-gray-800"
+            >
+              Load more <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

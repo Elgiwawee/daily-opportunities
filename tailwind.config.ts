@@ -48,6 +48,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        olive: {
+          '50': '#f9f9f6',
+          '100': '#f1f0e9',
+          '200': '#e2e0d0',
+          '300': '#cec9b0',
+          '400': '#b5ad88',
+          '500': '#a49770',
+          '600': '#8d7f5e',
+          '700': '#75684f',
+          '800': '#625746',
+          '900': '#524a3c',
+          '950': '#2b2719',
+        },
       },
       keyframes: {
         "fade-up": {

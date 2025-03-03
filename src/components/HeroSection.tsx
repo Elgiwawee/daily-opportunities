@@ -3,28 +3,28 @@ import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white to-transparent">
+    <div className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-indigo-100 to-white">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px)] bg-[size:3rem_1px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       </div>
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
         <motion.span
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-block px-4 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium mb-8"
+          className="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-8"
         >
-          Discover Your Next Opportunity
+          Find Your Perfect Opportunity
         </motion.span>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl sm:text-6xl font-bold text-gray-900 mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600"
+          className="text-4xl sm:text-6xl font-bold text-gray-900 mb-6 tracking-tight"
         >
-          Your Gateway to Success
+          Global Scholarships & Jobs
         </motion.h1>
 
         <motion.p
@@ -33,7 +33,7 @@ const HeroSection = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto"
         >
-          Explore curated scholarships and job opportunities tailored for your journey to excellence.
+          Discover opportunities from around the world, curated just for you.
         </motion.p>
 
         <motion.div
@@ -44,15 +44,15 @@ const HeroSection = () => {
         >
           <a
             href="#scholarships"
-            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-700 hover:bg-blue-800 transition-all shadow-lg hover:shadow-xl"
           >
-            Browse Scholarships
+            Find Scholarships
           </a>
           <a
             href="#jobs"
             className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-md hover:shadow-lg"
           >
-            View Job Openings
+            Explore Jobs
           </a>
         </motion.div>
       </div>
