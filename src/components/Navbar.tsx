@@ -1,14 +1,19 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, X, ChevronDown, Search } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, ChevronDown, Search, User } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +21,24 @@ const Navbar = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAdmin(!!user);
+    };
+    checkUser();
+    
+    // Subscribe to auth changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAdmin(!!session?.user);
+    });
+    
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   // Close mobile menu when route changes
@@ -32,20 +55,67 @@ const Navbar = () => {
     }
   };
 
+  const handleLogin = () => {
+    navigate('/auth');
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success("Logged out successfully");
+      if (location.pathname === '/admin') {
+        navigate('/');
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Error logging out");
+    }
+  };
+
   return (
     <div className="w-full fixed z-50">
       {/* Logo Section */}
       <div className="bg-white py-4 px-4 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto flex items-center">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center">
-            <div className="w-16 h-16 bg-white border border-olive-600 rounded-md flex items-center justify-center">
-              <span className="text-3xl font-bold text-olive-700">S<sub className="text-sm">R</sub></span>
-            </div>
+            <img 
+              src="/lovable-uploads/0fd8bd36-8cd2-4e3f-b34b-fdcf0692b42a.png" 
+              alt="Daily Opportunities Logo" 
+              className="h-16 w-auto"
+            />
             <div className="ml-2">
-              <div className="text-xl font-bold text-olive-700">SCHOLARSHIP</div>
-              <div className="text-xl font-bold text-olive-700">REGION</div>
+              <div className="text-xl font-bold text-teal-600">DAILY</div>
+              <div className="text-xl font-bold text-teal-600">OPPORTUNITIES</div>
             </div>
           </Link>
+          
+          <div>
+            {isAdmin ? (
+              <div className="flex items-center gap-4">
+                <Link to="/admin">
+                  <Button variant="outline" className="border border-olive-600 text-olive-700 hover:bg-olive-50">
+                    <User size={16} className="mr-2" />
+                    Admin Dashboard
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={handleLogout}
+                  variant="outline" 
+                  className="border border-olive-600 text-olive-700 hover:bg-olive-50"
+                >
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                onClick={handleLogin}
+                variant="outline" 
+                className="border border-olive-600 text-olive-700 hover:bg-olive-50"
+              >
+                <User size={16} className="mr-2" />
+                Admin Login
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       
@@ -194,6 +264,11 @@ const Navbar = () => {
               <Link to="/contact" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">📞</span> Contact Us
               </Link>
+              {isAdmin && (
+                <Link to="/admin" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
+                  <span className="mr-1">👤</span> Admin Dashboard
+                </Link>
+              )}
               <div className="relative pt-2">
                 <div className="flex items-center border-2 rounded-lg bg-white">
                   <input type="text" className="w-full px-4 py-1 text-gray-800 rounded-lg" placeholder="Search..." />

@@ -1,10 +1,12 @@
 
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { OpportunityForm } from '@/components/OpportunityForm';
 import OpportunityTable from '@/components/OpportunityTable';
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Home } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -46,7 +48,15 @@ const Admin = () => {
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+              <Link to="/" className="ml-4">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Home size={16} />
+                  Back to Home
+                </Button>
+              </Link>
+            </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => {
