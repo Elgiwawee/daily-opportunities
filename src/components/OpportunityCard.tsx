@@ -1,7 +1,8 @@
 
 import { motion } from 'framer-motion';
-import { Image, Video } from 'lucide-react';
+import { Image, Video, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 interface Attachment {
   name: string;
@@ -87,13 +88,27 @@ const OpportunityCard = ({
           </div>
         )}
         
-        <div className="mt-4">
+        <div className="mt-4 flex justify-between items-center">
           <Link
             to={`/opportunity/${id}`}
             className="text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors"
           >
             Learn More →
           </Link>
+          
+          {type === 'scholarship' && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1 text-purple-700 border-purple-200 hover:bg-purple-50"
+              asChild
+            >
+              <Link to={`/opportunity/${id}`}>
+                <ExternalLink className="w-4 h-4" />
+                Apply Now
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </motion.div>

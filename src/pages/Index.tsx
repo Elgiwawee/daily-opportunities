@@ -4,7 +4,6 @@ import HeroSection from '../components/HeroSection';
 import Opportunities from '../components/Opportunities';
 import AboutSection from '../components/AboutSection';
 import ContactSection from '../components/ContactSection'; 
-import { Link } from 'react-router-dom';
 
 const Index = () => {
   return (
@@ -14,14 +13,6 @@ const Index = () => {
       <Opportunities />
       <AboutSection />
       <ContactSection />
-      <div className="fixed bottom-4 right-4">
-        <Link
-          to="/auth"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors shadow-lg"
-        >
-          Admin Login
-        </Link>
-      </div>
     </div>
   );
 };
