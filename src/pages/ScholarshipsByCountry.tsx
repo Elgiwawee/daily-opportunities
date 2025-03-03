@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface Opportunity {
   id: string;
@@ -16,7 +17,6 @@ interface Opportunity {
   type: 'scholarship' | 'job';
   description: string;
   attachments: any[];
-  country?: string;
   created_at: string;
 }
 
@@ -39,16 +39,27 @@ const ScholarshipsByCountry = () => {
   
   const countryName = country ? countryMapping[country.toLowerCase()] || country : '';
 
+  // We can't filter by country in the database because the column doesn't exist
+  // So we'll fetch all scholarships and filter them in the frontend
   const fetchScholarships = async () => {
     const { data, error } = await supabase
       .from('opportunities')
       .select('*')
       .eq('type', 'scholarship')
-      .eq('country', countryName)
       .order('created_at', { ascending: false });
     
     if (error) {
+      toast.error("Error loading scholarships. Please try again later.");
       throw error;
+    }
+    
+    // Since we can't filter by country in the database, we need to check
+    // if the description or title contains the country name
+    if (countryName) {
+      return (data as Opportunity[]).filter(scholarship => 
+        scholarship.description.toLowerCase().includes(countryName.toLowerCase()) ||
+        scholarship.title.toLowerCase().includes(countryName.toLowerCase())
+      );
     }
     
     return data as Opportunity[];

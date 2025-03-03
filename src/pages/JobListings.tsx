@@ -7,16 +7,16 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import RegionFilter from '../components/RegionFilter';
+import { toast } from 'sonner';
 
-interface Opportunity {
+interface Job {
   id: string;
   title: string;
   organization: string;
   deadline: string;
-  type: 'scholarship' | 'job';
+  type: 'job';
   description: string;
   attachments: any[];
-  region?: string;
   created_at: string;
 }
 
@@ -25,23 +25,26 @@ const JobListings = () => {
   const [visibleCount, setVisibleCount] = useState(9);
 
   const fetchJobs = async () => {
-    let query = supabase
+    const { data, error } = await supabase
       .from('opportunities')
       .select('*')
       .eq('type', 'job')
       .order('created_at', { ascending: false });
     
-    if (selectedRegion && selectedRegion !== 'All') {
-      query = query.eq('region', selectedRegion);
-    }
-    
-    const { data, error } = await query;
-    
     if (error) {
+      toast.error("Error loading jobs. Please try again later.");
       throw error;
     }
     
-    return data as Opportunity[];
+    // Filter by region if selected
+    if (selectedRegion) {
+      return (data as Job[]).filter(job => 
+        job.description.toLowerCase().includes(selectedRegion.toLowerCase()) ||
+        job.title.toLowerCase().includes(selectedRegion.toLowerCase())
+      );
+    }
+    
+    return data as Job[];
   };
 
   const { data: jobs = [], isLoading, error } = useQuery({
@@ -65,7 +68,7 @@ const JobListings = () => {
           >
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Job Opportunities</h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Discover job opportunities from around the world to advance your career.
+              Explore exciting job opportunities from various organizations and companies.
             </p>
           </motion.div>
 
@@ -107,7 +110,7 @@ const JobListings = () => {
 
               {jobs.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-lg text-gray-500">No jobs found for this region. Please try another region.</p>
+                  <p className="text-lg text-gray-500">No job listings found. Please check back later.</p>
                 </div>
               )}
             </>

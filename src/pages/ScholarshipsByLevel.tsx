@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface Opportunity {
   id: string;
@@ -16,35 +17,43 @@ interface Opportunity {
   type: 'scholarship' | 'job';
   description: string;
   attachments: any[];
-  level?: string;
   created_at: string;
 }
 
-const levelMapping: Record<string, string> = {
-  'bachelors': 'Bachelors',
-  'undergraduate': 'Undergraduate',
-  'masters': 'Masters',
-  'phd': 'PhD',
-  'postgraduate': 'Postgraduate',
-  'research': 'Research',
+const levelKeywords: Record<string, string[]> = {
+  'undergraduate': ['undergraduate', 'bachelor', 'bachelors', 'bachelor\'s'],
+  'masters': ['masters', 'master', 'master\'s', 'postgraduate', 'post-graduate', 'msc', 'ma', 'mba'],
+  'phd': ['phd', 'doctorate', 'doctoral', 'doctor of philosophy']
 };
 
 const ScholarshipsByLevel = () => {
   const { level } = useParams<{ level: string }>();
   const [visibleCount, setVisibleCount] = useState(9);
   
-  const educationLevel = level ? levelMapping[level.toLowerCase()] || level : '';
-
   const fetchScholarships = async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from('opportunities')
       .select('*')
       .eq('type', 'scholarship')
-      .eq('level', educationLevel)
       .order('created_at', { ascending: false });
     
+    const { data, error } = await query;
+    
     if (error) {
+      toast.error("Error loading scholarships. Please try again later.");
       throw error;
+    }
+    
+    // Filter by level if specified
+    if (level && levelKeywords[level.toLowerCase()]) {
+      const keywords = levelKeywords[level.toLowerCase()];
+      return (data as Opportunity[]).filter(scholarship => {
+        const descLower = scholarship.description.toLowerCase();
+        const titleLower = scholarship.title.toLowerCase();
+        return keywords.some(keyword => 
+          descLower.includes(keyword) || titleLower.includes(keyword)
+        );
+      });
     }
     
     return data as Opportunity[];
@@ -59,6 +68,15 @@ const ScholarshipsByLevel = () => {
     setVisibleCount(prev => prev + 6);
   };
 
+  const formatLevel = (level: string) => {
+    if (level.toLowerCase() === 'undergraduate') return 'Undergraduate';
+    if (level.toLowerCase() === 'masters') return 'Master\'s';
+    if (level.toLowerCase() === 'phd') return 'PhD';
+    return level;
+  };
+
+  const levelTitle = level ? formatLevel(level) : 'All Levels';
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -70,10 +88,10 @@ const ScholarshipsByLevel = () => {
             className="mb-12 text-center"
           >
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              {educationLevel || 'Selected Level'} Scholarships
+              {levelTitle} Scholarships
             </h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Discover scholarship opportunities available for {educationLevel || 'this level'} students.
+              Discover {levelTitle.toLowerCase()} scholarship opportunities from around the world.
             </p>
           </motion.div>
 
@@ -110,7 +128,7 @@ const ScholarshipsByLevel = () => {
 
               {scholarships.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-lg text-gray-500">No scholarships found for {educationLevel} level. Please check back later.</p>
+                  <p className="text-lg text-gray-500">No {levelTitle.toLowerCase()} scholarships found. Please check back later.</p>
                 </div>
               )}
             </>

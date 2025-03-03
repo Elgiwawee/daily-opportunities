@@ -1,81 +1,165 @@
 
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export const ScholarshipScraper = () => {
-  const [url, setUrl] = useState('');
+interface ScrapedScholarship {
+  title: string;
+  organization: string;
+  deadline: string;
+  type: 'scholarship';
+  description: string;
+  attachments: any[];
+}
+
+const ScholarshipScraper = () => {
+  const [source, setSource] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [scrapedData, setScrapedData] = useState<ScrapedScholarship[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!url) {
-      toast.error('Please enter a URL');
+  const handleFetchScholarships = async () => {
+    if (!source) {
+      toast.error('Please enter a source URL');
       return;
     }
-    
+
     setIsLoading(true);
-    
     try {
-      const { data, error } = await supabase.functions.invoke('fetch-scholarships', {
-        body: { url }
+      // Call the edge function to fetch scholarships
+      const response = await supabase.functions.invoke('fetch-scholarships', {
+        body: { source },
       });
-      
-      if (error) {
-        console.error('Error fetching scholarships:', error);
-        toast.error('Failed to fetch scholarships: ' + error.message);
-        return;
+
+      if (response.error) {
+        throw new Error(response.error.message);
       }
+
+      const { data, success, message } = response.data;
       
-      console.log('Scholarship import response:', data);
-      toast.success(`Successfully imported scholarships from ${url}`);
-      setUrl('');
+      if (!success) {
+        throw new Error(message || 'Failed to fetch scholarships');
+      }
+
+      setScrapedData(data);
+      toast.success(`Successfully fetched ${data.length} scholarships`);
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('An unexpected error occurred');
+      console.error('Error fetching scholarships:', error);
+      toast.error(error.message || 'Failed to fetch scholarships');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveScholarships = async () => {
+    if (scrapedData.length === 0) {
+      toast.error('No scholarships to save');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Prepare data for insertion
+      const scholarshipsToInsert = scrapedData.map(scholarship => ({
+        ...scholarship,
+        created_at: new Date().toISOString(),
+      }));
+
+      // Insert into the database
+      const { error } = await supabase
+        .from('opportunities')
+        .insert(scholarshipsToInsert);
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success(`Successfully saved ${scrapedData.length} scholarships`);
+      setScrapedData([]);
+      setSource('');
+    } catch (error) {
+      console.error('Error saving scholarships:', error);
+      toast.error(error.message || 'Failed to save scholarships');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4 text-olive-800">Import Scholarships</h2>
-      <p className="mb-4 text-gray-600">
-        Enter the URL of a website to automatically scrape and import scholarship data.
-      </p>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-1">
-            Website URL
-          </label>
-          <Input
-            id="url"
-            type="url"
-            placeholder="https://example.com/scholarships"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            className="w-full"
-            required
-          />
+    <div className="space-y-6">
+      <div className="flex flex-col space-y-4">
+        <div className="flex items-end gap-2">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Source URL
+            </label>
+            <Input
+              type="text"
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              placeholder="Enter website URL to scrape scholarships from"
+              className="w-full"
+            />
+          </div>
+          <Button 
+            onClick={handleFetchScholarships} 
+            disabled={isLoading}
+            className="bg-olive-600 text-white hover:bg-olive-700"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Fetching...
+              </>
+            ) : (
+              'Fetch Scholarships'
+            )}
+          </Button>
         </div>
-        
-        <Button
-          type="submit"
-          className="w-full bg-olive-700 hover:bg-olive-800 text-white"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Importing...' : 'Import Scholarships'}
-        </Button>
-      </form>
-      
-      <div className="mt-4 text-sm text-gray-500">
-        <p>Note: This tool will attempt to extract scholarship information from the specified website.</p>
-        <p>For best results, provide direct links to scholarship listing pages.</p>
+
+        {/* Scraped data display */}
+        {scrapedData.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-medium">
+                Fetched Scholarships ({scrapedData.length})
+              </h3>
+              <Button 
+                onClick={handleSaveScholarships} 
+                disabled={isLoading}
+                className="bg-olive-600 text-white hover:bg-olive-700"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save All to Database'
+                )}
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {scrapedData.map((scholarship, index) => (
+                <Card key={index} className="shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">{scholarship.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-500 mb-2">
+                      {scholarship.organization} | Deadline: {scholarship.deadline}
+                    </p>
+                    <p className="text-sm line-clamp-3">{scholarship.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

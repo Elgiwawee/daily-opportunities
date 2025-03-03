@@ -1,118 +1,88 @@
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.42.1'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.21.0'
 
-// Define the CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-export const handler = async (req: Request) => {
-  // Handle CORS preflight requests
+// Handle CORS preflight requests
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    // Create a Supabase client with the service role key
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    // Create Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') || ''
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
-    const { url } = await req.json()
+    if (req.method === 'POST') {
+      // Example implementation - in a real scenario, you would scrape data from external websites
+      const body = await req.json()
+      const { source } = body
 
-    // Log the request
-    console.log(`Fetching scholarships from URL: ${url}`)
+      console.log(`Fetching scholarships from source: ${source}`)
 
-    // Validate that we received a proper URL
-    if (!url || typeof url !== 'string') {
-      return new Response(
-        JSON.stringify({ 
-          error: 'URL is required and must be a string' 
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-          status: 400 
+      // For now, we'll just return a mock response
+      // In a real implementation, you would use a library like Cheerio or Puppeteer
+      // to scrape scholarship data from the specified source
+      const mockData = [
+        {
+          title: "International Scholarship Program",
+          organization: "Global Education Fund",
+          deadline: "2025-08-30",
+          type: "scholarship",
+          description: "Full-ride scholarship for international students to study in the United States, covering tuition, accommodation, and living expenses.",
+          attachments: []
+        },
+        {
+          title: "Research Fellowship",
+          organization: "Science Foundation",
+          deadline: "2025-07-15",
+          type: "scholarship",
+          description: "Fellowship for graduate students pursuing research in STEM fields with a stipend of $30,000 per year.",
+          attachments: []
         }
-      )
-    }
+      ]
 
-    // Placeholder for actual scraping logic
-    // In a real implementation, you would use a more advanced method or service to scrape data
-    const scholarships = await fetchScholarshipsFromWebsite(url)
-
-    // Store the fetched scholarships in the database
-    const { data, error } = await supabaseAdmin
-      .from('opportunities')
-      .insert(scholarships)
-      .select()
-
-    if (error) {
-      console.error('Error storing scholarships:', error)
-      throw error
-    }
-
-    // Return the success response
-    return new Response(
-      JSON.stringify({ 
+      // In a real implementation, you would insert the scraped data into the database
+      // For now, we'll just return the mock data
+      return new Response(JSON.stringify({ 
         success: true, 
-        message: `Successfully imported ${scholarships.length} scholarships`, 
-        data 
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 200 
-      }
-    )
-  } catch (error) {
-    console.error('Scholarship fetch error:', error)
-    return new Response(
-      JSON.stringify({ error: error.message || 'An unexpected error occurred' }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 500 
-      }
-    )
-  }
-}
+        data: mockData,
+        message: "Successfully fetched scholarships" 
+      }), { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json' 
+        } 
+      })
+    }
 
-// This is a simplified placeholder function for scholarship scraping
-// In a real implementation, you would use a proper scraping service or library
-async function fetchScholarshipsFromWebsite(url: string) {
-  // For demonstration purposes, we'll return mock data
-  // In a real implementation, you would:
-  // 1. Fetch the HTML content from the URL
-  // 2. Parse it to extract scholarship information
-  // 3. Format the data according to your database schema
-  
-  try {
-    const response = await fetch(url)
-    const html = await response.text()
-    
-    console.log(`Successfully fetched HTML content from ${url}`)
-    
-    // Here you would parse the HTML and extract scholarship information
-    // For now, we'll return mock data
-    return [
-      {
-        title: `Scholarship from ${new URL(url).hostname}`,
-        organization: `Sourced from ${new URL(url).hostname}`,
-        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
-        type: 'scholarship',
-        description: `This scholarship was automatically scraped from ${url}. The description would typically contain details about the scholarship, requirements, and application process.`,
-        country: 'Various',
-        level: 'Undergraduate',
-        region: 'International',
-        attachments: [],
-        source_url: url,
-        created_at: new Date().toISOString(),
-      }
-    ]
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: "Method not allowed" 
+    }), { 
+      status: 405,
+      headers: { 
+        ...corsHeaders,
+        'Content-Type': 'application/json' 
+      } 
+    })
   } catch (error) {
-    console.error(`Error fetching content from ${url}:`, error)
-    throw new Error(`Failed to fetch scholarship data from ${url}: ${error.message}`)
+    console.error('Error processing request:', error)
+    
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: error.message 
+    }), { 
+      status: 500,
+      headers: { 
+        ...corsHeaders,
+        'Content-Type': 'application/json' 
+      } 
+    })
   }
-}
-
-Deno.serve(handler)
+})

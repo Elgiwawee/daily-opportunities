@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import RegionFilter from '../components/RegionFilter';
+import { toast } from 'sonner';
 
 interface Opportunity {
   id: string;
@@ -16,7 +17,6 @@ interface Opportunity {
   type: 'scholarship' | 'job';
   description: string;
   attachments: any[];
-  region?: string;
   created_at: string;
 }
 
@@ -31,14 +31,20 @@ const Scholarships = () => {
       .eq('type', 'scholarship')
       .order('created_at', { ascending: false });
     
-    if (selectedRegion && selectedRegion !== 'All') {
-      query = query.eq('region', selectedRegion);
-    }
-    
     const { data, error } = await query;
     
     if (error) {
+      toast.error("Error loading scholarships. Please try again later.");
       throw error;
+    }
+    
+    // Filter by region if a region is selected
+    // Since we can't filter by region in the database, we'll do it client-side
+    if (selectedRegion) {
+      return (data as Opportunity[]).filter(scholarship => 
+        scholarship.description.toLowerCase().includes(selectedRegion.toLowerCase()) ||
+        scholarship.title.toLowerCase().includes(selectedRegion.toLowerCase())
+      );
     }
     
     return data as Opportunity[];

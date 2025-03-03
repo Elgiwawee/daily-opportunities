@@ -1,9 +1,11 @@
+
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Attachment {
   name: string;
@@ -64,6 +66,7 @@ const Opportunities = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
+        toast.error('Error fetching opportunities. Please try again later.');
         throw error;
       }
 
