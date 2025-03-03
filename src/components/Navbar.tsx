@@ -2,12 +2,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, X, ChevronDown, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +17,12 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setDropdownOpen(null);
+  }, [location.pathname]);
 
   const toggleDropdown = (name: string) => {
     if (dropdownOpen === name) {
@@ -26,7 +33,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="w-full z-50">
+    <div className="w-full fixed z-50">
       {/* Logo Section */}
       <div className="bg-white py-4 px-4 border-b border-gray-200">
         <div className="max-w-7xl mx-auto flex items-center">
@@ -46,28 +53,29 @@ const Navbar = () => {
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gray-900 text-white shadow-md"
+        className="bg-olive-700 text-white shadow-md"
       >
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-14">
             <div className="hidden md:flex items-center space-x-1">
-              <Link to="/" className="px-3 py-2 flex items-center hover:bg-gray-800">
+              <Link to="/" className="px-3 py-2 flex items-center hover:bg-olive-800">
                 <span className="mr-1">🏠</span> Home
               </Link>
               
               <div className="relative group">
                 <button 
                   onClick={() => toggleDropdown('scholarships')}
-                  className="px-3 py-2 flex items-center hover:bg-gray-800"
+                  className="px-3 py-2 flex items-center hover:bg-olive-800"
                 >
                   <span className="mr-1">🎓</span> Scholarships <ChevronDown size={14} />
                 </button>
                 {dropdownOpen === 'scholarships' && (
                   <div className="absolute left-0 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-20 w-48">
                     <div className="py-1">
-                      <Link to="/scholarships/undergraduate" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Undergraduate</Link>
-                      <Link to="/scholarships/masters" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Masters</Link>
-                      <Link to="/scholarships/phd" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">PhD</Link>
+                      <Link to="/scholarships" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">All Scholarships</Link>
+                      <Link to="/levels/undergraduate" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Undergraduate</Link>
+                      <Link to="/levels/masters" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Masters</Link>
+                      <Link to="/levels/phd" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">PhD</Link>
                     </div>
                   </div>
                 )}
@@ -76,7 +84,7 @@ const Navbar = () => {
               <div className="relative group">
                 <button 
                   onClick={() => toggleDropdown('countries')}
-                  className="px-3 py-2 flex items-center hover:bg-gray-800"
+                  className="px-3 py-2 flex items-center hover:bg-olive-800"
                 >
                   <span className="mr-1">🌎</span> Scholarship In Countries <ChevronDown size={14} />
                 </button>
@@ -87,6 +95,8 @@ const Navbar = () => {
                       <Link to="/countries/uk" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">UK</Link>
                       <Link to="/countries/canada" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Canada</Link>
                       <Link to="/countries/australia" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Australia</Link>
+                      <Link to="/countries/germany" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Germany</Link>
+                      <Link to="/countries/nigeria" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Nigeria</Link>
                     </div>
                   </div>
                 )}
@@ -95,7 +105,7 @@ const Navbar = () => {
               <div className="relative group">
                 <button 
                   onClick={() => toggleDropdown('levels')}
-                  className="px-3 py-2 flex items-center hover:bg-gray-800"
+                  className="px-3 py-2 flex items-center hover:bg-olive-800"
                 >
                   <span className="mr-1">🏆</span> Scholarships By Level <ChevronDown size={14} />
                 </button>
@@ -110,25 +120,29 @@ const Navbar = () => {
                 )}
               </div>
               
-              <Link to="/explainer" className="px-3 py-2 flex items-center hover:bg-gray-800">
+              <Link to="/jobs" className="px-3 py-2 flex items-center hover:bg-olive-800">
+                <span className="mr-1">💼</span> Jobs
+              </Link>
+              
+              <Link to="/explainer" className="px-3 py-2 flex items-center hover:bg-olive-800">
                 <span className="mr-1">📚</span> Explainer
               </Link>
               
-              <Link to="/news" className="px-3 py-2 flex items-center hover:bg-gray-800">
+              <Link to="/news" className="px-3 py-2 flex items-center hover:bg-olive-800">
                 <span className="mr-1">📰</span> News
               </Link>
               
-              <Link to="/about" className="px-3 py-2 flex items-center hover:bg-gray-800">
+              <Link to="/about" className="px-3 py-2 flex items-center hover:bg-olive-800">
                 <span className="mr-1">ℹ️</span> About Us
               </Link>
               
-              <Link to="/contact" className="px-3 py-2 flex items-center hover:bg-gray-800">
+              <Link to="/contact" className="px-3 py-2 flex items-center hover:bg-olive-800">
                 <span className="mr-1">📞</span> Contact Us
               </Link>
             </div>
             
             <div className="hidden md:flex items-center">
-              <button className="px-3 py-2 hover:bg-gray-800">
+              <button className="px-3 py-2 hover:bg-olive-800">
                 <Search size={20} />
               </button>
             </div>
@@ -150,31 +164,34 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-gray-900"
+            className="md:hidden bg-olive-700"
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link to="/" className="block px-3 py-2 hover:bg-gray-800 rounded-md">
+              <Link to="/" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">🏠</span> Home
               </Link>
-              <Link to="/scholarships" className="block px-3 py-2 hover:bg-gray-800 rounded-md">
+              <Link to="/scholarships" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">🎓</span> Scholarships
               </Link>
-              <Link to="/countries" className="block px-3 py-2 hover:bg-gray-800 rounded-md">
+              <Link to="/countries/usa" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">🌎</span> Scholarship In Countries
               </Link>
-              <Link to="/levels" className="block px-3 py-2 hover:bg-gray-800 rounded-md">
+              <Link to="/levels/bachelors" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">🏆</span> Scholarships By Level
               </Link>
-              <Link to="/explainer" className="block px-3 py-2 hover:bg-gray-800 rounded-md">
+              <Link to="/jobs" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
+                <span className="mr-1">💼</span> Jobs
+              </Link>
+              <Link to="/explainer" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">📚</span> Explainer
               </Link>
-              <Link to="/news" className="block px-3 py-2 hover:bg-gray-800 rounded-md">
+              <Link to="/news" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">📰</span> News
               </Link>
-              <Link to="/about" className="block px-3 py-2 hover:bg-gray-800 rounded-md">
+              <Link to="/about" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">ℹ️</span> About Us
               </Link>
-              <Link to="/contact" className="block px-3 py-2 hover:bg-gray-800 rounded-md">
+              <Link to="/contact" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">📞</span> Contact Us
               </Link>
               <div className="relative pt-2">

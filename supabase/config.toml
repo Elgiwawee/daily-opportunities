@@ -1,1 +1,4 @@
-project_id = "mkcvqqaumfwyrkurfohh"
+
+project_id = "scholarship-region"
+[functions.fetch-scholarships]
+verify_jwt = false

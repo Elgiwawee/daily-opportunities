@@ -21,6 +21,7 @@ interface OpportunityCardProps {
   description: string;
   attachments?: Attachment[];
   featured?: boolean;
+  applicationUrl?: string;
 }
 
 const OpportunityCard = ({
@@ -32,6 +33,7 @@ const OpportunityCard = ({
   description,
   attachments = [],
   featured = false,
+  applicationUrl,
 }: OpportunityCardProps) => {
   // Try to parse the deadline to a readable format
   let formattedDate = deadline;
@@ -53,7 +55,7 @@ const OpportunityCard = ({
       viewport={{ once: true }}
       whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
-      className={`overflow-hidden border border-gray-200 ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
+      className={`overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:shadow-md ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
     >
       <div className="relative aspect-video w-full overflow-hidden">
         {attachments.length > 0 && attachments[0].type === 'image' ? (
@@ -106,10 +108,17 @@ const OpportunityCard = ({
               className="flex items-center gap-1 text-blue-700 border-blue-200 hover:bg-blue-50"
               asChild
             >
-              <Link to={`/opportunity/${id}`}>
-                <ExternalLink className="w-3 h-3" />
-                Apply Now
-              </Link>
+              {applicationUrl ? (
+                <a href={applicationUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-3 h-3" />
+                  Apply Now
+                </a>
+              ) : (
+                <Link to={`/opportunity/${id}`}>
+                  <ExternalLink className="w-3 h-3" />
+                  Apply Now
+                </Link>
+              )}
             </Button>
           )}
         </div>

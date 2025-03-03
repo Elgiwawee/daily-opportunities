@@ -8,6 +8,14 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OpportunityDetails from "./pages/OpportunityDetails";
+import Scholarships from "./pages/Scholarships";
+import ScholarshipsByCountry from "./pages/ScholarshipsByCountry";
+import ScholarshipsByLevel from "./pages/ScholarshipsByLevel";
+import JobListings from "./pages/JobListings";
+import News from "./pages/News";
+import AboutUs from "./pages/AboutUs";
+import Contact from "./pages/Contact";
+import Explainer from "./pages/Explainer";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +31,14 @@ const App = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/opportunity/:id" element={<OpportunityDetails />} />
+          <Route path="/scholarships" element={<Scholarships />} />
+          <Route path="/countries/:country" element={<ScholarshipsByCountry />} />
+          <Route path="/levels/:level" element={<ScholarshipsByLevel />} />
+          <Route path="/jobs" element={<JobListings />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/explainer" element={<Explainer />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
