@@ -240,15 +240,65 @@ const Navbar = () => {
               <Link to="/" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">🏠</span> Home
               </Link>
-              <Link to="/scholarships" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">🎓</span> Scholarships
-              </Link>
-              <Link to="/countries/usa" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">🌎</span> Scholarship In Countries
-              </Link>
-              <Link to="/levels/bachelors" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">🏆</span> Scholarships By Level
-              </Link>
+              
+              {/* Mobile Scholarships Dropdown */}
+              <div className="relative">
+                <button 
+                  onClick={() => toggleDropdown('mobile-scholarships')}
+                  className="w-full text-left block px-3 py-2 hover:bg-olive-800 rounded-md flex items-center justify-between"
+                >
+                  <span><span className="mr-1">🎓</span> Scholarships</span>
+                  <ChevronDown size={14} className={dropdownOpen === 'mobile-scholarships' ? 'transform rotate-180' : ''} />
+                </button>
+                {dropdownOpen === 'mobile-scholarships' && (
+                  <div className="bg-olive-600 rounded-md mt-1 py-1">
+                    <Link to="/scholarships" className="block px-5 py-2 hover:bg-olive-700">All Scholarships</Link>
+                    <Link to="/levels/undergraduate" className="block px-5 py-2 hover:bg-olive-700">Undergraduate</Link>
+                    <Link to="/levels/masters" className="block px-5 py-2 hover:bg-olive-700">Masters</Link>
+                    <Link to="/levels/phd" className="block px-5 py-2 hover:bg-olive-700">PhD</Link>
+                  </div>
+                )}
+              </div>
+              
+              {/* Mobile Countries Dropdown */}
+              <div className="relative">
+                <button 
+                  onClick={() => toggleDropdown('mobile-countries')}
+                  className="w-full text-left block px-3 py-2 hover:bg-olive-800 rounded-md flex items-center justify-between"
+                >
+                  <span><span className="mr-1">🌎</span> Scholarship In Countries</span>
+                  <ChevronDown size={14} className={dropdownOpen === 'mobile-countries' ? 'transform rotate-180' : ''} />
+                </button>
+                {dropdownOpen === 'mobile-countries' && (
+                  <div className="bg-olive-600 rounded-md mt-1 py-1">
+                    <Link to="/countries/usa" className="block px-5 py-2 hover:bg-olive-700">USA</Link>
+                    <Link to="/countries/uk" className="block px-5 py-2 hover:bg-olive-700">UK</Link>
+                    <Link to="/countries/canada" className="block px-5 py-2 hover:bg-olive-700">Canada</Link>
+                    <Link to="/countries/australia" className="block px-5 py-2 hover:bg-olive-700">Australia</Link>
+                    <Link to="/countries/germany" className="block px-5 py-2 hover:bg-olive-700">Germany</Link>
+                    <Link to="/countries/nigeria" className="block px-5 py-2 hover:bg-olive-700">Nigeria</Link>
+                  </div>
+                )}
+              </div>
+              
+              {/* Mobile Levels Dropdown */}
+              <div className="relative">
+                <button 
+                  onClick={() => toggleDropdown('mobile-levels')}
+                  className="w-full text-left block px-3 py-2 hover:bg-olive-800 rounded-md flex items-center justify-between"
+                >
+                  <span><span className="mr-1">🏆</span> Scholarships By Level</span>
+                  <ChevronDown size={14} className={dropdownOpen === 'mobile-levels' ? 'transform rotate-180' : ''} />
+                </button>
+                {dropdownOpen === 'mobile-levels' && (
+                  <div className="bg-olive-600 rounded-md mt-1 py-1">
+                    <Link to="/levels/bachelors" className="block px-5 py-2 hover:bg-olive-700">Bachelors</Link>
+                    <Link to="/levels/masters" className="block px-5 py-2 hover:bg-olive-700">Masters</Link>
+                    <Link to="/levels/phd" className="block px-5 py-2 hover:bg-olive-700">PhD</Link>
+                  </div>
+                )}
+              </div>
+              
               <Link to="/jobs" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">💼</span> Jobs
               </Link>
@@ -264,11 +314,13 @@ const Navbar = () => {
               <Link to="/contact" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                 <span className="mr-1">📞</span> Contact Us
               </Link>
+              
               {isAdmin && (
                 <Link to="/admin" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
                   <span className="mr-1">👤</span> Admin Dashboard
                 </Link>
               )}
+              
               <div className="relative pt-2">
                 <div className="flex items-center border-2 rounded-lg bg-white">
                   <input type="text" className="w-full px-4 py-1 text-gray-800 rounded-lg" placeholder="Search..." />

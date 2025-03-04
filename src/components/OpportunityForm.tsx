@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -40,9 +39,7 @@ const formSchema = z.object({
   description: z.string().min(10, {
     message: "Description must be at least 10 characters.",
   }),
-  deadline: z.date({
-    required_error: "A deadline is required.",
-  }),
+  deadline: z.date().optional(),
   type: z.enum(["scholarship", "job"], {
     required_error: "You need to select an opportunity type.",
   }),
@@ -84,7 +81,6 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
 
   useEffect(() => {
     if (opportunity) {
-      // Convert deadline string to Date object
       const deadlineDate = opportunity.deadline ? new Date(opportunity.deadline) : new Date();
       
       form.reset({
@@ -95,7 +91,6 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
         deadline: deadlineDate,
       });
 
-      // Set existing attachments if any
       if (opportunity.attachments && Array.isArray(opportunity.attachments)) {
         setExistingAttachments(opportunity.attachments as Attachment[]);
       }
@@ -114,7 +109,6 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
 
       let attachments: Attachment[] = [...existingAttachments];
 
-      // Upload new files if there are any
       if (files.length > 0) {
         for (const file of files) {
           const fileExt = file.name.split('.').pop();
@@ -144,26 +138,23 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
         }
       }
 
-      // Create the opportunity data with attachments
       const opportunityData: OpportunityData = {
         ...values,
         attachments
       };
 
-      // Convert attachments to a JSON-compatible format
       const jsonAttachments = attachments as unknown as Json;
 
       let error;
 
       if (isEditing) {
-        // Update existing opportunity
         const result = await supabase
           .from('opportunities')
           .update({
             title: opportunityData.title,
             organization: opportunityData.organization,
             description: opportunityData.description,
-            deadline: opportunityData.deadline.toISOString().split('T')[0],
+            deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
             type: opportunityData.type,
             attachments: jsonAttachments,
             updated_at: new Date().toISOString()
@@ -171,14 +162,13 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
           .eq('id', opportunity.id);
         error = result.error;
       } else {
-        // Insert new opportunity
         const result = await supabase
           .from('opportunities')
           .insert({
             title: opportunityData.title,
             organization: opportunityData.organization,
             description: opportunityData.description,
-            deadline: opportunityData.deadline.toISOString().split('T')[0],
+            deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
             type: opportunityData.type,
             attachments: jsonAttachments,
             created_by: sessionData.session.user.id
@@ -192,7 +182,6 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
 
       toast.success(isEditing ? "Opportunity updated successfully!" : "Opportunity created successfully!");
       
-      // Reset the form and call onSuccess callback
       if (!isEditing) {
         form.reset({
           title: "",
@@ -294,7 +283,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             name="deadline"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Deadline</FormLabel>
+                <FormLabel>Deadline (optional)</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -308,7 +297,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                         {field.value ? (
                           format(field.value, "PPP")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>Pick a date (optional)</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -324,7 +313,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                   </PopoverContent>
                 </Popover>
                 <FormDescription>
-                  The deadline for applying to this opportunity
+                  The deadline for applying to this opportunity (optional)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
