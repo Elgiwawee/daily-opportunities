@@ -80,22 +80,22 @@ const Navbar = () => {
             <img 
               src="/lovable-uploads/0fd8bd36-8cd2-4e3f-b34b-fdcf0692b42a.png" 
               alt="Daily Opportunities Logo" 
-              className="h-12 sm:h-16 w-auto"
+              className="h-10 sm:h-12 md:h-16 w-auto"
             />
-            <div className="ml-2">
-              <div className="text-lg sm:text-xl font-bold text-teal-600">DAILY</div>
-              <div className="text-lg sm:text-xl font-bold text-teal-600">OPPORTUNITIES</div>
+            <div className="ml-1 sm:ml-2">
+              <div className="text-sm xs:text-base sm:text-lg md:text-xl font-bold text-teal-600 tracking-tight">DAILY</div>
+              <div className="text-sm xs:text-base sm:text-lg md:text-xl font-bold text-teal-600 tracking-tight">OPPORTUNITIES</div>
             </div>
           </Link>
           
           <div>
             {isAdmin ? (
-              <div className="flex items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
                 <Link to="/admin">
                   <Button variant="outline" size="sm" className="border border-olive-600 text-olive-700 hover:bg-olive-50">
-                    <User size={14} className="mr-1 sm:mr-2" />
+                    <User size={12} className="mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Admin Dashboard</span>
-                    <span className="sm:hidden">Admin</span>
+                    <span className="sm:hidden text-[10px] xs:text-xs">Admin</span>
                   </Button>
                 </Link>
                 <Button 
@@ -104,7 +104,7 @@ const Navbar = () => {
                   size="sm"
                   className="border border-olive-600 text-olive-700 hover:bg-olive-50"
                 >
-                  <span className="text-xs sm:text-sm">Logout</span>
+                  <span className="text-[10px] xs:text-xs sm:text-sm">Logout</span>
                 </Button>
               </div>
             ) : (
@@ -114,8 +114,8 @@ const Navbar = () => {
                 size="sm"
                 className="border border-olive-600 text-olive-700 hover:bg-olive-50"
               >
-                <User size={14} className="mr-1 sm:mr-2" />
-                <span className="text-xs sm:text-sm">Admin</span>
+                <User size={12} className="mr-1 sm:mr-2" />
+                <span className="text-[10px] xs:text-xs sm:text-sm">Admin</span>
               </Button>
             )}
           </div>
