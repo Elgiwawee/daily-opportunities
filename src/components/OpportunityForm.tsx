@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -43,6 +44,9 @@ const formSchema = z.object({
   type: z.enum(["scholarship", "job"], {
     required_error: "You need to select an opportunity type.",
   }),
+  applicationUrl: z.string().url({
+    message: "Please enter a valid URL for the application link.",
+  }).or(z.literal('')).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -76,6 +80,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
       organization: "",
       description: "",
       type: "scholarship",
+      applicationUrl: "",
     },
   });
 
@@ -89,6 +94,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
         description: opportunity.description || "",
         type: opportunity.type || "scholarship",
         deadline: deadlineDate,
+        applicationUrl: opportunity.application_url || "",
       });
 
       if (opportunity.attachments && Array.isArray(opportunity.attachments)) {
@@ -157,6 +163,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
             type: opportunityData.type,
             attachments: jsonAttachments,
+            application_url: values.applicationUrl || null,
             updated_at: new Date().toISOString()
           })
           .eq('id', opportunity.id);
@@ -171,6 +178,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
             type: opportunityData.type,
             attachments: jsonAttachments,
+            application_url: values.applicationUrl || null,
             created_by: sessionData.session.user.id
           });
         error = result.error;
@@ -188,6 +196,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
           organization: "",
           description: "",
           type: "scholarship",
+          applicationUrl: "",
         });
         setFiles([]);
         setExistingAttachments([]);
@@ -273,6 +282,26 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                 </FormControl>
                 <FormDescription>
                   Detailed information about the opportunity
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="applicationUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Application URL</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="https://example.com/apply" 
+                    type="url"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormDescription>
+                  Direct link to the application portal (optional)
                 </FormDescription>
                 <FormMessage />
               </FormItem>

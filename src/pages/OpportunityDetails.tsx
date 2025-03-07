@@ -2,9 +2,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram } from 'lucide-react';
+import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface Attachment {
   name: string;
@@ -22,6 +23,7 @@ interface Opportunity {
   description: string;
   attachments: Attachment[];
   created_at: string;
+  application_url: string | null;
 }
 
 const OpportunityDetails = () => {
@@ -284,6 +286,26 @@ const OpportunityDetails = () => {
             <div className="prose max-w-none">
               <p className="whitespace-pre-wrap text-gray-700">{opportunity.description}</p>
             </div>
+
+            {opportunity.application_url && (
+              <div className="mt-8">
+                <Button
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+                  size="lg"
+                  asChild
+                >
+                  <a 
+                    href={opportunity.application_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center"
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Apply Now
+                  </a>
+                </Button>
+              </div>
+            )}
 
             {opportunity.attachments && opportunity.attachments.length > 0 && (
               <div className="mt-8 border-t border-gray-100 pt-8">
