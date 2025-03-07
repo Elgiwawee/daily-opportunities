@@ -80,39 +80,42 @@ const Navbar = () => {
             <img 
               src="/lovable-uploads/0fd8bd36-8cd2-4e3f-b34b-fdcf0692b42a.png" 
               alt="Daily Opportunities Logo" 
-              className="h-16 w-auto"
+              className="h-12 sm:h-16 w-auto"
             />
             <div className="ml-2">
-              <div className="text-xl font-bold text-teal-600">DAILY</div>
-              <div className="text-xl font-bold text-teal-600">OPPORTUNITIES</div>
+              <div className="text-lg sm:text-xl font-bold text-teal-600">DAILY</div>
+              <div className="text-lg sm:text-xl font-bold text-teal-600">OPPORTUNITIES</div>
             </div>
           </Link>
           
           <div>
             {isAdmin ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <Link to="/admin">
-                  <Button variant="outline" className="border border-olive-600 text-olive-700 hover:bg-olive-50">
-                    <User size={16} className="mr-2" />
-                    Admin Dashboard
+                  <Button variant="outline" size="sm" className="border border-olive-600 text-olive-700 hover:bg-olive-50">
+                    <User size={14} className="mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Admin Dashboard</span>
+                    <span className="sm:hidden">Admin</span>
                   </Button>
                 </Link>
                 <Button 
                   onClick={handleLogout}
                   variant="outline" 
+                  size="sm"
                   className="border border-olive-600 text-olive-700 hover:bg-olive-50"
                 >
-                  Logout
+                  <span className="text-xs sm:text-sm">Logout</span>
                 </Button>
               </div>
             ) : (
               <Button 
                 onClick={handleLogin}
                 variant="outline" 
+                size="sm"
                 className="border border-olive-600 text-olive-700 hover:bg-olive-50"
               >
-                <User size={16} className="mr-2" />
-                Admin Login
+                <User size={14} className="mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Admin</span>
               </Button>
             )}
           </div>
