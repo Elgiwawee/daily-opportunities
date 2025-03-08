@@ -86,7 +86,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
 
   useEffect(() => {
     if (opportunity) {
-      const deadlineDate = opportunity.deadline ? new Date(opportunity.deadline) : new Date();
+      const deadlineDate = opportunity.deadline ? new Date(opportunity.deadline) : undefined;
       
       form.reset({
         title: opportunity.title || "",
@@ -292,7 +292,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             name="applicationUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Application URL</FormLabel>
+                <FormLabel>Application URL (optional)</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="https://example.com/apply" 
