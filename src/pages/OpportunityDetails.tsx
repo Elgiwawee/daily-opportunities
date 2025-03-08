@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +22,7 @@ interface Opportunity {
   description: string;
   attachments: Attachment[];
   created_at: string;
-  application_url: string | null;
+  external_url: string | null;
 }
 
 const OpportunityDetails = () => {
@@ -37,7 +36,6 @@ const OpportunityDetails = () => {
   useEffect(() => {
     const checkIfAdmin = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      // Simple check if user is logged in - in a real application, you would check for admin role
       setIsAdmin(!!session);
     };
 
@@ -55,13 +53,14 @@ const OpportunityDetails = () => {
 
       if (error) throw error;
       
-      // Format the attachments to match our interface
       const formattedData = {
         ...data,
-        attachments: Array.isArray(data.attachments) ? data.attachments : []
+        attachments: Array.isArray(data.attachments) ? data.attachments : [],
+        external_url: data.external_url || null
       } as unknown as Opportunity;
       
       setOpportunity(formattedData);
+      console.log("Fetched opportunity:", formattedData);
     } catch (error) {
       console.error('Error fetching opportunity:', error);
       toast.error('Error loading opportunity');
@@ -83,7 +82,6 @@ const OpportunityDetails = () => {
 
       if (error) throw error;
 
-      // If there are attachments, delete them from storage
       if (opportunity.attachments?.length > 0) {
         const paths = opportunity.attachments.map(attachment => attachment.path);
         const { error: storageError } = await supabase.storage
@@ -104,7 +102,6 @@ const OpportunityDetails = () => {
   const handleShare = (platform: string) => {
     if (!opportunity) return;
     
-    // Get the current page URL
     const url = window.location.href;
     const title = opportunity.title;
     const description = opportunity.description.substring(0, 100) + '...';
@@ -122,18 +119,15 @@ const OpportunityDetails = () => {
         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' - ' + url)}`;
         break;
       case 'instagram':
-        // Instagram doesn't have a direct share URL, usually handled through their app
         toast.info("Instagram sharing requires the mobile app");
         return;
       default:
-        // Copy link to clipboard as fallback
         navigator.clipboard.writeText(url).then(() => {
           toast.success('Link copied to clipboard!');
         });
         return;
     }
     
-    // Open share dialog in a new window
     window.open(shareUrl, '_blank', 'width=600,height=400');
     setShareOpen(false);
   };
@@ -175,7 +169,6 @@ const OpportunityDetails = () => {
             Back to opportunities
           </Link>
           <div className="flex space-x-2">
-            {/* Share button */}
             <div className="relative">
               <button
                 onClick={() => setShareOpen(!shareOpen)}
@@ -185,7 +178,6 @@ const OpportunityDetails = () => {
                 Share
               </button>
               
-              {/* Share dropdown */}
               {shareOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-100">
                   <div className="py-1">
@@ -242,7 +234,6 @@ const OpportunityDetails = () => {
               )}
             </div>
             
-            {/* Delete button - only visible for admins */}
             {isAdmin && (
               <button
                 onClick={handleDelete}
@@ -287,7 +278,7 @@ const OpportunityDetails = () => {
               <p className="whitespace-pre-wrap text-gray-700">{opportunity.description}</p>
             </div>
 
-            {opportunity.application_url && (
+            {opportunity.external_url && (
               <div className="mt-8">
                 <Button
                   className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
@@ -295,7 +286,7 @@ const OpportunityDetails = () => {
                   asChild
                 >
                   <a 
-                    href={opportunity.application_url} 
+                    href={opportunity.external_url} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center"

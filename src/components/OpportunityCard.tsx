@@ -23,7 +23,7 @@ interface OpportunityCardProps {
   description: string;
   attachments?: Attachment[];
   featured?: boolean;
-  applicationUrl?: string;
+  external_url?: string;
 }
 
 const OpportunityCard = ({
@@ -35,7 +35,7 @@ const OpportunityCard = ({
   description,
   attachments = [],
   featured = false,
-  applicationUrl,
+  external_url,
 }: OpportunityCardProps) => {
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   
@@ -121,7 +121,7 @@ const OpportunityCard = ({
           {type === 'scholarship' ? 'Scholarship' : 'Job Opening'}
         </div>
         
-        {/* Share button - moved down from top-2 to top-10 to avoid navbar overlap */}
+        {/* Share button positioned away from navbar */}
         <div className="absolute top-10 right-2">
           <div className="relative inline-block">
             <button 
@@ -181,14 +181,14 @@ const OpportunityCard = ({
             {type === 'scholarship' ? 'How to Apply' : 'View Details'}
           </Link>
           
-          {applicationUrl && (
+          {external_url && (
             <Button 
               variant="outline" 
               size="sm" 
               className="flex items-center gap-1 text-blue-700 border-blue-200 hover:bg-blue-50"
               asChild
             >
-              <a href={applicationUrl} target="_blank" rel="noopener noreferrer">
+              <a href={external_url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="w-3 h-3" />
                 Apply Now
               </a>

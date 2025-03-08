@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -44,10 +43,9 @@ const formSchema = z.object({
   type: z.enum(["scholarship", "job"], {
     required_error: "You need to select an opportunity type.",
   }),
-  // Make applicationUrl truly optional - accept empty string or valid URL
-  applicationUrl: z.union([
+  externalUrl: z.union([
     z.string().url({
-      message: "Please enter a valid URL for the application link.",
+      message: "Please enter a valid URL for the external link.",
     }),
     z.string().length(0)
   ]).optional(),
@@ -84,7 +82,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
       organization: "",
       description: "",
       type: "scholarship",
-      applicationUrl: "",
+      externalUrl: "",
     },
   });
 
@@ -98,7 +96,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
         description: opportunity.description || "",
         type: opportunity.type || "scholarship",
         deadline: deadlineDate,
-        applicationUrl: opportunity.application_url || "",
+        externalUrl: opportunity.external_url || "",
       });
 
       if (opportunity.attachments && Array.isArray(opportunity.attachments)) {
@@ -155,10 +153,11 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
 
       const jsonAttachments = attachments as unknown as Json;
 
-      // Properly handle empty application URL
-      const applicationUrl = values.applicationUrl && values.applicationUrl.trim() !== '' 
-        ? values.applicationUrl 
+      const externalUrl = values.externalUrl && values.externalUrl.trim() !== '' 
+        ? values.externalUrl 
         : null;
+
+      console.log("Saving opportunity with external_url:", externalUrl);
 
       let error;
 
@@ -172,7 +171,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
             type: opportunityData.type,
             attachments: jsonAttachments,
-            application_url: applicationUrl,
+            external_url: externalUrl,
             updated_at: new Date().toISOString()
           })
           .eq('id', opportunity.id);
@@ -187,7 +186,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
             type: opportunityData.type,
             attachments: jsonAttachments,
-            application_url: applicationUrl,
+            external_url: externalUrl,
             created_by: sessionData.session.user.id
           });
         error = result.error;
@@ -205,7 +204,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
           organization: "",
           description: "",
           type: "scholarship",
-          applicationUrl: "",
+          externalUrl: "",
         });
         setFiles([]);
         setExistingAttachments([]);
@@ -298,10 +297,10 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
           />
           <FormField
             control={form.control}
-            name="applicationUrl"
+            name="externalUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Application URL (optional)</FormLabel>
+                <FormLabel>External URL (optional)</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="https://example.com/apply" 
@@ -310,7 +309,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                   />
                 </FormControl>
                 <FormDescription>
-                  Direct link to the application portal (optional - leave empty if none)
+                  Direct link to the application portal or external website (optional - leave empty if none)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -488,20 +487,4 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
       </form>
     </Form>
   );
-
-  // Need to add the handleFileChange, removeFile and removeExistingAttachment functions
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    }
-  }
-
-  function removeFile(index: number) {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  }
-
-  function removeExistingAttachment(index: number) {
-    setExistingAttachments((prevAttachments) => prevAttachments.filter((_, i) => i !== index));
-  }
 }
