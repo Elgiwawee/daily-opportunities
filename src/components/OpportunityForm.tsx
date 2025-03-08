@@ -44,9 +44,13 @@ const formSchema = z.object({
   type: z.enum(["scholarship", "job"], {
     required_error: "You need to select an opportunity type.",
   }),
-  applicationUrl: z.string().url({
-    message: "Please enter a valid URL for the application link.",
-  }).optional().or(z.literal('')),
+  // Make applicationUrl truly optional - accept empty string or valid URL
+  applicationUrl: z.union([
+    z.string().url({
+      message: "Please enter a valid URL for the application link.",
+    }),
+    z.string().length(0)
+  ]).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -151,6 +155,11 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
 
       const jsonAttachments = attachments as unknown as Json;
 
+      // Properly handle empty application URL
+      const applicationUrl = values.applicationUrl && values.applicationUrl.trim() !== '' 
+        ? values.applicationUrl 
+        : null;
+
       let error;
 
       if (isEditing) {
@@ -163,7 +172,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
             type: opportunityData.type,
             attachments: jsonAttachments,
-            application_url: values.applicationUrl || null,
+            application_url: applicationUrl,
             updated_at: new Date().toISOString()
           })
           .eq('id', opportunity.id);
@@ -178,7 +187,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
             type: opportunityData.type,
             attachments: jsonAttachments,
-            application_url: values.applicationUrl || null,
+            application_url: applicationUrl,
             created_by: sessionData.session.user.id
           });
         error = result.error;
@@ -301,7 +310,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                   />
                 </FormControl>
                 <FormDescription>
-                  Direct link to the application portal (optional)
+                  Direct link to the application portal (optional - leave empty if none)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -479,4 +488,20 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
       </form>
     </Form>
   );
+
+  // Need to add the handleFileChange, removeFile and removeExistingAttachment functions
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
+      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    }
+  }
+
+  function removeFile(index: number) {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  }
+
+  function removeExistingAttachment(index: number) {
+    setExistingAttachments((prevAttachments) => prevAttachments.filter((_, i) => i !== index));
+  }
 }
