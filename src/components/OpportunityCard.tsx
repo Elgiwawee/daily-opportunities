@@ -1,9 +1,11 @@
 
 import { motion } from 'framer-motion';
-import { Image, Video, ExternalLink } from 'lucide-react';
+import { Image, Video, ExternalLink, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface Attachment {
   name: string;
@@ -35,6 +37,8 @@ const OpportunityCard = ({
   featured = false,
   applicationUrl,
 }: OpportunityCardProps) => {
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  
   // Try to parse the deadline to a readable format
   let formattedDate = deadline;
   try {
@@ -47,6 +51,39 @@ const OpportunityCard = ({
     // If parsing fails, use the original string
     console.log('Date parsing failed for:', deadline);
   }
+
+  const handleShare = (platform: string) => {
+    // Get the current page URL + opportunity ID for sharing
+    const baseUrl = window.location.origin;
+    const shareUrl = `${baseUrl}/opportunity/${id}`;
+    
+    let shareLink = '';
+    
+    switch (platform) {
+      case 'facebook':
+        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(title)}`;
+        break;
+      case 'twitter':
+        shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`;
+        break;
+      case 'whatsapp':
+        shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' - ' + shareUrl)}`;
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          toast.success('Link copied to clipboard!');
+        });
+        return;
+      default:
+        break;
+    }
+    
+    if (shareLink) {
+      window.open(shareLink, '_blank', 'width=600,height=400');
+    }
+    
+    setShareMenuOpen(false);
+  };
 
   return (
     <motion.div
@@ -83,6 +120,49 @@ const OpportunityCard = ({
         }`}>
           {type === 'scholarship' ? 'Scholarship' : 'Job Opening'}
         </div>
+        
+        {/* Share button */}
+        <div className="absolute top-2 right-2">
+          <div className="relative inline-block">
+            <button 
+              onClick={() => setShareMenuOpen(!shareMenuOpen)}
+              className="flex items-center justify-center bg-white/80 hover:bg-white text-gray-700 p-1.5 rounded-full"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+            
+            {shareMenuOpen && (
+              <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100">
+                <div className="py-1">
+                  <button
+                    onClick={() => handleShare('facebook')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  >
+                    Facebook
+                  </button>
+                  <button
+                    onClick={() => handleShare('twitter')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  >
+                    Twitter
+                  </button>
+                  <button
+                    onClick={() => handleShare('whatsapp')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  >
+                    WhatsApp
+                  </button>
+                  <button
+                    onClick={() => handleShare('copy')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  >
+                    Copy Link
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       
       <div className="p-4">
@@ -101,24 +181,17 @@ const OpportunityCard = ({
             {type === 'scholarship' ? 'How to Apply' : 'View Details'}
           </Link>
           
-          {type === 'scholarship' && (
+          {applicationUrl && (
             <Button 
               variant="outline" 
               size="sm" 
               className="flex items-center gap-1 text-blue-700 border-blue-200 hover:bg-blue-50"
               asChild
             >
-              {applicationUrl ? (
-                <a href={applicationUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-3 h-3" />
-                  Apply Now
-                </a>
-              ) : (
-                <Link to={`/opportunity/${id}`}>
-                  <ExternalLink className="w-3 h-3" />
-                  Apply Now
-                </Link>
-              )}
+              <a href={applicationUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-3 h-3" />
+                Apply Now
+              </a>
             </Button>
           )}
         </div>

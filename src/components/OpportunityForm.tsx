@@ -46,7 +46,7 @@ const formSchema = z.object({
   }),
   applicationUrl: z.string().url({
     message: "Please enter a valid URL for the application link.",
-  }).or(z.literal('')).optional(),
+  }).optional().or(z.literal('')),
 });
 
 type FormValues = z.infer<typeof formSchema>;
