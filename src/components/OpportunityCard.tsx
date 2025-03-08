@@ -121,8 +121,8 @@ const OpportunityCard = ({
           {type === 'scholarship' ? 'Scholarship' : 'Job Opening'}
         </div>
         
-        {/* Share button */}
-        <div className="absolute top-2 right-2">
+        {/* Share button - moved down from top-2 to top-10 to avoid navbar overlap */}
+        <div className="absolute top-10 right-2">
           <div className="relative inline-block">
             <button 
               onClick={() => setShareMenuOpen(!shareMenuOpen)}
