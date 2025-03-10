@@ -6,7 +6,7 @@ import { OpportunityForm } from '@/components/OpportunityForm';
 import OpportunityTable from '@/components/OpportunityTable';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Home } from "lucide-react";
+import { Home, Plus, X } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -58,21 +58,33 @@ const Admin = () => {
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <button
+              <Button
                 onClick={() => {
                   setEditingOpportunity(null);
                   setShowForm(!showForm);
                 }}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                variant="default"
               >
-                {showForm ? 'Cancel' : 'Add New Opportunity'}
-              </button>
-              <button
+                {showForm ? (
+                  <>
+                    <X size={16} />
+                    Cancel
+                  </>
+                ) : (
+                  <>
+                    <Plus size={16} />
+                    Add New Opportunity
+                  </>
+                )}
+              </Button>
+              <Button
                 onClick={handleLogout}
                 className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                variant="secondary"
               >
                 Logout
-              </button>
+              </Button>
             </div>
           </div>
         </div>

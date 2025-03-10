@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
+import { Edit, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface OpportunityTableProps {
   onEdit: (opportunity: any) => void;
@@ -106,18 +108,24 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
                 {opportunity.deadline}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  onClick={() => onEdit(opportunity)}
-                  className="text-indigo-600 hover:text-indigo-900 mr-4"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(opportunity.id)}
-                  className="text-red-600 hover:text-red-900"
-                >
-                  Delete
-                </button>
+                <div className="flex space-x-2">
+                  <Button 
+                    onClick={() => onEdit(opportunity)}
+                    variant="ghost" 
+                    size="sm"
+                    className="text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50"
+                  >
+                    <Edit size={16} />
+                  </Button>
+                  <Button 
+                    onClick={() => handleDelete(opportunity.id)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600 hover:text-red-900 hover:bg-red-50"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}
