@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -153,11 +154,16 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
 
       const jsonAttachments = attachments as unknown as Json;
 
+      // Handle empty external URL - convert empty string to null
       const externalUrl = values.externalUrl && values.externalUrl.trim() !== '' 
         ? values.externalUrl 
         : null;
+        
+      // Handle deadline - null if not provided
+      const deadline = values.deadline ? values.deadline.toISOString().split('T')[0] : null;
 
       console.log("Saving opportunity with external_url:", externalUrl);
+      console.log("Saving opportunity with deadline:", deadline);
 
       let error;
 
@@ -168,7 +174,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             title: opportunityData.title,
             organization: opportunityData.organization,
             description: opportunityData.description,
-            deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
+            deadline: deadline,
             type: opportunityData.type,
             attachments: jsonAttachments,
             external_url: externalUrl,
@@ -183,7 +189,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             title: opportunityData.title,
             organization: opportunityData.organization,
             description: opportunityData.description,
-            deadline: values.deadline ? values.deadline.toISOString().split('T')[0] : null,
+            deadline: deadline,
             type: opportunityData.type,
             attachments: jsonAttachments,
             external_url: externalUrl,
