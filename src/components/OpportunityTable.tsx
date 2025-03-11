@@ -109,24 +109,18 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div className="flex space-x-2">
-                  <Button 
+                  <button 
                     onClick={() => onEdit(opportunity)}
-                    variant="ghost" 
-                    size="icon"
-                    className="text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50"
+                    className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
                   >
-                    <Pencil className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                  </Button>
-                  <Button 
+                    <Pencil size={16} />
+                  </button>
+                  <button 
                     onClick={() => handleDelete(opportunity.id)}
-                    variant="ghost"
-                    size="icon"
-                    className="text-red-600 hover:text-red-900 hover:bg-red-50"
+                    className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
                   >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </td>
             </tr>
