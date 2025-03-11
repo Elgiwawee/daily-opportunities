@@ -2,8 +2,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
-import { Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface OpportunityTableProps {
   onEdit: (opportunity: any) => void;
@@ -83,12 +81,11 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {opportunities.map((opportunity) => (
-            <tr key={opportunity.id}>
+            <tr key={opportunity.id} onClick={() => onEdit(opportunity)} className="cursor-pointer hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm font-medium text-gray-900">{opportunity.title}</div>
               </td>
@@ -106,22 +103,6 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {opportunity.deadline}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => onEdit(opportunity)}
-                    className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(opportunity.id)}
-                    className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
               </td>
             </tr>
           ))}
