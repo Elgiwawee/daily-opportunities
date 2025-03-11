@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
-import { Edit, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface OpportunityTableProps {
@@ -115,7 +115,8 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
                     size="sm"
                     className="text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50"
                   >
-                    <Edit size={16} />
+                    <Pencil size={16} />
+                    <span className="sr-only">Edit</span>
                   </Button>
                   <Button 
                     onClick={() => handleDelete(opportunity.id)}
@@ -124,6 +125,7 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
                     className="text-red-600 hover:text-red-900 hover:bg-red-50"
                   >
                     <Trash2 size={16} />
+                    <span className="sr-only">Delete</span>
                   </Button>
                 </div>
               </td>
