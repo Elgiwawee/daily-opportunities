@@ -112,19 +112,19 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
                   <Button 
                     onClick={() => onEdit(opportunity)}
                     variant="ghost" 
-                    size="sm"
+                    size="icon"
                     className="text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50"
                   >
-                    <Pencil size={16} />
+                    <Pencil className="h-4 w-4" />
                     <span className="sr-only">Edit</span>
                   </Button>
                   <Button 
                     onClick={() => handleDelete(opportunity.id)}
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     className="text-red-600 hover:text-red-900 hover:bg-red-50"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Delete</span>
                   </Button>
                 </div>
