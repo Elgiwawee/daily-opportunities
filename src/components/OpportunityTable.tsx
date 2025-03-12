@@ -107,29 +107,22 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {opportunity.deadline}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center space-x-2">
-                  <Button 
+                  <button 
                     onClick={() => onEdit(opportunity)}
-                    variant="ghost" 
-                    size="sm"
-                    className="text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50"
+                    className="p-2 text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 rounded-md"
+                    aria-label="Edit"
                   >
-                    <Pencil className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                  </Button>
-                  <Button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(opportunity.id);
-                    }}
-                    variant="ghost" 
-                    size="sm"
-                    className="text-red-600 hover:text-red-900 hover:bg-red-50"
+                    <Pencil className="h-5 w-5" />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(opportunity.id)}
+                    className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-md"
+                    aria-label="Delete"
                   >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
+                    <Trash2 className="h-5 w-5" />
+                  </button>
                 </div>
               </td>
             </tr>
