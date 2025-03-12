@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
+import { Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface OpportunityTableProps {
   onEdit: (opportunity: any) => void;
@@ -81,11 +83,12 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {opportunities.map((opportunity) => (
-            <tr key={opportunity.id} onClick={() => onEdit(opportunity)} className="cursor-pointer hover:bg-gray-50">
+            <tr key={opportunity.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm font-medium text-gray-900">{opportunity.title}</div>
               </td>
@@ -103,6 +106,31 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {opportunity.deadline}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    onClick={() => onEdit(opportunity)}
+                    variant="ghost" 
+                    size="sm"
+                    className="text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    <span className="sr-only">Edit</span>
+                  </Button>
+                  <Button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(opportunity.id);
+                    }}
+                    variant="ghost" 
+                    size="sm"
+                    className="text-red-600 hover:text-red-900 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}

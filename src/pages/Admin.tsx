@@ -39,6 +39,13 @@ const Admin = () => {
     }
   };
 
+  const handleEditOpportunity = (opportunity: any) => {
+    setEditingOpportunity(opportunity);
+    setShowForm(true);
+    // Scroll to the top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
@@ -102,10 +109,7 @@ const Admin = () => {
         )}
         
         <OpportunityTable
-          onEdit={(opportunity) => {
-            setEditingOpportunity(opportunity);
-            setShowForm(true);
-          }}
+          onEdit={handleEditOpportunity}
         />
       </main>
     </div>
