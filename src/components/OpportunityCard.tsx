@@ -57,13 +57,22 @@ const OpportunityCard = ({
     const baseUrl = window.location.origin;
     const shareUrl = `${baseUrl}/opportunity/${id}`;
     
+    // Get image URL if available
+    const imageUrl = attachments.length > 0 && attachments[0].type === 'image' 
+      ? attachments[0].url 
+      : `${baseUrl}/${type === 'scholarship' 
+          ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+          : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40'}`;
+    
     let shareLink = '';
     
     switch (platform) {
       case 'facebook':
-        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(title)}`;
+        // Facebook sharing with image
+        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(title)}&picture=${encodeURIComponent(imageUrl)}`;
         break;
       case 'twitter':
+        // Twitter doesn't directly support image sharing via URL parameters
         shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`;
         break;
       case 'whatsapp':

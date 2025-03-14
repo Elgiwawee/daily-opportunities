@@ -110,11 +110,17 @@ const OpportunityDetails = () => {
     const title = opportunity.title;
     const description = opportunity.description.substring(0, 100) + '...';
     
+    const imageUrl = opportunity.attachments && opportunity.attachments.length > 0 && opportunity.attachments[0].type === 'image'
+      ? opportunity.attachments[0].url
+      : `${window.location.origin}/${opportunity.type === 'scholarship' 
+          ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+          : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40'}`;
+    
     let shareUrl = '';
     
     switch (platform) {
       case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}&picture=${encodeURIComponent(imageUrl)}`;
         break;
       case 'twitter':
         shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
@@ -359,3 +365,4 @@ const OpportunityDetails = () => {
 };
 
 export default OpportunityDetails;
+
