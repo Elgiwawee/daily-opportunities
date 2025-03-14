@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -167,21 +166,23 @@ const OpportunityDetails = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
           <Link to="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-700">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to opportunities
           </Link>
-          <div className="flex space-x-3">
+          
+          <div className="flex gap-3">
             <div className="relative">
-              <button
+              <Button
                 onClick={() => setShareOpen(!shareOpen)}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-md hover:from-indigo-600 hover:to-indigo-700 transition-colors shadow-md hover:shadow-lg"
+                variant="outline"
+                className="flex items-center gap-2"
               >
-                <Share2 className="w-4 h-4 mr-2" />
+                <Share2 className="w-4 h-4" />
                 Share
-              </button>
+              </Button>
               
               {shareOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-100">
@@ -240,22 +241,24 @@ const OpportunityDetails = () => {
             </div>
             
             {isAdmin && (
-              <>
+              <div className="flex gap-3">
                 <Button
                   onClick={handleEdit}
-                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700 transition-colors shadow-md hover:shadow-lg"
+                  className="flex items-center gap-2"
+                  variant="default"
                 >
-                  <Pencil className="w-4 h-4 mr-2" />
+                  <Pencil className="w-4 h-4" />
                   Edit
                 </Button>
                 <Button
                   onClick={handleDelete}
-                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md hover:from-red-600 hover:to-red-700 transition-colors shadow-md hover:shadow-lg"
+                  className="flex items-center gap-2"
+                  variant="destructive"
                 >
-                  <Trash2 className="w-4 h-4 mr-2" />
+                  <Trash2 className="w-4 h-4" />
                   Delete
                 </Button>
-              </>
+              </div>
             )}
           </div>
         </div>

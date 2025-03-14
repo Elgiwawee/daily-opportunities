@@ -71,66 +71,76 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="p-8 text-center">Loading opportunities...</div>;
   }
 
   return (
     <div className="bg-white shadow-sm rounded-lg overflow-hidden mt-8">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {opportunities.map((opportunity) => (
-            <tr key={opportunity.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">{opportunity.title}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">{opportunity.organization}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                  opportunity.type === 'scholarship' 
-                    ? 'bg-purple-100 text-purple-800' 
-                    : 'bg-green-100 text-green-800'
-                }`}>
-                  {opportunity.type === 'scholarship' ? 'Scholarship' : 'Job'}
-                </span>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {opportunity.deadline}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center space-x-3">
-                  <Button 
-                    onClick={() => onEdit(opportunity)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
-                    size="sm"
-                  >
-                    <Pencil className="h-4 w-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button 
-                    onClick={() => handleDelete(opportunity.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white"
-                    size="sm"
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Delete
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {opportunities.length === 0 ? (
+        <div className="p-8 text-center text-gray-500">
+          No opportunities found. Click "Add New Opportunity" to create one.
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {opportunities.map((opportunity) => (
+                <tr key={opportunity.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{opportunity.title}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{opportunity.organization}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      opportunity.type === 'scholarship' 
+                        ? 'bg-purple-100 text-purple-800' 
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {opportunity.type === 'scholarship' ? 'Scholarship' : 'Job'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {opportunity.deadline}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <Button 
+                        onClick={() => onEdit(opportunity)}
+                        variant="default"
+                        size="sm"
+                        className="flex items-center gap-1"
+                      >
+                        <Pencil className="h-4 w-4" />
+                        Edit
+                      </Button>
+                      <Button 
+                        onClick={() => handleDelete(opportunity.id)}
+                        variant="destructive"
+                        size="sm"
+                        className="flex items-center gap-1"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
