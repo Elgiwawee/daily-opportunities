@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { OpportunityForm } from '@/components/OpportunityForm';
 import OpportunityTable from '@/components/OpportunityTable';
@@ -10,13 +10,22 @@ import { Home, Plus, X } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingOpportunity, setEditingOpportunity] = useState<any>(null);
 
   useEffect(() => {
     checkUser();
-  }, []);
+    
+    // Check if edit parameter is in URL
+    const query = new URLSearchParams(location.search);
+    const editId = query.get('edit');
+    
+    if (editId) {
+      fetchOpportunityForEdit(editId);
+    }
+  }, [location]);
 
   const checkUser = async () => {
     try {
@@ -27,6 +36,25 @@ const Admin = () => {
       setIsLoading(false);
     } catch (error) {
       navigate('/auth');
+    }
+  };
+
+  const fetchOpportunityForEdit = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      
+      setEditingOpportunity(data);
+      setShowForm(true);
+      // Scroll to the top of the page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error: any) {
+      toast.error(error.message || 'Error fetching opportunity for editing');
     }
   };
 
@@ -42,6 +70,8 @@ const Admin = () => {
   const handleEditOpportunity = (opportunity: any) => {
     setEditingOpportunity(opportunity);
     setShowForm(true);
+    // Clear the edit parameter from URL
+    navigate('/admin');
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -49,6 +79,8 @@ const Admin = () => {
   const handleFormSuccess = () => {
     setShowForm(false);
     setEditingOpportunity(null);
+    // Clear the edit parameter from URL
+    navigate('/admin');
     toast.success(editingOpportunity ? 'Opportunity updated successfully!' : 'Opportunity created successfully!');
   };
 
@@ -81,12 +113,12 @@ const Admin = () => {
               >
                 {showForm ? (
                   <>
-                    <X size={16} />
+                    <X size={16} className="mr-1" />
                     Cancel
                   </>
                 ) : (
                   <>
-                    <Plus size={16} />
+                    <Plus size={16} className="mr-1" />
                     Add New Opportunity
                   </>
                 )}

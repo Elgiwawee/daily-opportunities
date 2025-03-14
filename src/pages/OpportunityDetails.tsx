@@ -1,7 +1,8 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink, Pencil } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,10 @@ const OpportunityDetails = () => {
     }
   };
 
+  const handleEdit = () => {
+    navigate(`/admin?edit=${opportunity?.id}`);
+  };
+
   const handleShare = (platform: string) => {
     if (!opportunity) return;
     
@@ -168,7 +173,7 @@ const OpportunityDetails = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to opportunities
           </Link>
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <div className="relative">
               <button
                 onClick={() => setShareOpen(!shareOpen)}
@@ -235,13 +240,22 @@ const OpportunityDetails = () => {
             </div>
             
             {isAdmin && (
-              <button
-                onClick={handleDelete}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md hover:from-red-600 hover:to-red-700 transition-colors shadow-md hover:shadow-lg"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete
-              </button>
+              <>
+                <Button
+                  onClick={handleEdit}
+                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700 transition-colors shadow-md hover:shadow-lg"
+                >
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md hover:from-red-600 hover:to-red-700 transition-colors shadow-md hover:shadow-lg"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </Button>
+              </>
             )}
           </div>
         </div>
