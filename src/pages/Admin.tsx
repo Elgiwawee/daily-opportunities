@@ -46,6 +46,12 @@ const Admin = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleFormSuccess = () => {
+    setShowForm(false);
+    setEditingOpportunity(null);
+    toast.success(editingOpportunity ? 'Opportunity updated successfully!' : 'Opportunity created successfully!');
+  };
+
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
@@ -99,15 +105,18 @@ const Admin = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {showForm && (
-          <OpportunityForm
-            opportunity={editingOpportunity}
-            onSuccess={() => {
-              setShowForm(false);
-              setEditingOpportunity(null);
-            }}
-          />
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">
+              {editingOpportunity ? 'Edit Opportunity' : 'Create New Opportunity'}
+            </h2>
+            <OpportunityForm
+              opportunity={editingOpportunity}
+              onSuccess={handleFormSuccess}
+            />
+          </div>
         )}
         
+        <h2 className="text-2xl font-bold mb-4">All Opportunities</h2>
         <OpportunityTable
           onEdit={handleEditOpportunity}
         />
