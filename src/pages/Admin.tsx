@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { OpportunityForm } from '@/components/OpportunityForm';
 import OpportunityTable from '@/components/OpportunityTable';
@@ -10,13 +10,22 @@ import { Home, Plus, X } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingOpportunity, setEditingOpportunity] = useState<any>(null);
 
   useEffect(() => {
     checkUser();
-  }, []);
+    
+    // Check if edit parameter is in URL
+    const query = new URLSearchParams(location.search);
+    const editId = query.get('edit');
+    
+    if (editId) {
+      fetchOpportunityForEdit(editId);
+    }
+  }, [location]);
 
   const checkUser = async () => {
     try {
@@ -30,6 +39,25 @@ const Admin = () => {
     }
   };
 
+  const fetchOpportunityForEdit = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      
+      setEditingOpportunity(data);
+      setShowForm(true);
+      // Scroll to the top of the page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error: any) {
+      toast.error(error.message || 'Error fetching opportunity for editing');
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -37,6 +65,23 @@ const Admin = () => {
     } catch (error: any) {
       toast.error(error.message || "Error logging out");
     }
+  };
+
+  const handleEditOpportunity = (opportunity: any) => {
+    setEditingOpportunity(opportunity);
+    setShowForm(true);
+    // Clear the edit parameter from URL
+    navigate('/admin');
+    // Scroll to the top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleFormSuccess = () => {
+    setShowForm(false);
+    setEditingOpportunity(null);
+    // Clear the edit parameter from URL
+    navigate('/admin');
+    toast.success(editingOpportunity ? 'Opportunity updated successfully!' : 'Opportunity created successfully!');
   };
 
   if (isLoading) {
@@ -68,12 +113,12 @@ const Admin = () => {
               >
                 {showForm ? (
                   <>
-                    <X size={16} />
+                    <X size={16} className="mr-1" />
                     Cancel
                   </>
                 ) : (
                   <>
-                    <Plus size={16} />
+                    <Plus size={16} className="mr-1" />
                     Add New Opportunity
                   </>
                 )}
@@ -92,20 +137,20 @@ const Admin = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {showForm && (
-          <OpportunityForm
-            opportunity={editingOpportunity}
-            onSuccess={() => {
-              setShowForm(false);
-              setEditingOpportunity(null);
-            }}
-          />
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">
+              {editingOpportunity ? 'Edit Opportunity' : 'Create New Opportunity'}
+            </h2>
+            <OpportunityForm
+              opportunity={editingOpportunity}
+              onSuccess={handleFormSuccess}
+            />
+          </div>
         )}
         
+        <h2 className="text-2xl font-bold mb-4">All Opportunities</h2>
         <OpportunityTable
-          onEdit={(opportunity) => {
-            setEditingOpportunity(opportunity);
-            setShowForm(true);
-          }}
+          onEdit={handleEditOpportunity}
         />
       </main>
     </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink, Pencil } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -99,6 +99,10 @@ const OpportunityDetails = () => {
     }
   };
 
+  const handleEdit = () => {
+    navigate(`/admin?edit=${opportunity?.id}`);
+  };
+
   const handleShare = (platform: string) => {
     if (!opportunity) return;
     
@@ -106,11 +110,17 @@ const OpportunityDetails = () => {
     const title = opportunity.title;
     const description = opportunity.description.substring(0, 100) + '...';
     
+    const imageUrl = opportunity.attachments && opportunity.attachments.length > 0 && opportunity.attachments[0].type === 'image'
+      ? opportunity.attachments[0].url
+      : `${window.location.origin}/${opportunity.type === 'scholarship' 
+          ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+          : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40'}`;
+    
     let shareUrl = '';
     
     switch (platform) {
       case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}&picture=${encodeURIComponent(imageUrl)}`;
         break;
       case 'twitter':
         shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
@@ -162,21 +172,23 @@ const OpportunityDetails = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
           <Link to="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-700">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to opportunities
           </Link>
-          <div className="flex space-x-2">
+          
+          <div className="flex gap-3">
             <div className="relative">
-              <button
+              <Button
                 onClick={() => setShareOpen(!shareOpen)}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-md hover:from-indigo-600 hover:to-indigo-700 transition-colors shadow-md hover:shadow-lg"
+                variant="outline"
+                className="flex items-center gap-2"
               >
-                <Share2 className="w-4 h-4 mr-2" />
+                <Share2 className="w-4 h-4" />
                 Share
-              </button>
+              </Button>
               
               {shareOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-100">
@@ -235,13 +247,24 @@ const OpportunityDetails = () => {
             </div>
             
             {isAdmin && (
-              <button
-                onClick={handleDelete}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md hover:from-red-600 hover:to-red-700 transition-colors shadow-md hover:shadow-lg"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete
-              </button>
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleEdit}
+                  className="flex items-center gap-2"
+                  variant="default"
+                >
+                  <Pencil className="w-4 h-4" />
+                  Edit
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  className="flex items-center gap-2"
+                  variant="destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </Button>
+              </div>
             )}
           </div>
         </div>
@@ -342,3 +365,4 @@ const OpportunityDetails = () => {
 };
 
 export default OpportunityDetails;
+
