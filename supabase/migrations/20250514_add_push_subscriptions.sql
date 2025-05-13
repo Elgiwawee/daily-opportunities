@@ -33,7 +33,7 @@ CREATE POLICY "Users can update their own subscriptions"
   FOR UPDATE 
   USING (auth.uid() = user_id OR user_id IS NULL);
 
--- Policy to allow users to delete their own subscription
+-- Policy to allow users to delete their own subscriptions
 CREATE POLICY "Users can delete their own subscriptions" 
   ON push_subscriptions 
   FOR DELETE 

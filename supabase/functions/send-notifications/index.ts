@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import { decode as base64Decode } from "https://deno.land/std@0.170.0/encoding/base64.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
@@ -68,12 +69,23 @@ serve(async (req) => {
     
     console.log(`Would send notifications to ${subscriptions.length} subscribers for opportunity ${opportunity.id}`);
     
+    // Simulate sending notifications
+    const notificationPayload = {
+      title: `New ${opportunity.type}: ${opportunity.title}`,
+      body: `${opportunity.organization} has posted a new ${opportunity.type}`,
+      url: `${req.url.split('/api/')[0]}/opportunity/${opportunity.id}`,
+      icon: '/og-image.png',
+    };
+    
+    console.log("Notification payload:", notificationPayload);
+    
     // Simulate success for now
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: `Notification sent to ${subscriptions.length} subscribers`,
-        opportunity 
+        opportunity,
+        subscriptions: subscriptions.length
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

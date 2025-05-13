@@ -1,7 +1,8 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink, Pencil } from 'lucide-react';
+import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink, Pencil, Play, X, Maximize } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 interface Attachment {
   name: string;
   url: string;
-  type: 'image' | 'video';
+  type: string;
   path: string;
 }
 
@@ -32,6 +33,7 @@ const OpportunityDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [activeMedia, setActiveMedia] = useState<{url: string, type: string} | null>(null);
 
   useEffect(() => {
     const checkIfAdmin = async () => {
@@ -110,7 +112,8 @@ const OpportunityDetails = () => {
     const title = opportunity.title;
     const description = opportunity.description.substring(0, 100) + '...';
     
-    const imageUrl = opportunity.attachments && opportunity.attachments.length > 0 && opportunity.attachments[0].type === 'image'
+    const imageUrl = opportunity.attachments && opportunity.attachments.length > 0 && 
+      opportunity.attachments[0].type.startsWith('image/')
       ? opportunity.attachments[0].url
       : `${window.location.origin}/${opportunity.type === 'scholarship' 
           ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
@@ -141,6 +144,17 @@ const OpportunityDetails = () => {
     window.open(shareUrl, '_blank', 'width=600,height=400');
     setShareOpen(false);
   };
+
+  const openMediaViewer = (url: string, type: string) => {
+    setActiveMedia({ url, type });
+  };
+
+  const closeMediaViewer = () => {
+    setActiveMedia(null);
+  };
+
+  const isVideo = (type: string) => type.startsWith('video/');
+  const isImage = (type: string) => type.startsWith('image/');
 
   if (loading) {
     return (
@@ -270,13 +284,37 @@ const OpportunityDetails = () => {
         </div>
 
         <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100">
-          {opportunity.attachments?.length > 0 && opportunity.attachments[0].type === 'image' && (
-            <div className="aspect-video w-full overflow-hidden">
-              <img
-                src={opportunity.attachments[0].url}
-                alt={opportunity.title}
-                className="w-full h-full object-cover"
-              />
+          {opportunity.attachments?.length > 0 && (
+            <div className="aspect-video w-full overflow-hidden relative">
+              {isImage(opportunity.attachments[0].type) ? (
+                <img
+                  src={opportunity.attachments[0].url}
+                  alt={opportunity.title}
+                  className="w-full h-full object-cover cursor-pointer"
+                  onClick={() => openMediaViewer(opportunity.attachments[0].url, opportunity.attachments[0].type)}
+                />
+              ) : isVideo(opportunity.attachments[0].type) ? (
+                <div className="relative w-full h-full bg-black">
+                  <video 
+                    src={opportunity.attachments[0].url}
+                    className="w-full h-full object-contain"
+                    onClick={(e) => e.currentTarget.paused ? e.currentTarget.play() : e.currentTarget.pause()}
+                    controls={false}
+                  />
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black bg-opacity-30 hover:bg-opacity-10 transition-all"
+                    onClick={() => openMediaViewer(opportunity.attachments[0].url, opportunity.attachments[0].type)}
+                  >
+                    <div className="w-16 h-16 rounded-full bg-white bg-opacity-80 flex items-center justify-center">
+                      <Play className="w-8 h-8 text-red-600 ml-1" />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                  <p className="text-gray-500">File: {opportunity.attachments[0].name}</p>
+                </div>
+              )}
             </div>
           )}
 
@@ -328,31 +366,51 @@ const OpportunityDetails = () => {
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {opportunity.attachments.map((attachment, index) => (
-                    <a
-                      key={index}
-                      href={attachment.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block group"
-                    >
-                      {attachment.type === 'image' ? (
-                        <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-lg transition-shadow">
-                          <img
-                            src={attachment.url}
-                            alt={attachment.name}
-                            className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
-                          />
-                        </div>
-                      ) : (
-                        <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
+                    <div key={index} className="aspect-video rounded-lg overflow-hidden bg-gray-100 shadow-md hover:shadow-lg transition-shadow relative group">
+                      {isImage(attachment.type) ? (
+                        <img
+                          src={attachment.url}
+                          alt={attachment.name}
+                          className="w-full h-full object-cover cursor-pointer"
+                          onClick={() => openMediaViewer(attachment.url, attachment.type)}
+                        />
+                      ) : isVideo(attachment.type) ? (
+                        <div className="relative w-full h-full">
                           <video
                             src={attachment.url}
-                            className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
+                            className="w-full h-full object-cover"
+                            preload="metadata"
                           />
+                          <div 
+                            className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                            onClick={() => openMediaViewer(attachment.url, attachment.type)}
+                          >
+                            <div className="w-12 h-12 rounded-full bg-white bg-opacity-80 flex items-center justify-center">
+                              <Play className="w-6 h-6 text-red-600 ml-0.5" />
+                            </div>
+                          </div>
                         </div>
+                      ) : (
+                        <a 
+                          href={attachment.url} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full h-full flex items-center justify-center bg-gray-100 p-4"
+                        >
+                          <p className="text-sm text-center text-gray-500">
+                            {attachment.name || 'File'}
+                          </p>
+                        </a>
                       )}
-                      <p className="mt-2 text-sm text-gray-600 truncate">{attachment.name}</p>
-                    </a>
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <button 
+                          className="p-2 bg-white rounded-full shadow-md"
+                          onClick={() => openMediaViewer(attachment.url, attachment.type)}
+                        >
+                          <Maximize className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -360,9 +418,38 @@ const OpportunityDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Media Viewer Modal */}
+      {activeMedia && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+          <div className="absolute top-4 right-4 z-10">
+            <button
+              onClick={closeMediaViewer}
+              className="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-70 transition-all"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="max-w-5xl max-h-[90vh] w-full">
+            {isVideo(activeMedia.type) ? (
+              <video 
+                src={activeMedia.url}
+                className="w-full max-h-[90vh] object-contain"
+                controls
+                autoPlay
+              />
+            ) : (
+              <img 
+                src={activeMedia.url}
+                className="w-full max-h-[90vh] object-contain"
+                alt="Media preview"
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default OpportunityDetails;
-

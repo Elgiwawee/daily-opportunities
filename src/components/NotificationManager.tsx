@@ -158,8 +158,14 @@ const NotificationManager = () => {
     const { data: { user } } = await supabase.auth.getUser();
     const userId = user?.id;
 
+    const subscriptionJSON = subscription.toJSON();
     const endpoint = subscription.endpoint;
-    const { p256dh, auth } = subscription.toJSON().keys || {};
+    const p256dh = subscriptionJSON.keys?.p256dh;
+    const auth = subscriptionJSON.keys?.auth;
+
+    if (!p256dh || !auth) {
+      throw new Error('Invalid subscription keys');
+    }
 
     try {
       const { error } = await supabase
