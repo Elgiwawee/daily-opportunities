@@ -48,6 +48,12 @@ const Opportunities = () => {
           console.log('Real-time change:', payload);
           // Refresh the opportunities list when any change occurs
           fetchOpportunities();
+          
+          // Show notification for new opportunities
+          if (payload.eventType === 'INSERT') {
+            const newOpportunity = payload.new as Opportunity;
+            showNewOpportunityNotification(newOpportunity);
+          }
         }
       )
       .subscribe();
@@ -90,8 +96,57 @@ const Opportunities = () => {
     }
   };
 
+  const showNewOpportunityNotification = (opportunity: Opportunity) => {
+    // Show toast notification for all users
+    toast(
+      `New ${opportunity.type}: ${opportunity.title}`,
+      {
+        description: `From ${opportunity.organization}`,
+        action: {
+          label: 'View',
+          onClick: () => window.location.href = `/opportunity/${opportunity.id}`
+        },
+        duration: 10000,
+      }
+    );
+    
+    // Try to show push notification if available and permission granted
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      try {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.showNotification(`New ${opportunity.type}: ${opportunity.title}`, {
+            body: `From ${opportunity.organization}`,
+            icon: '/og-image.png',
+            badge: '/favicon.ico',
+            data: {
+              url: `/opportunity/${opportunity.id}`
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Error showing notification:', error);
+      }
+    }
+  };
+
   const loadMore = () => {
     setVisibleCount(prevCount => prevCount + 6);
+  };
+
+  // Function to determine where to place ads
+  const renderAdPlaceholder = (index: number) => {
+    // Show ad after every 3 opportunities
+    if ((index + 1) % 3 === 0) {
+      return (
+        <div className="col-span-1 md:col-span-3 bg-gray-100 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-500 font-medium">Advertisement</p>
+            <p className="text-sm text-gray-400">Ad space available</p>
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -112,12 +167,23 @@ const Opportunities = () => {
               />
             ))}
           </div>
+          
+          {/* Ad banner below featured section */}
+          <div className="my-8 bg-gray-100 rounded-lg p-6 text-center">
+            <p className="text-gray-500 font-medium">Advertisement</p>
+            <div className="h-[120px] flex items-center justify-center">
+              <p className="text-sm text-gray-400">Premium ad space</p>
+            </div>
+          </div>
         </div>
 
         {/* Other Opportunities */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {otherOpportunities.slice(0, visibleCount).map((opportunity) => (
-            <OpportunityCard key={opportunity.id} {...opportunity} />
+          {otherOpportunities.slice(0, visibleCount).map((opportunity, index) => (
+            <>
+              <OpportunityCard key={opportunity.id} {...opportunity} />
+              {renderAdPlaceholder(index)}
+            </>
           ))}
         </div>
 

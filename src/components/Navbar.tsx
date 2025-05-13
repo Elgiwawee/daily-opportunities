@@ -1,342 +1,168 @@
-
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Menu, X, ChevronDown, Search, User } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from "sonner";
+import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import NotificationManager from './NotificationManager';
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    // Check if the user is logged in
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  // Check if user is admin
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAdmin(!!user);
-    };
-    checkUser();
-    
-    // Subscribe to auth changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAdmin(!!session?.user);
+    checkAuth();
+
+    // Subscribe to auth state changes
+    supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session);
     });
-    
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
   }, []);
 
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-    setDropdownOpen(null);
-  }, [location.pathname]);
-
-  const toggleDropdown = (name: string) => {
-    if (dropdownOpen === name) {
-      setDropdownOpen(null);
-    } else {
-      setDropdownOpen(name);
-    }
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleLogin = () => {
-    navigate('/auth');
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast.success("Logged out successfully");
-      if (location.pathname === '/admin') {
-        navigate('/');
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Error logging out");
-    }
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implement search logic here
+    console.log('Search term:', searchTerm);
   };
 
   return (
-    <div className="w-full fixed z-50">
-      {/* Logo Section */}
-      <div className="bg-white py-4 px-4 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/0fd8bd36-8cd2-4e3f-b34b-fdcf0692b42a.png" 
-              alt="Daily Opportunities Logo" 
-              className="h-10 sm:h-12 md:h-16 w-auto"
-            />
-            <div className="ml-1 sm:ml-2">
-              <div className="text-sm xs:text-base sm:text-lg md:text-xl font-bold text-teal-600 tracking-tight">DAILY</div>
-              <div className="text-sm xs:text-base sm:text-lg md:text-xl font-bold text-teal-600 tracking-tight">OPPORTUNITIES</div>
-            </div>
-          </Link>
+    <nav className="fixed w-full bg-white border-b border-gray-200 z-50">
+      <div className="flex justify-between items-center py-4 px-6 max-w-7xl mx-auto">
+        {/* Logo and site name */}
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/logo.png" alt="Daily Opportunities Logo" className="h-8 w-auto" />
+          <span className="font-bold text-xl">Daily Opportunities</span>
+        </Link>
+
+        {/* Desktop navigation */}
+        <div className="hidden md:flex items-center space-x-6">
+          <Link to="/" className={cn("hover:text-olive-600 transition-colors", {
+            'text-olive-600 font-semibold': location.pathname === '/'
+          })}>Home</Link>
+          <Link to="/scholarships" className={cn("hover:text-olive-600 transition-colors", {
+            'text-olive-600 font-semibold': location.pathname === '/scholarships'
+          })}>Scholarships</Link>
+          <Link to="/jobs" className={cn("hover:text-olive-600 transition-colors", {
+            'text-olive-600 font-semibold': location.pathname === '/jobs'
+          })}>Job Listings</Link>
+          <Link to="/news" className={cn("hover:text-olive-600 transition-colors", {
+            'text-olive-600 font-semibold': location.pathname === '/news'
+          })}>News</Link>
           
-          <div>
-            {isAdmin ? (
-              <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
-                <Link to="/admin">
-                  <Button variant="outline" size="sm" className="border border-olive-600 text-olive-700 hover:bg-olive-50">
-                    <User size={12} className="mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Admin Dashboard</span>
-                    <span className="sm:hidden text-[10px] xs:text-xs">Admin</span>
-                  </Button>
-                </Link>
-                <Button 
-                  onClick={handleLogout}
-                  variant="outline" 
-                  size="sm"
-                  className="border border-olive-600 text-olive-700 hover:bg-olive-50"
-                >
-                  <span className="text-[10px] xs:text-xs sm:text-sm">Logout</span>
-                </Button>
-              </div>
-            ) : (
-              <Button 
-                onClick={handleLogin}
-                variant="outline" 
-                size="sm"
-                className="border border-olive-600 text-olive-700 hover:bg-olive-50"
-              >
-                <User size={12} className="mr-1 sm:mr-2" />
-                <span className="text-[10px] xs:text-xs sm:text-sm">Admin</span>
+          {/* Add notification manager */}
+          <NotificationManager />
+          
+          {/* Search bar */}
+          <form onSubmit={handleSearchSubmit} className="relative">
+            <input
+              type="search"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="border border-gray-300 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500"
+            />
+            <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+          </form>
+
+          {/* Authentication buttons */}
+          {isLoggedIn ? (
+            <Link to="/admin">
+              <Button variant="outline" size="sm">
+                <User className="w-4 h-4 mr-2" />
+                Admin
               </Button>
+            </Link>
+          ) : (
+            <Link to="/auth">
+              <Button variant="outline" size="sm">
+                Login
+              </Button>
+            </Link>
+          )}
+        </div>
+
+        {/* Mobile menu button */}
+        <div className="md:hidden flex items-center">
+          {/* Add notification manager for mobile too */}
+          <div className="mr-2">
+            <NotificationManager />
+          </div>
+          
+          <button onClick={toggleMenu}>
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile navigation */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex flex-col space-y-4">
+            <Link to="/" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Home</Link>
+            <Link to="/scholarships" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Scholarships</Link>
+            <Link to="/jobs" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Job Listings</Link>
+            <Link to="/news" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">News</Link>
+            
+            {/* Search bar */}
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                type="search"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="border border-gray-300 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500 w-full"
+              />
+              <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+            </form>
+
+            {/* Authentication buttons */}
+            {isLoggedIn ? (
+              <Link to="/admin" onClick={closeMenu}>
+                <Button variant="outline" size="sm" className="w-full">
+                  <User className="w-4 h-4 mr-2" />
+                  Admin
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth" onClick={closeMenu}>
+                <Button variant="outline" size="sm" className="w-full">
+                  Login
+                </Button>
+              </Link>
             )}
           </div>
         </div>
-      </div>
-      
-      {/* Navigation Section */}
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-olive-700 text-white shadow-md"
-      >
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center h-14">
-            <div className="hidden md:flex items-center space-x-1">
-              <Link to="/" className="px-3 py-2 flex items-center hover:bg-olive-800">
-                <span className="mr-1">🏠</span> Home
-              </Link>
-              
-              <div className="relative group">
-                <button 
-                  onClick={() => toggleDropdown('scholarships')}
-                  className="px-3 py-2 flex items-center hover:bg-olive-800"
-                >
-                  <span className="mr-1">🎓</span> Scholarships <ChevronDown size={14} />
-                </button>
-                {dropdownOpen === 'scholarships' && (
-                  <div className="absolute left-0 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-20 w-48">
-                    <div className="py-1">
-                      <Link to="/scholarships" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">All Scholarships</Link>
-                      <Link to="/levels/undergraduate" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Undergraduate</Link>
-                      <Link to="/levels/masters" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Masters</Link>
-                      <Link to="/levels/phd" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">PhD</Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <div className="relative group">
-                <button 
-                  onClick={() => toggleDropdown('countries')}
-                  className="px-3 py-2 flex items-center hover:bg-olive-800"
-                >
-                  <span className="mr-1">🌎</span> Scholarship In Countries <ChevronDown size={14} />
-                </button>
-                {dropdownOpen === 'countries' && (
-                  <div className="absolute left-0 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-20 w-48">
-                    <div className="py-1">
-                      <Link to="/countries/usa" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">USA</Link>
-                      <Link to="/countries/uk" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">UK</Link>
-                      <Link to="/countries/canada" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Canada</Link>
-                      <Link to="/countries/australia" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Australia</Link>
-                      <Link to="/countries/germany" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Germany</Link>
-                      <Link to="/countries/nigeria" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Nigeria</Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <div className="relative group">
-                <button 
-                  onClick={() => toggleDropdown('levels')}
-                  className="px-3 py-2 flex items-center hover:bg-olive-800"
-                >
-                  <span className="mr-1">🏆</span> Scholarships By Level <ChevronDown size={14} />
-                </button>
-                {dropdownOpen === 'levels' && (
-                  <div className="absolute left-0 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-20 w-48">
-                    <div className="py-1">
-                      <Link to="/levels/bachelors" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bachelors</Link>
-                      <Link to="/levels/masters" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Masters</Link>
-                      <Link to="/levels/phd" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">PhD</Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <Link to="/jobs" className="px-3 py-2 flex items-center hover:bg-olive-800">
-                <span className="mr-1">💼</span> Jobs
-              </Link>
-              
-              <Link to="/explainer" className="px-3 py-2 flex items-center hover:bg-olive-800">
-                <span className="mr-1">📚</span> Explainer
-              </Link>
-              
-              <Link to="/news" className="px-3 py-2 flex items-center hover:bg-olive-800">
-                <span className="mr-1">📰</span> News
-              </Link>
-              
-              <Link to="/about" className="px-3 py-2 flex items-center hover:bg-olive-800">
-                <span className="mr-1">ℹ️</span> About Us
-              </Link>
-              
-              <Link to="/contact" className="px-3 py-2 flex items-center hover:bg-olive-800">
-                <span className="mr-1">📞</span> Contact Us
-              </Link>
-            </div>
-            
-            <div className="hidden md:flex items-center">
-              <button className="px-3 py-2 hover:bg-olive-800">
-                <Search size={20} />
-              </button>
-            </div>
-
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-white p-2"
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-olive-700"
-          >
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link to="/" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">🏠</span> Home
-              </Link>
-              
-              {/* Mobile Scholarships Dropdown */}
-              <div className="relative">
-                <button 
-                  onClick={() => toggleDropdown('mobile-scholarships')}
-                  className="w-full text-left block px-3 py-2 hover:bg-olive-800 rounded-md flex items-center justify-between"
-                >
-                  <span><span className="mr-1">🎓</span> Scholarships</span>
-                  <ChevronDown size={14} className={dropdownOpen === 'mobile-scholarships' ? 'transform rotate-180' : ''} />
-                </button>
-                {dropdownOpen === 'mobile-scholarships' && (
-                  <div className="bg-olive-600 rounded-md mt-1 py-1">
-                    <Link to="/scholarships" className="block px-5 py-2 hover:bg-olive-700">All Scholarships</Link>
-                    <Link to="/levels/undergraduate" className="block px-5 py-2 hover:bg-olive-700">Undergraduate</Link>
-                    <Link to="/levels/masters" className="block px-5 py-2 hover:bg-olive-700">Masters</Link>
-                    <Link to="/levels/phd" className="block px-5 py-2 hover:bg-olive-700">PhD</Link>
-                  </div>
-                )}
-              </div>
-              
-              {/* Mobile Countries Dropdown */}
-              <div className="relative">
-                <button 
-                  onClick={() => toggleDropdown('mobile-countries')}
-                  className="w-full text-left block px-3 py-2 hover:bg-olive-800 rounded-md flex items-center justify-between"
-                >
-                  <span><span className="mr-1">🌎</span> Scholarship In Countries</span>
-                  <ChevronDown size={14} className={dropdownOpen === 'mobile-countries' ? 'transform rotate-180' : ''} />
-                </button>
-                {dropdownOpen === 'mobile-countries' && (
-                  <div className="bg-olive-600 rounded-md mt-1 py-1">
-                    <Link to="/countries/usa" className="block px-5 py-2 hover:bg-olive-700">USA</Link>
-                    <Link to="/countries/uk" className="block px-5 py-2 hover:bg-olive-700">UK</Link>
-                    <Link to="/countries/canada" className="block px-5 py-2 hover:bg-olive-700">Canada</Link>
-                    <Link to="/countries/australia" className="block px-5 py-2 hover:bg-olive-700">Australia</Link>
-                    <Link to="/countries/germany" className="block px-5 py-2 hover:bg-olive-700">Germany</Link>
-                    <Link to="/countries/nigeria" className="block px-5 py-2 hover:bg-olive-700">Nigeria</Link>
-                  </div>
-                )}
-              </div>
-              
-              {/* Mobile Levels Dropdown */}
-              <div className="relative">
-                <button 
-                  onClick={() => toggleDropdown('mobile-levels')}
-                  className="w-full text-left block px-3 py-2 hover:bg-olive-800 rounded-md flex items-center justify-between"
-                >
-                  <span><span className="mr-1">🏆</span> Scholarships By Level</span>
-                  <ChevronDown size={14} className={dropdownOpen === 'mobile-levels' ? 'transform rotate-180' : ''} />
-                </button>
-                {dropdownOpen === 'mobile-levels' && (
-                  <div className="bg-olive-600 rounded-md mt-1 py-1">
-                    <Link to="/levels/bachelors" className="block px-5 py-2 hover:bg-olive-700">Bachelors</Link>
-                    <Link to="/levels/masters" className="block px-5 py-2 hover:bg-olive-700">Masters</Link>
-                    <Link to="/levels/phd" className="block px-5 py-2 hover:bg-olive-700">PhD</Link>
-                  </div>
-                )}
-              </div>
-              
-              <Link to="/jobs" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">💼</span> Jobs
-              </Link>
-              <Link to="/explainer" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">📚</span> Explainer
-              </Link>
-              <Link to="/news" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">📰</span> News
-              </Link>
-              <Link to="/about" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">ℹ️</span> About Us
-              </Link>
-              <Link to="/contact" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                <span className="mr-1">📞</span> Contact Us
-              </Link>
-              
-              {isAdmin && (
-                <Link to="/admin" className="block px-3 py-2 hover:bg-olive-800 rounded-md">
-                  <span className="mr-1">👤</span> Admin Dashboard
-                </Link>
-              )}
-              
-              <div className="relative pt-2">
-                <div className="flex items-center border-2 rounded-lg bg-white">
-                  <input type="text" className="w-full px-4 py-1 text-gray-800 rounded-lg" placeholder="Search..." />
-                  <button className="bg-gray-300 p-1 rounded-r-lg">
-                    <Search size={20} className="text-gray-800" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </motion.nav>
-    </div>
+      )}
+    </nav>
   );
 };
 

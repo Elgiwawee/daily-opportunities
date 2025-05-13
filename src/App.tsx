@@ -16,6 +16,7 @@ import News from "./pages/News";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import Explainer from "./pages/Explainer";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => {
       <BrowserRouter>
         <Toaster />
         <Sonner />
+        <CookieConsent />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
