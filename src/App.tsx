@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import AdminNews from "./pages/AdminNews";
 import NotFound from "./pages/NotFound";
 import OpportunityDetails from "./pages/OpportunityDetails";
 import Scholarships from "./pages/Scholarships";
@@ -32,6 +33,7 @@ const App = () => {
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/news" element={<AdminNews />} />
           <Route path="/opportunity/:id" element={<OpportunityDetails />} />
           <Route path="/scholarships" element={<Scholarships />} />
           <Route path="/countries/:country" element={<ScholarshipsByCountry />} />

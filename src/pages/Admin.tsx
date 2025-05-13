@@ -6,7 +6,7 @@ import { OpportunityForm } from '@/components/OpportunityForm';
 import OpportunityTable from '@/components/OpportunityTable';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Home, Plus, X } from "lucide-react";
+import { Home, Plus, X, Newspaper } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -99,6 +99,12 @@ const Admin = () => {
                 <Button variant="outline" className="flex items-center gap-2">
                   <Home size={16} />
                   Back to Home
+                </Button>
+              </Link>
+              <Link to="/admin/news" className="ml-4">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Newspaper size={16} />
+                  Manage News
                 </Button>
               </Link>
             </div>

@@ -10,9 +10,8 @@ import { toast } from 'sonner';
 
 interface NewsItem {
   id: string;
-  title: string;
-  organization: string;
-  description: string;
+  subject: string;
+  body: string;
   created_at: string;
   attachments: any[];
 }
@@ -21,28 +20,18 @@ const News = () => {
   const [visibleCount, setVisibleCount] = useState(5);
 
   const fetchNews = async () => {
-    // For now, we'll just use the opportunities table and filter for the newest scholarships
-    // Later, we can create a specific news table if needed
+    // Fetch from news_items table
     const { data, error } = await supabase
-      .from('opportunities')
+      .from('news_items')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(20);
+      .order('created_at', { ascending: false });
     
     if (error) {
       toast.error("Error loading news. Please try again later.");
       throw error;
     }
     
-    // Convert opportunities to news items
-    return data.map(item => ({
-      id: item.id,
-      title: item.title,
-      organization: item.organization,
-      description: item.description,
-      created_at: item.created_at,
-      attachments: item.attachments
-    })) as NewsItem[];
+    return data as NewsItem[];
   };
 
   const { data: newsItems = [], isLoading, error } = useQuery({
@@ -71,7 +60,7 @@ const News = () => {
           >
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Latest News</h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Stay updated with the latest scholarship and job opportunity news.
+              Stay updated with the latest news and announcements.
             </p>
           </motion.div>
 
@@ -92,7 +81,7 @@ const News = () => {
                       <div className="relative h-64 w-full">
                         <img 
                           src={news.attachments[0].url} 
-                          alt={news.title} 
+                          alt={news.subject} 
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -105,19 +94,56 @@ const News = () => {
                         <Clock className="w-4 h-4 mr-1" />
                         <span>News</span>
                       </div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">{news.title}</h2>
-                      <p className="text-gray-600 mb-4 line-clamp-3">{news.description}</p>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Source: {news.organization}</span>
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">{news.subject}</h2>
+                      <p className="text-gray-600 mb-4 line-clamp-3">{news.body}</p>
+                      <div className="flex justify-end">
                         <Button 
-                          asChild
                           variant="outline" 
                           className="border border-olive-600 text-olive-700 hover:bg-olive-50"
+                          onClick={() => {
+                            // For now, just show the full content in a modal or expand it
+                            toast.info("Full news viewer will be implemented soon!");
+                          }}
                         >
-                          <a href={`/opportunity/${news.id}`}>Read More</a>
+                          Read More
                         </Button>
                       </div>
                     </div>
+
+                    {/* Display additional attachments if any */}
+                    {news.attachments && news.attachments.length > 1 && (
+                      <div className="px-6 pb-6">
+                        <h3 className="text-sm font-medium text-gray-700 mb-2">Media Gallery</h3>
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                          {news.attachments.slice(1, 5).map((attachment, index) => (
+                            <div key={index} className="aspect-square overflow-hidden rounded-md">
+                              {attachment.type?.startsWith("image/") ? (
+                                <img
+                                  src={attachment.url}
+                                  alt={`Media ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : attachment.type?.startsWith("video/") ? (
+                                <video
+                                  src={attachment.url}
+                                  className="w-full h-full object-cover"
+                                  controls
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                  File
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          {news.attachments.length > 5 && (
+                            <div className="aspect-square flex items-center justify-center bg-gray-100 rounded-md">
+                              +{news.attachments.length - 5} more
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
