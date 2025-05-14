@@ -21,7 +21,7 @@ interface OpportunityCardProps {
   deadline: string;
   type: 'scholarship' | 'job';
   description: string;
-  attachments?: Attachment[];
+  attachments?: Attachment[] | any[];
   featured?: boolean;
   external_url?: string;
 }
@@ -52,17 +52,30 @@ const OpportunityCard = ({
     console.log('Date parsing failed for:', deadline);
   }
 
+  // Fix to ensure attachments is always an array and has properly formatted objects
+  const normalizedAttachments = Array.isArray(attachments) ? attachments : [];
+  
+  // Get proper image URL for card background
+  const getCardImageUrl = () => {
+    if (normalizedAttachments.length > 0 && 
+        normalizedAttachments[0].type === 'image' && 
+        normalizedAttachments[0].url) {
+      return normalizedAttachments[0].url;
+    }
+    
+    // Default images based on opportunity type
+    return type === 'scholarship' 
+      ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+      : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
+  };
+
   const handleShare = (platform: string) => {
     // Get the current page URL + opportunity ID for sharing
     const baseUrl = window.location.origin;
     const shareUrl = `${baseUrl}/opportunity/${id}`;
     
     // Get image URL if available
-    const imageUrl = attachments.length > 0 && attachments[0].type === 'image' 
-      ? attachments[0].url 
-      : `${baseUrl}/${type === 'scholarship' 
-          ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
-          : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40'}`;
+    const imageUrl = getCardImageUrl();
     
     let shareLink = '';
     
@@ -104,21 +117,18 @@ const OpportunityCard = ({
       className={`overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:shadow-md ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
     >
       <div className="relative aspect-video w-full overflow-hidden">
-        {attachments.length > 0 && attachments[0].type === 'image' ? (
-          <img
-            src={attachments[0].url}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <img
-            src={type === 'scholarship' 
+        <img
+          src={getCardImageUrl()}
+          alt={title}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            // Fallback if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.src = type === 'scholarship' 
               ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
-              : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40'}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
-        )}
+              : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
+          }}
+        />
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
           <h3 className="text-lg md:text-xl font-bold text-white">{title}</h3>

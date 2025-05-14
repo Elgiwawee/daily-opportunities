@@ -1,11 +1,28 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, User } from 'lucide-react';
+import { Menu, X, Search, User, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import NotificationManager from './NotificationManager';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,15 +77,103 @@ const Navbar = () => {
           <Link to="/" className={cn("hover:text-olive-600 transition-colors", {
             'text-olive-600 font-semibold': location.pathname === '/'
           })}>Home</Link>
-          <Link to="/scholarships" className={cn("hover:text-olive-600 transition-colors", {
-            'text-olive-600 font-semibold': location.pathname === '/scholarships'
-          })}>Scholarships</Link>
+          
+          {/* Scholarships dropdown */}
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className={cn(
+                  "hover:text-olive-600 transition-colors bg-transparent hover:bg-transparent focus:bg-transparent",
+                  {
+                    'text-olive-600 font-semibold': location.pathname.includes('/scholarships')
+                  }
+                )}>Scholarships</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="w-[200px] p-2">
+                    <Link
+                      to="/scholarships"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
+                      onClick={closeMenu}
+                    >
+                      All Scholarships
+                    </Link>
+                    <div className="font-medium px-3 py-2 text-sm">By Country</div>
+                    <Link
+                      to="/scholarships/country/usa"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
+                      onClick={closeMenu}
+                    >
+                      USA
+                    </Link>
+                    <Link
+                      to="/scholarships/country/uk"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
+                      onClick={closeMenu}
+                    >
+                      UK
+                    </Link>
+                    <Link
+                      to="/scholarships/country/canada"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
+                      onClick={closeMenu}
+                    >
+                      Canada
+                    </Link>
+                    <div className="font-medium px-3 py-2 text-sm">By Level</div>
+                    <Link
+                      to="/scholarships/level/undergraduate"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
+                      onClick={closeMenu}
+                    >
+                      Undergraduate
+                    </Link>
+                    <Link
+                      to="/scholarships/level/masters"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
+                      onClick={closeMenu}
+                    >
+                      Master's
+                    </Link>
+                    <Link
+                      to="/scholarships/level/phd"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
+                      onClick={closeMenu}
+                    >
+                      PhD
+                    </Link>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+          
           <Link to="/jobs" className={cn("hover:text-olive-600 transition-colors", {
             'text-olive-600 font-semibold': location.pathname === '/jobs'
           })}>Job Listings</Link>
           <Link to="/news" className={cn("hover:text-olive-600 transition-colors", {
             'text-olive-600 font-semibold': location.pathname === '/news'
           })}>News</Link>
+          
+          {/* More dropdown with About Us, Contact, and Disclaimer */}
+          <Menubar className="border-none bg-transparent">
+            <MenubarMenu>
+              <MenubarTrigger className="hover:text-olive-600 transition-colors bg-transparent hover:bg-transparent focus:bg-transparent">
+                More <ChevronDown className="ml-1 h-4 w-4" />
+              </MenubarTrigger>
+              <MenubarContent>
+                <MenubarItem asChild>
+                  <Link to="/about">About Us</Link>
+                </MenubarItem>
+                <MenubarItem asChild>
+                  <Link to="/contact">Contact</Link>
+                </MenubarItem>
+                <MenubarSeparator />
+                <MenubarItem asChild>
+                  <Link to="/disclaimer">Disclaimer</Link>
+                </MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
           
           {/* Add notification manager */}
           <NotificationManager />
@@ -126,9 +231,28 @@ const Navbar = () => {
         <div className="md:hidden bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex flex-col space-y-4">
             <Link to="/" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Home</Link>
-            <Link to="/scholarships" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Scholarships</Link>
+            
+            {/* Scholarships section */}
+            <div className="py-2">
+              <Link to="/scholarships" onClick={closeMenu} className="hover:text-olive-600 transition-colors block pb-2 font-medium">Scholarships</Link>
+              <div className="ml-4 space-y-2 mt-1">
+                <div className="text-sm font-medium text-gray-700">By Country</div>
+                <Link to="/scholarships/country/usa" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">USA</Link>
+                <Link to="/scholarships/country/uk" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">UK</Link>
+                <Link to="/scholarships/country/canada" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">Canada</Link>
+                
+                <div className="text-sm font-medium text-gray-700 mt-2">By Level</div>
+                <Link to="/scholarships/level/undergraduate" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">Undergraduate</Link>
+                <Link to="/scholarships/level/masters" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">Master's</Link>
+                <Link to="/scholarships/level/phd" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">PhD</Link>
+              </div>
+            </div>
+            
             <Link to="/jobs" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Job Listings</Link>
             <Link to="/news" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">News</Link>
+            <Link to="/about" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">About Us</Link>
+            <Link to="/contact" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Contact</Link>
+            <Link to="/disclaimer" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Disclaimer</Link>
             
             {/* Search bar */}
             <form onSubmit={handleSearchSubmit} className="relative">
