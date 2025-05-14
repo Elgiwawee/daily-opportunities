@@ -52,13 +52,12 @@ const OpportunityCard = ({
     console.log('Date parsing failed for:', deadline);
   }
 
-  // Fix to ensure attachments is always an array and has properly formatted objects
+  // Fix to ensure attachments is always an array
   const normalizedAttachments = Array.isArray(attachments) ? attachments : [];
   
   // Get proper image URL for card background
   const getCardImageUrl = () => {
     if (normalizedAttachments.length > 0 && 
-        normalizedAttachments[0].type === 'image' && 
         normalizedAttachments[0].url) {
       return normalizedAttachments[0].url;
     }

@@ -8,8 +8,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Tables } from '@/integrations/supabase/types';
 
-interface Opportunity {
+interface Opportunity extends Tables<'opportunities'> {
   id: string;
   title: string;
   organization: string;

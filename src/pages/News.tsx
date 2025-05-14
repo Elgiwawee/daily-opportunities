@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Play, Pause } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { Json } from '@/integrations/supabase/types';
 
 interface Attachment {
   name: string;
@@ -40,10 +41,13 @@ const News = () => {
         throw error;
       }
       
-      // Process and type-cast the attachments properly
+      // Process and convert the attachments properly
       return (data || []).map(item => ({
         ...item,
-        attachments: Array.isArray(item.attachments) ? item.attachments : []
+        // Ensure attachments is an array and has the correct type
+        attachments: Array.isArray(item.attachments) 
+          ? item.attachments.map((att: Json) => att as unknown as Attachment)
+          : []
       })) as NewsItem[];
     },
   });
@@ -116,14 +120,12 @@ const News = () => {
                                   </div>
                                 ) : (
                                   <div 
-                                    className="relative cursor-pointer"
+                                    className="relative cursor-pointer pb-[56.25%] bg-black"
                                     onClick={() => handleVideoToggle(`${news.id}-${index}`)}
                                   >
-                                    <div className="pb-[56.25%] bg-black relative">
-                                      <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center">
-                                          <Play className="h-8 w-8 text-white" />
-                                        </div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <div className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center">
+                                        <Play className="h-8 w-8 text-white" />
                                       </div>
                                     </div>
                                   </div>
