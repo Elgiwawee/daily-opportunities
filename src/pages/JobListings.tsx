@@ -13,10 +13,10 @@ interface Job {
   id: string;
   title: string;
   organization: string;
-  deadline: string;
+  deadline: string | null;
   type: 'job';
   description: string;
-  attachments: any[];
+  attachments: any[] | null;
   created_at: string;
 }
 
@@ -25,26 +25,40 @@ const JobListings = () => {
   const [visibleCount, setVisibleCount] = useState(9);
 
   const fetchJobs = async () => {
-    const { data, error } = await supabase
-      .from('opportunities')
-      .select('*')
-      .eq('type', 'job')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      toast.error("Error loading jobs. Please try again later.");
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .eq('type', 'job')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error("Database error:", error);
+        toast.error("Error loading jobs. Please try again later.");
+        throw error;
+      }
+      
+      // For debugging
+      console.log("Fetched jobs:", data?.length || 0);
+      
+      if (!data || data.length === 0) {
+        return [];
+      }
+      
+      // Filter by region if selected
+      if (selectedRegion) {
+        return (data as Job[]).filter(job => 
+          (job.description?.toLowerCase() || '').includes(selectedRegion.toLowerCase()) ||
+          (job.title?.toLowerCase() || '').includes(selectedRegion.toLowerCase())
+        );
+      }
+      
+      return data as Job[];
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      toast.error("Failed to load jobs");
+      return [];
     }
-    
-    // Filter by region if selected
-    if (selectedRegion) {
-      return (data as Job[]).filter(job => 
-        job.description.toLowerCase().includes(selectedRegion.toLowerCase()) ||
-        job.title.toLowerCase().includes(selectedRegion.toLowerCase())
-      );
-    }
-    
-    return data as Job[];
   };
 
   const { data: jobs = [], isLoading, error } = useQuery({

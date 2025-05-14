@@ -1,23 +1,22 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import OpportunityCard from '../components/OpportunityCard';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Tables } from '@/integrations/supabase/types';
 
-interface Opportunity extends Tables<'opportunities'> {
+interface Opportunity {
   id: string;
   title: string;
   organization: string;
-  deadline: string;
+  deadline: string | null;
   type: 'scholarship' | 'job';
   description: string;
-  attachments: any[];
+  attachments: any[] | null;
   created_at: string;
 }
 
@@ -30,34 +29,47 @@ const countryKeywords: Record<string, string[]> = {
 const ScholarshipsByCountry = () => {
   const { country } = useParams<{ country: string }>();
   const [visibleCount, setVisibleCount] = useState(9);
+  const navigate = useNavigate();
+  
+  // Validate country parameter
+  useEffect(() => {
+    if (country && !countryKeywords[country.toLowerCase()]) {
+      navigate('/scholarships', { replace: true });
+      toast.error(`Invalid country filter: ${country}`);
+    }
+  }, [country, navigate]);
   
   const fetchScholarships = async () => {
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('opportunities')
         .select('*')
         .eq('type', 'scholarship')
         .order('created_at', { ascending: false });
       
-      const { data, error } = await query;
-      
       if (error) {
+        console.error("Database error:", error);
         toast.error("Error loading scholarships. Please try again later.");
         throw error;
       }
       
-      console.log("Fetched scholarships:", data);
+      // For debugging
+      console.log("Fetched scholarships:", data?.length || 0);
       console.log("Current country param:", country);
+      
+      if (!data || data.length === 0) {
+        return [];
+      }
       
       // Filter by country if specified
       if (country && countryKeywords[country.toLowerCase()]) {
         const keywords = countryKeywords[country.toLowerCase()];
         console.log("Filtering by country keywords:", keywords);
         
-        return (data as Opportunity[]).filter(scholarship => {
-          const descLower = scholarship.description.toLowerCase();
-          const titleLower = scholarship.title.toLowerCase();
-          const orgLower = scholarship.organization.toLowerCase();
+        const filtered = (data as Opportunity[]).filter(scholarship => {
+          const descLower = scholarship.description?.toLowerCase() || '';
+          const titleLower = scholarship.title?.toLowerCase() || '';
+          const orgLower = scholarship.organization?.toLowerCase() || '';
           
           return keywords.some(keyword => 
             descLower.includes(keyword) || 
@@ -65,6 +77,9 @@ const ScholarshipsByCountry = () => {
             orgLower.includes(keyword)
           );
         });
+        
+        console.log(`Filtered to ${filtered.length} scholarships for ${country}`);
+        return filtered;
       }
       
       return data as Opportunity[];
@@ -84,14 +99,15 @@ const ScholarshipsByCountry = () => {
     setVisibleCount(prev => prev + 6);
   };
 
-  const formatCountry = (country: string) => {
-    if (country?.toLowerCase() === 'usa') return 'USA';
-    if (country?.toLowerCase() === 'uk') return 'UK';
-    if (country?.toLowerCase() === 'canada') return 'Canada';
-    return country || 'All Countries';
+  const formatCountry = (country: string | undefined) => {
+    if (!country) return 'All Countries';
+    if (country.toLowerCase() === 'usa') return 'USA';
+    if (country.toLowerCase() === 'uk') return 'UK';
+    if (country.toLowerCase() === 'canada') return 'Canada';
+    return country;
   };
 
-  const countryTitle = country ? formatCountry(country) : 'All Countries';
+  const countryTitle = formatCountry(country);
 
   return (
     <div className="min-h-screen bg-white">

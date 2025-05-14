@@ -1,23 +1,22 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import OpportunityCard from '../components/OpportunityCard';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Tables } from '@/integrations/supabase/types';
 
-interface Opportunity extends Tables<'opportunities'> {
+interface Opportunity {
   id: string;
   title: string;
   organization: string;
-  deadline: string;
+  deadline: string | null;
   type: 'scholarship' | 'job';
   description: string;
-  attachments: any[];
+  attachments: any[] | null;
   created_at: string;
 }
 
@@ -30,37 +29,54 @@ const levelKeywords: Record<string, string[]> = {
 const ScholarshipsByLevel = () => {
   const { level } = useParams<{ level: string }>();
   const [visibleCount, setVisibleCount] = useState(9);
+  const navigate = useNavigate();
+  
+  // Validate level parameter
+  useEffect(() => {
+    if (level && !levelKeywords[level.toLowerCase()]) {
+      navigate('/scholarships', { replace: true });
+      toast.error(`Invalid level filter: ${level}`);
+    }
+  }, [level, navigate]);
   
   const fetchScholarships = async () => {
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('opportunities')
         .select('*')
         .eq('type', 'scholarship')
         .order('created_at', { ascending: false });
       
-      const { data, error } = await query;
-      
       if (error) {
+        console.error("Database error:", error);
         toast.error("Error loading scholarships. Please try again later.");
         throw error;
       }
       
-      console.log("Fetched scholarships:", data);
+      // For debugging
+      console.log("Fetched scholarships:", data?.length || 0);
       console.log("Current level param:", level);
+      
+      if (!data || data.length === 0) {
+        return [];
+      }
       
       // Filter by level if specified
       if (level && levelKeywords[level.toLowerCase()]) {
         const keywords = levelKeywords[level.toLowerCase()];
         console.log("Filtering by keywords:", keywords);
         
-        return (data as Opportunity[]).filter(scholarship => {
-          const descLower = scholarship.description.toLowerCase();
-          const titleLower = scholarship.title.toLowerCase();
+        const filtered = (data as Opportunity[]).filter(scholarship => {
+          const descLower = scholarship.description?.toLowerCase() || '';
+          const titleLower = scholarship.title?.toLowerCase() || '';
+          
           return keywords.some(keyword => 
             descLower.includes(keyword) || titleLower.includes(keyword)
           );
         });
+        
+        console.log(`Filtered to ${filtered.length} scholarships for ${level} level`);
+        return filtered;
       }
       
       return data as Opportunity[];
@@ -80,14 +96,15 @@ const ScholarshipsByLevel = () => {
     setVisibleCount(prev => prev + 6);
   };
 
-  const formatLevel = (level: string) => {
-    if (level?.toLowerCase() === 'undergraduate') return 'Undergraduate';
-    if (level?.toLowerCase() === 'masters') return 'Master\'s';
-    if (level?.toLowerCase() === 'phd') return 'PhD';
-    return level || 'All Levels';
+  const formatLevel = (level: string | undefined) => {
+    if (!level) return 'All Levels';
+    if (level.toLowerCase() === 'undergraduate') return 'Undergraduate';
+    if (level.toLowerCase() === 'masters') return 'Master\'s';
+    if (level.toLowerCase() === 'phd') return 'PhD';
+    return level;
   };
 
-  const levelTitle = level ? formatLevel(level) : 'All Levels';
+  const levelTitle = formatLevel(level);
 
   return (
     <div className="min-h-screen bg-white">
