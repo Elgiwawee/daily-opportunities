@@ -32,32 +32,43 @@ const ScholarshipsByLevel = () => {
   const [visibleCount, setVisibleCount] = useState(9);
   
   const fetchScholarships = async () => {
-    let query = supabase
-      .from('opportunities')
-      .select('*')
-      .eq('type', 'scholarship')
-      .order('created_at', { ascending: false });
-    
-    const { data, error } = await query;
-    
-    if (error) {
-      toast.error("Error loading scholarships. Please try again later.");
-      throw error;
+    try {
+      let query = supabase
+        .from('opportunities')
+        .select('*')
+        .eq('type', 'scholarship')
+        .order('created_at', { ascending: false });
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        toast.error("Error loading scholarships. Please try again later.");
+        throw error;
+      }
+      
+      console.log("Fetched scholarships:", data);
+      console.log("Current level param:", level);
+      
+      // Filter by level if specified
+      if (level && levelKeywords[level.toLowerCase()]) {
+        const keywords = levelKeywords[level.toLowerCase()];
+        console.log("Filtering by keywords:", keywords);
+        
+        return (data as Opportunity[]).filter(scholarship => {
+          const descLower = scholarship.description.toLowerCase();
+          const titleLower = scholarship.title.toLowerCase();
+          return keywords.some(keyword => 
+            descLower.includes(keyword) || titleLower.includes(keyword)
+          );
+        });
+      }
+      
+      return data as Opportunity[];
+    } catch (error) {
+      console.error("Error fetching scholarships:", error);
+      toast.error("Failed to load scholarships");
+      return [];
     }
-    
-    // Filter by level if specified
-    if (level && levelKeywords[level.toLowerCase()]) {
-      const keywords = levelKeywords[level.toLowerCase()];
-      return (data as Opportunity[]).filter(scholarship => {
-        const descLower = scholarship.description.toLowerCase();
-        const titleLower = scholarship.title.toLowerCase();
-        return keywords.some(keyword => 
-          descLower.includes(keyword) || titleLower.includes(keyword)
-        );
-      });
-    }
-    
-    return data as Opportunity[];
   };
 
   const { data: scholarships = [], isLoading, error } = useQuery({
@@ -70,10 +81,10 @@ const ScholarshipsByLevel = () => {
   };
 
   const formatLevel = (level: string) => {
-    if (level.toLowerCase() === 'undergraduate') return 'Undergraduate';
-    if (level.toLowerCase() === 'masters') return 'Master\'s';
-    if (level.toLowerCase() === 'phd') return 'PhD';
-    return level;
+    if (level?.toLowerCase() === 'undergraduate') return 'Undergraduate';
+    if (level?.toLowerCase() === 'masters') return 'Master\'s';
+    if (level?.toLowerCase() === 'phd') return 'PhD';
+    return level || 'All Levels';
   };
 
   const levelTitle = level ? formatLevel(level) : 'All Levels';

@@ -10,8 +10,8 @@ import { toast } from 'sonner';
 interface Attachment {
   name: string;
   url: string;
-  type: 'image' | 'video';
-  path: string;
+  type?: 'image' | 'video';
+  path?: string;
 }
 
 interface OpportunityCardProps {
@@ -57,8 +57,7 @@ const OpportunityCard = ({
   
   // Get proper image URL for card background
   const getCardImageUrl = () => {
-    if (normalizedAttachments.length > 0 && 
-        normalizedAttachments[0].url) {
+    if (normalizedAttachments.length > 0 && normalizedAttachments[0].url) {
       return normalizedAttachments[0].url;
     }
     
@@ -123,6 +122,7 @@ const OpportunityCard = ({
           onError={(e) => {
             // Fallback if image fails to load
             const target = e.target as HTMLImageElement;
+            console.log("Image failed to load, using fallback for type:", type);
             target.src = type === 'scholarship' 
               ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
               : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';

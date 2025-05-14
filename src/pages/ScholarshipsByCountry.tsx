@@ -21,49 +21,58 @@ interface Opportunity extends Tables<'opportunities'> {
   created_at: string;
 }
 
-const countryMapping: Record<string, string> = {
-  'usa': 'United States',
-  'uk': 'United Kingdom',
-  'canada': 'Canada',
-  'australia': 'Australia',
-  'germany': 'Germany',
-  'france': 'France',
-  'japan': 'Japan',
-  'china': 'China',
-  'india': 'India',
-  'nigeria': 'Nigeria',
+const countryKeywords: Record<string, string[]> = {
+  'usa': ['usa', 'united states', 'america', 'american', 'u.s.', 'u.s.a.'],
+  'uk': ['uk', 'united kingdom', 'britain', 'british', 'england', 'scotland', 'wales'],
+  'canada': ['canada', 'canadian']
 };
 
 const ScholarshipsByCountry = () => {
   const { country } = useParams<{ country: string }>();
   const [visibleCount, setVisibleCount] = useState(9);
   
-  const countryName = country ? countryMapping[country.toLowerCase()] || country : '';
-
-  // We can't filter by country in the database because the column doesn't exist
-  // So we'll fetch all scholarships and filter them in the frontend
   const fetchScholarships = async () => {
-    const { data, error } = await supabase
-      .from('opportunities')
-      .select('*')
-      .eq('type', 'scholarship')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      toast.error("Error loading scholarships. Please try again later.");
-      throw error;
+    try {
+      let query = supabase
+        .from('opportunities')
+        .select('*')
+        .eq('type', 'scholarship')
+        .order('created_at', { ascending: false });
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        toast.error("Error loading scholarships. Please try again later.");
+        throw error;
+      }
+      
+      console.log("Fetched scholarships:", data);
+      console.log("Current country param:", country);
+      
+      // Filter by country if specified
+      if (country && countryKeywords[country.toLowerCase()]) {
+        const keywords = countryKeywords[country.toLowerCase()];
+        console.log("Filtering by country keywords:", keywords);
+        
+        return (data as Opportunity[]).filter(scholarship => {
+          const descLower = scholarship.description.toLowerCase();
+          const titleLower = scholarship.title.toLowerCase();
+          const orgLower = scholarship.organization.toLowerCase();
+          
+          return keywords.some(keyword => 
+            descLower.includes(keyword) || 
+            titleLower.includes(keyword) ||
+            orgLower.includes(keyword)
+          );
+        });
+      }
+      
+      return data as Opportunity[];
+    } catch (error) {
+      console.error("Error fetching scholarships:", error);
+      toast.error("Failed to load scholarships");
+      return [];
     }
-    
-    // Since we can't filter by country in the database, we need to check
-    // if the description or title contains the country name
-    if (countryName) {
-      return (data as Opportunity[]).filter(scholarship => 
-        scholarship.description.toLowerCase().includes(countryName.toLowerCase()) ||
-        scholarship.title.toLowerCase().includes(countryName.toLowerCase())
-      );
-    }
-    
-    return data as Opportunity[];
   };
 
   const { data: scholarships = [], isLoading, error } = useQuery({
@@ -74,6 +83,15 @@ const ScholarshipsByCountry = () => {
   const loadMore = () => {
     setVisibleCount(prev => prev + 6);
   };
+
+  const formatCountry = (country: string) => {
+    if (country?.toLowerCase() === 'usa') return 'USA';
+    if (country?.toLowerCase() === 'uk') return 'UK';
+    if (country?.toLowerCase() === 'canada') return 'Canada';
+    return country || 'All Countries';
+  };
+
+  const countryTitle = country ? formatCountry(country) : 'All Countries';
 
   return (
     <div className="min-h-screen bg-white">
@@ -86,10 +104,10 @@ const ScholarshipsByCountry = () => {
             className="mb-12 text-center"
           >
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Scholarships in {countryName || 'Selected Country'}
+              Scholarships in {countryTitle}
             </h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Discover scholarship opportunities available in {countryName || 'this country'}.
+              Discover scholarship opportunities in {countryTitle}.
             </p>
           </motion.div>
 
@@ -126,7 +144,7 @@ const ScholarshipsByCountry = () => {
 
               {scholarships.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-lg text-gray-500">No scholarships found for {countryName}. Please check back later.</p>
+                  <p className="text-lg text-gray-500">No scholarships found for {countryTitle}. Please check back later.</p>
                 </div>
               )}
             </>

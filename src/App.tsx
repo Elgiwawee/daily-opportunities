@@ -17,6 +17,7 @@ import News from "./pages/News";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import Explainer from "./pages/Explainer";
+import Disclaimer from "./pages/Disclaimer";
 import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
@@ -36,12 +37,13 @@ const App = () => {
           <Route path="/admin/news" element={<AdminNews />} />
           <Route path="/opportunity/:id" element={<OpportunityDetails />} />
           <Route path="/scholarships" element={<Scholarships />} />
-          <Route path="/countries/:country" element={<ScholarshipsByCountry />} />
-          <Route path="/levels/:level" element={<ScholarshipsByLevel />} />
+          <Route path="/scholarships/country/:country" element={<ScholarshipsByCountry />} />
+          <Route path="/scholarships/level/:level" element={<ScholarshipsByLevel />} />
           <Route path="/jobs" element={<JobListings />} />
           <Route path="/news" element={<News />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/explainer" element={<Explainer />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

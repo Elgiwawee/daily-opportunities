@@ -68,7 +68,17 @@ const Navbar = () => {
       <div className="flex justify-between items-center py-4 px-6 max-w-7xl mx-auto">
         {/* Logo and site name */}
         <Link to="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Daily Opportunities Logo" className="h-8 w-auto" />
+          <img 
+            src="/logo.png" 
+            alt="Daily Opportunities Logo" 
+            className="h-8 w-auto"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              console.log("Logo failed to load, using fallback");
+              target.src = "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=74&auto=format&fit=crop";
+              target.onerror = null; // Prevent infinite error loop
+            }}
+          />
           <span className="font-bold text-xl">Daily Opportunities</span>
         </Link>
 
