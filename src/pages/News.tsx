@@ -8,6 +8,7 @@ import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Json } from '@/integrations/supabase/types';
+import DonationButton from '../components/DonationButton';
 
 interface Attachment {
   name: string;
@@ -84,6 +85,9 @@ const News = () => {
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Stay updated with the latest news and announcements about scholarships and job opportunities.
             </p>
+            <div className="mt-6">
+              <DonationButton size="lg" />
+            </div>
           </motion.div>
 
           {isLoading ? (
@@ -101,7 +105,14 @@ const News = () => {
                   className="bg-white rounded-lg shadow-md overflow-hidden"
                 >
                   <div className="p-6">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">{news.subject}</h2>
+                    <div className="flex justify-between items-start mb-3">
+                      <h2 className="text-2xl font-bold text-gray-900">{news.subject}</h2>
+                      <DonationButton 
+                        variant="outline"
+                        size="sm"
+                        label="Support"
+                      />
+                    </div>
                     <div className="text-sm text-gray-500 mb-4">
                       {news.created_at && format(new Date(news.created_at), 'MMMM d, yyyy')}
                     </div>

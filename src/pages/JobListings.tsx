@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import RegionFilter from '../components/RegionFilter';
 import { toast } from 'sonner';
+import DonationButton from '../components/DonationButton';
 
 interface Job {
   id: string;
@@ -84,6 +85,9 @@ const JobListings = () => {
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Explore exciting job opportunities from various organizations and companies.
             </p>
+            <div className="mt-6">
+              <DonationButton size="lg" />
+            </div>
           </motion.div>
 
           <RegionFilter

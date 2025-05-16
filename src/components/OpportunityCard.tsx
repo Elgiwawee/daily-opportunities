@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import DonationButton from './DonationButton';
 
 interface Attachment {
   name: string;
@@ -199,19 +200,28 @@ const OpportunityCard = ({
             {type === 'scholarship' ? 'How to Apply' : 'View Details'}
           </Link>
           
-          {external_url && (
-            <Button 
+          <div className="flex items-center gap-2">
+            {external_url && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-1 text-blue-700 border-blue-200 hover:bg-blue-50"
+                asChild
+              >
+                <a href={external_url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-3 h-3" />
+                  Apply
+                </a>
+              </Button>
+            )}
+            
+            <DonationButton 
               variant="outline" 
               size="sm" 
-              className="flex items-center gap-1 text-blue-700 border-blue-200 hover:bg-blue-50"
-              asChild
-            >
-              <a href={external_url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-3 h-3" />
-                Apply Now
-              </a>
-            </Button>
-          )}
+              label="Support"
+              className="text-amber-700 border-amber-200 hover:bg-amber-50"
+            />
+          </div>
         </div>
       </div>
     </motion.div>

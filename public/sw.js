@@ -22,6 +22,11 @@ self.addEventListener('push', function(event) {
           action: 'explore',
           title: 'View Details',
           icon: '/favicon.ico'
+        },
+        {
+          action: 'donate',
+          title: 'Support Us',
+          icon: '/coffee-icon.png'
         }
       ],
       // Make notifications more prominent
@@ -50,6 +55,15 @@ self.addEventListener('push', function(event) {
 
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
+  
+  // Handle donation action
+  if (event.action === 'donate') {
+    // Open the donation page
+    event.waitUntil(
+      clients.openWindow('/donate')
+    );
+    return;
+  }
   
   // Determine the URL to open
   let url = '/';

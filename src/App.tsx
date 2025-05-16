@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -19,6 +18,7 @@ import Contact from "./pages/Contact";
 import Explainer from "./pages/Explainer";
 import Disclaimer from "./pages/Disclaimer";
 import CookieConsent from "./components/CookieConsent";
+import Donate from './pages/Donate';
 
 const queryClient = new QueryClient();
 
@@ -45,6 +45,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/explainer" element={<Explainer />} />
+          <Route path="/donate" element={<Donate />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

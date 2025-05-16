@@ -1,12 +1,12 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { NewsForm } from "@/components/NewsForm";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Home, Plus, X, Trash2, Edit } from "lucide-react";
+import { Home, Plus, X, Trash2, Edit, Coffee } from "lucide-react";
 import { format } from "date-fns";
+import DonationButton from "@/components/DonationButton";
 
 interface NewsItem {
   id: string;
@@ -120,6 +120,9 @@ const AdminNews = () => {
                   Admin Dashboard
                 </Button>
               </Link>
+              <div className="ml-4">
+                <DonationButton variant="coffee" size="sm" />
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <Button
@@ -192,6 +195,12 @@ const AdminNews = () => {
                       </div>
                     </div>
                     <div className="flex space-x-2">
+                      <DonationButton
+                        variant="outline"
+                        size="sm"
+                        label="Support"
+                        showIcon={false}
+                      />
                       <Button
                         onClick={() => handleEditNews(news)}
                         variant="outline"

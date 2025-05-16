@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,6 +5,7 @@ import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink, 
 import Navbar from '../components/Navbar';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import DonationButton from '../components/DonationButton';
 
 interface Attachment {
   name: string;
@@ -260,6 +260,8 @@ const OpportunityDetails = () => {
               )}
             </div>
             
+            <DonationButton variant="coffee" />
+            
             {isAdmin && (
               <div className="flex gap-3">
                 <Button
@@ -339,8 +341,8 @@ const OpportunityDetails = () => {
               <p className="whitespace-pre-wrap text-gray-700">{opportunity.description}</p>
             </div>
 
-            {opportunity.external_url && (
-              <div className="mt-8">
+            <div className="mt-8 flex items-center justify-between">
+              {opportunity.external_url && (
                 <Button
                   className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
                   size="lg"
@@ -356,8 +358,10 @@ const OpportunityDetails = () => {
                     Apply Now
                   </a>
                 </Button>
-              </div>
-            )}
+              )}
+              
+              <DonationButton size="lg" label="Support This Work" />
+            </div>
 
             {opportunity.attachments && opportunity.attachments.length > 0 && (
               <div className="mt-8 border-t border-gray-100 pt-8">
