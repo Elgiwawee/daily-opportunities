@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search, User, ChevronDown } from 'lucide-react';
@@ -22,12 +23,21 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [scholarshipsOpen, setScholarshipsOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Check if the user is logged in
@@ -50,6 +60,10 @@ const Navbar = () => {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const toggleScholarshipsDropdown = () => {
+    setScholarshipsOpen(!scholarshipsOpen);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,20 +249,78 @@ const Navbar = () => {
           <div className="flex flex-col space-y-4">
             <Link to="/" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Home</Link>
             
-            {/* Scholarships section */}
+            {/* Scholarships dropdown - now using DropdownMenu for mobile */}
             <div className="py-2">
-              <Link to="/scholarships" onClick={closeMenu} className="hover:text-olive-600 transition-colors block pb-2 font-medium">Scholarships</Link>
-              <div className="ml-4 space-y-2 mt-1">
-                <div className="text-sm font-medium text-gray-700">By Country</div>
-                <Link to="/scholarships/country/usa" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">USA</Link>
-                <Link to="/scholarships/country/uk" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">UK</Link>
-                <Link to="/scholarships/country/canada" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">Canada</Link>
-                
-                <div className="text-sm font-medium text-gray-700 mt-2">By Level</div>
-                <Link to="/scholarships/level/undergraduate" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">Undergraduate</Link>
-                <Link to="/scholarships/level/masters" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">Master's</Link>
-                <Link to="/scholarships/level/phd" onClick={closeMenu} className="hover:text-olive-600 transition-colors block text-sm py-1">PhD</Link>
+              <div className="flex items-center justify-between">
+                <button 
+                  onClick={toggleScholarshipsDropdown} 
+                  className={cn(
+                    "hover:text-olive-600 transition-colors flex items-center", 
+                    { 'text-olive-600 font-semibold': location.pathname.includes('/scholarships') }
+                  )}
+                >
+                  Scholarships
+                  <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform", {
+                    "transform rotate-180": scholarshipsOpen
+                  })} />
+                </button>
               </div>
+              
+              {scholarshipsOpen && (
+                <div className="ml-4 mt-2 space-y-2 bg-white rounded-md shadow-sm border border-gray-100">
+                  <Link
+                    to="/scholarships"
+                    onClick={closeMenu}
+                    className="block px-3 py-2 hover:bg-gray-100"
+                  >
+                    All Scholarships
+                  </Link>
+                  <div className="text-sm font-medium text-gray-700 px-3 pt-2">By Country</div>
+                  <Link
+                    to="/scholarships/country/usa"
+                    onClick={closeMenu}
+                    className="block px-3 py-2 hover:bg-gray-100"
+                  >
+                    USA
+                  </Link>
+                  <Link
+                    to="/scholarships/country/uk"
+                    onClick={closeMenu}
+                    className="block px-3 py-2 hover:bg-gray-100"
+                  >
+                    UK
+                  </Link>
+                  <Link
+                    to="/scholarships/country/canada"
+                    onClick={closeMenu}
+                    className="block px-3 py-2 hover:bg-gray-100"
+                  >
+                    Canada
+                  </Link>
+                  <div className="text-sm font-medium text-gray-700 px-3 pt-2">By Level</div>
+                  <Link
+                    to="/scholarships/level/undergraduate"
+                    onClick={closeMenu}
+                    className="block px-3 py-2 hover:bg-gray-100"
+                  >
+                    Undergraduate
+                  </Link>
+                  <Link
+                    to="/scholarships/level/masters"
+                    onClick={closeMenu}
+                    className="block px-3 py-2 hover:bg-gray-100"
+                  >
+                    Master's
+                  </Link>
+                  <Link
+                    to="/scholarships/level/phd"
+                    onClick={closeMenu}
+                    className="block px-3 py-2 hover:bg-gray-100"
+                  >
+                    PhD
+                  </Link>
+                </div>
+              )}
             </div>
             
             <Link to="/jobs" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Job Listings</Link>
