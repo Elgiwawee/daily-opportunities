@@ -2,9 +2,12 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
-import { Bitcoin, CreditCard, Banknote, Wallet, PoundSterling } from 'lucide-react';
+import { Bitcoin, CreditCard, Banknote, Wallet, PoundSterling, DollarSign, Euro, Coins, BadgeDollarSign } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Donate = () => {
+  const [showCurrencyInfo, setShowCurrencyInfo] = React.useState<boolean>(false);
+  
   const cryptoAddresses = [
     {
       name: "Bitcoin (BTC)",
@@ -40,6 +43,16 @@ const Donate = () => {
     }, 2000);
   };
 
+  const supportedCurrencies = [
+    { code: 'USD', name: 'US Dollar', symbol: '$', icon: <DollarSign className="w-4 h-4 text-blue-500" /> },
+    { code: 'NGN', name: 'Nigerian Naira', symbol: '₦', icon: <PoundSterling className="w-4 h-4 text-green-500" /> },
+    { code: 'EUR', name: 'Euro', symbol: '€', icon: <Euro className="w-4 h-4 text-yellow-500" /> },
+    { code: 'GBP', name: 'British Pound', symbol: '£', icon: <PoundSterling className="w-4 h-4 text-purple-500" /> },
+    { code: 'USDT', name: 'Tether', symbol: 'USDT', icon: <Coins className="w-4 h-4 text-teal-500" /> },
+    { code: 'BTC', name: 'Bitcoin', symbol: 'BTC', icon: <Bitcoin className="w-4 h-4 text-orange-500" /> },
+    { code: 'ETH', name: 'Ethereum', symbol: 'ETH', icon: <Bitcoin className="w-4 h-4 text-indigo-500" /> }
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -54,6 +67,13 @@ const Donate = () => {
             <p className="text-xl text-amber-700 max-w-3xl mx-auto">
               Your donation helps us continue providing valuable opportunities and resources to students around the world.
             </p>
+            <button 
+              onClick={() => setShowCurrencyInfo(true)}
+              className="mt-4 inline-flex items-center text-amber-600 hover:text-amber-800 text-sm font-medium"
+            >
+              <Coins className="w-4 h-4 mr-1" />
+              View all supported currencies
+            </button>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
@@ -73,8 +93,22 @@ const Donate = () => {
                 <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                   <h3 className="font-medium text-gray-800 mb-3">Credit/Debit Card</h3>
                   <p className="text-gray-600 mb-4">
-                    Make a secure donation using your credit or debit card.
+                    Make a secure donation using your credit or debit card in your local currency.
                   </p>
+                  
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Select currency:</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {supportedCurrencies.slice(0, 4).map(curr => (
+                        <div key={curr.code} className="bg-white border border-gray-200 rounded p-2 text-center">
+                          <div className="flex justify-center mb-1">{curr.icon}</div>
+                          <div className="text-xs font-medium">{curr.symbol}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">More currencies available at checkout</p>
+                  </div>
+                  
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                     {[5, 10, 20, 50].map(amount => (
                       <button
@@ -247,6 +281,39 @@ const Donate = () => {
           </motion.div>
         </div>
       </div>
+      
+      {/* Currency Information Dialog */}
+      <Dialog open={showCurrencyInfo} onOpenChange={setShowCurrencyInfo}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Supported Currencies</DialogTitle>
+            <DialogDescription>
+              We accept donations in multiple currencies and automatically convert them to Naira or USDT.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+            {supportedCurrencies.map(currency => (
+              <div key={currency.code} className="flex items-center p-3 border rounded-md">
+                <div className="mr-3">{currency.icon}</div>
+                <div>
+                  <p className="font-medium">{currency.code}</p>
+                  <p className="text-xs text-gray-500">{currency.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-4 text-sm bg-amber-50 p-3 rounded-md">
+            <h4 className="font-medium text-amber-800">How Currency Conversion Works</h4>
+            <p className="mt-1 text-gray-700">
+              When you donate in your local currency, the amount is automatically converted to Nigerian Naira (NGN) 
+              or USDT based on the current exchange rate. This allows us to receive funds in our preferred currencies 
+              while you can donate in the currency most convenient for you.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
