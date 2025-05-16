@@ -36,10 +36,25 @@ const NotificationManager = () => {
         
         // Set up cookie for returning users
         checkCookieConsent();
+        
+        // Prompt for notifications if permission is not determined yet
+        if (Notification.permission === 'default') {
+          // We'll prompt when they interact with the site
+          console.log('Notification permission status: default');
+        } else if (Notification.permission === 'granted') {
+          // Auto-subscribe for returning users who already granted permission
+          if (!subscription) {
+            console.log('Permission already granted, subscribing automatically');
+            subscribeToNotifications();
+          }
+        }
       })
       .catch(error => {
         console.error('Service Worker registration failed:', error);
       });
+      
+    // Listen for new opportunities to show notifications
+    listenForNewOpportunities();
   }, []);
 
   // Set a cookie with an expiration date
@@ -73,12 +88,58 @@ const NotificationManager = () => {
           description: 'By continuing to use this site, you consent to our cookie policy.',
           action: {
             label: 'Accept',
-            onClick: () => setCookie('cookieConsent', 'accepted', 365)
+            onClick: () => {
+              setCookie('cookieConsent', 'accepted', 365);
+              // After accepting cookies, ask about notifications
+              promptForNotifications();
+            }
           },
           duration: 10000,
         }
       );
     }
+  };
+  
+  // Prompt for notifications after interacting with site
+  const promptForNotifications = () => {
+    if (Notification.permission === 'default') {
+      toast(
+        'Stay updated with new opportunities!',
+        {
+          description: 'Enable notifications to receive alerts when new scholarships and jobs are posted.',
+          action: {
+            label: 'Enable',
+            onClick: () => subscribeToNotifications()
+          },
+          duration: 10000,
+        }
+      );
+    }
+  };
+
+  // Listen for new opportunities via Supabase realtime
+  const listenForNewOpportunities = () => {
+    const channel = supabase
+      .channel('opportunities-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'opportunities'
+        },
+        (payload) => {
+          if (Notification.permission === 'granted') {
+            const newOpportunity = payload.new as any;
+            showNewOpportunityNotification(newOpportunity);
+          }
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
   };
 
   // Subscribe to push notifications
@@ -96,7 +157,8 @@ const NotificationManager = () => {
         const result = await Notification.requestPermission();
         setPermission(result);
         if (result !== 'granted') {
-          toast.error('Notification permission denied');
+          // Handle denied permission gracefully
+          toast.error('You can enable notifications later from the settings');
           setLoading(false);
           return;
         }
@@ -124,7 +186,7 @@ const NotificationManager = () => {
       toast.success('Successfully subscribed to notifications');
     } catch (error) {
       console.error('Failed to subscribe:', error);
-      toast.error('Failed to subscribe to notifications');
+      toast.info('Please allow notifications from your browser settings');
     } finally {
       setLoading(false);
     }
@@ -201,6 +263,22 @@ const NotificationManager = () => {
     }
   };
 
+  // Helper function to show notifications
+  const showNewOpportunityNotification = (opportunity: any) => {
+    if (Notification.permission === 'granted' && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.showNotification(`New ${opportunity.type}: ${opportunity.title}`, {
+          body: `From ${opportunity.organization}`,
+          icon: '/og-image.png',
+          badge: '/favicon.ico',
+          data: {
+            url: `/opportunity/${opportunity.id}`
+          }
+        });
+      });
+    }
+  };
+
   // Convert base64 to Uint8Array for applicationServerKey
   const urlBase64ToUint8Array = (base64String: string) => {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -222,12 +300,15 @@ const NotificationManager = () => {
   }
 
   return (
-    <div>
+    <div onClick={promptForNotifications}>
       {subscription ? (
         <Button
           variant="outline"
           size="sm"
-          onClick={unsubscribeFromNotifications}
+          onClick={(e) => {
+            e.stopPropagation();
+            unsubscribeFromNotifications();
+          }}
           disabled={loading}
           className="flex items-center gap-2"
         >
@@ -238,7 +319,10 @@ const NotificationManager = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={subscribeToNotifications}
+          onClick={(e) => {
+            e.stopPropagation();
+            subscribeToNotifications();
+          }}
           disabled={loading}
           className="flex items-center gap-2"
         >

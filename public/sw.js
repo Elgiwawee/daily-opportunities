@@ -1,3 +1,4 @@
+
 // Service Worker for Push Notifications
 self.addEventListener('push', function(event) {
   try {
@@ -22,7 +23,9 @@ self.addEventListener('push', function(event) {
           title: 'View Details',
           icon: '/favicon.ico'
         }
-      ]
+      ],
+      // Make notifications more prominent
+      requireInteraction: true
     };
 
     // Show the notification
@@ -77,4 +80,9 @@ self.addEventListener('notificationclick', function(event) {
 // Handle the notification closing event
 self.addEventListener('notificationclose', function(event) {
   console.log('Notification was closed', event);
+});
+
+// Activate event - claim clients so the service worker is used right away
+self.addEventListener('activate', event => {
+  event.waitUntil(clients.claim());
 });

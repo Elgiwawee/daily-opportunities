@@ -29,10 +29,18 @@ const Opportunities = () => {
   const [featuredOpportunities, setFeaturedOpportunities] = useState<Opportunity[]>([]);
   const [otherOpportunities, setOtherOpportunities] = useState<Opportunity[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);
+  const [lastNotificationTime, setLastNotificationTime] = useState<number>(
+    parseInt(localStorage.getItem('lastNotificationTime') || '0')
+  );
 
   useEffect(() => {
     // Initial fetch of opportunities
     fetchOpportunities();
+    
+    // Prompt for notifications on page load after a delay
+    const timer = setTimeout(() => {
+      promptForNotifications();
+    }, 5000);
     
     // Set up real-time subscription
     const channel = supabase
@@ -61,8 +69,124 @@ const Opportunities = () => {
     // Cleanup subscription
     return () => {
       supabase.removeChannel(channel);
+      clearTimeout(timer);
     };
   }, []);
+
+  const promptForNotifications = () => {
+    // Only prompt if they haven't been asked recently (in the last 3 days)
+    const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    
+    if (now - lastNotificationTime > THREE_DAYS) {
+      // Only prompt if not already granted
+      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        toast(
+          'Never miss new opportunities!',
+          {
+            description: 'Get notified when new scholarships and jobs are posted.',
+            action: {
+              label: 'Enable Notifications',
+              onClick: () => {
+                requestNotificationPermission();
+                // Update the last notification time
+                setLastNotificationTime(now);
+                localStorage.setItem('lastNotificationTime', now.toString());
+              }
+            },
+            duration: 10000,
+          }
+        );
+      }
+    }
+  };
+  
+  const requestNotificationPermission = async () => {
+    try {
+      const result = await Notification.requestPermission();
+      if (result === 'granted') {
+        // Subscribe the user to push notifications
+        subscribeUserToPush();
+      }
+    } catch (error) {
+      console.error('Error requesting permission:', error);
+    }
+  };
+  
+  const subscribeUserToPush = async () => {
+    try {
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        const registration = await navigator.serviceWorker.ready;
+        
+        // Subscribe to push
+        const subscriptionOptions = {
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(
+            // In real implementation, this key should come from your server
+            'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U'
+          )
+        };
+        
+        const subscription = await registration.pushManager.subscribe(subscriptionOptions);
+        
+        // Save the subscription to your server
+        await saveSubscription(subscription);
+        
+        toast.success('You will now be notified about new opportunities!');
+      }
+    } catch (error) {
+      console.error('Failed to subscribe to push notifications:', error);
+    }
+  };
+
+  // Helper function for creating application server key
+  const urlBase64ToUint8Array = (base64String) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+    
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  };
+
+  // Save subscription to database
+  const saveSubscription = async (subscription) => {
+    const subscriptionJSON = subscription.toJSON();
+    const endpoint = subscription.endpoint;
+    const p256dh = subscriptionJSON.keys?.p256dh;
+    const auth = subscriptionJSON.keys?.auth;
+
+    if (!p256dh || !auth) {
+      throw new Error('Invalid subscription keys');
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+      
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .upsert({ 
+          endpoint, 
+          p256dh, 
+          auth, 
+          user_id: userId || null
+        }, { 
+          onConflict: 'endpoint' 
+        });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error saving subscription:', error);
+      throw error;
+    }
+  };
 
   const fetchOpportunities = async () => {
     try {
@@ -138,7 +262,7 @@ const Opportunities = () => {
     // Show ad after every 3 opportunities
     if ((index + 1) % 3 === 0) {
       return (
-        <div className="col-span-1 md:col-span-3 bg-gray-100 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
+        <div key={`ad-${index}`} className="col-span-1 md:col-span-3 bg-gray-100 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
           <div className="text-center">
             <p className="text-gray-500 font-medium">Advertisement</p>
             <p className="text-sm text-gray-400">Ad space available</p>

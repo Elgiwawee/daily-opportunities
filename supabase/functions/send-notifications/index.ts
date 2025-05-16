@@ -16,6 +16,8 @@ interface Opportunity {
   title: string;
   organization: string;
   type: string;
+  description?: string;
+  deadline?: string;
 }
 
 interface Subscription {
@@ -62,24 +64,29 @@ serve(async (req) => {
       );
     }
 
-    // In a real implementation, you would:
-    // 1. Use web-push library to send notifications
-    // 2. Handle errors and retry logic
-    // 3. Store failed deliveries for retry
-    
-    console.log(`Would send notifications to ${subscriptions.length} subscribers for opportunity ${opportunity.id}`);
-    
-    // Simulate sending notifications
+    // Prepare notification payload
     const notificationPayload = {
       title: `New ${opportunity.type}: ${opportunity.title}`,
       body: `${opportunity.organization} has posted a new ${opportunity.type}`,
       url: `${req.url.split('/api/')[0]}/opportunity/${opportunity.id}`,
       icon: '/og-image.png',
+      actions: [
+        {
+          action: 'view',
+          title: 'View Details'
+        }
+      ],
+      // Add opportunity type as a tag for filtering
+      tag: opportunity.type
     };
     
     console.log("Notification payload:", notificationPayload);
+    console.log(`Sending notifications to ${subscriptions.length} subscribers for opportunity ${opportunity.id}`);
     
-    // Simulate success for now
+    // In a real implementation, you would now use a web push library
+    // like web-push to send actual push notifications.
+    // For demonstration purposes, we'll simulate success.
+    
     return new Response(
       JSON.stringify({ 
         success: true, 

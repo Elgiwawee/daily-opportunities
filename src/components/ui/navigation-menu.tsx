@@ -116,6 +116,28 @@ const NavigationMenuIndicator = React.forwardRef<
 NavigationMenuIndicator.displayName =
   NavigationMenuPrimitive.Indicator.displayName
 
+// Mobile-specific components
+const NavigationMenuMobile = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root> & {
+    isOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+  }
+>(({ className, children, isOpen, onOpenChange, ...props }, ref) => (
+  <NavigationMenuPrimitive.Root
+    ref={ref}
+    className={cn(
+      "relative z-10 flex w-full flex-col",
+      isOpen ? "block" : "hidden",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </NavigationMenuPrimitive.Root>
+))
+NavigationMenuMobile.displayName = "NavigationMenuMobile"
+
 export {
   navigationMenuTriggerStyle,
   NavigationMenu,
@@ -126,4 +148,5 @@ export {
   NavigationMenuLink,
   NavigationMenuIndicator,
   NavigationMenuViewport,
+  NavigationMenuMobile,
 }
