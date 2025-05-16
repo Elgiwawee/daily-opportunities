@@ -2,7 +2,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
-import { Bitcoin, CreditCard, Banknote, Wallet, Naira } from 'lucide-react';
+import { Bitcoin, CreditCard, Banknote, Wallet, PoundSterling } from 'lucide-react';
 
 const Donate = () => {
   const cryptoAddresses = [
@@ -134,7 +134,7 @@ const Donate = () => {
                   </div>
                   
                   <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-medium transition-colors flex items-center justify-center">
-                    <Naira className="w-4 h-4 mr-2" />
+                    <PoundSterling className="w-4 h-4 mr-2" />
                     Generate Remita RRR
                   </button>
                 </div>

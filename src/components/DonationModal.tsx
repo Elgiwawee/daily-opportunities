@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { X, Coffee, CreditCard, DollarSign, Bitcoin, Wallet, Banknote, Naira } from 'lucide-react';
+import { X, Coffee, CreditCard, DollarSign, Bitcoin, Wallet, Banknote, PoundSterling } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -224,7 +223,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                           {currency === 'USDT' || currency === 'BTC' || currency === 'ETH' ? (
                             <Bitcoin className="h-4 w-4" />
                           ) : currency === 'NGN' ? (
-                            <Naira className="h-4 w-4" />
+                            <PoundSterling className="h-4 w-4" />
                           ) : (
                             <DollarSign className="h-4 w-4" />
                           )}
