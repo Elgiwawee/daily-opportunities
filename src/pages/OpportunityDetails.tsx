@@ -1,7 +1,8 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Trash2, Share2, Facebook, Twitter, Instagram, ExternalLink, Pencil, Play, X, Maximize } from 'lucide-react';
+import { ArrowLeft, Share2, Facebook, Twitter, Instagram, ExternalLink, Play, X, Maximize } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -69,40 +70,6 @@ const OpportunityDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDelete = async () => {
-    if (!opportunity || !window.confirm('Are you sure you want to delete this opportunity?')) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('opportunities')
-        .delete()
-        .eq('id', opportunity.id);
-
-      if (error) throw error;
-
-      if (opportunity.attachments?.length > 0) {
-        const paths = opportunity.attachments.map(attachment => attachment.path);
-        const { error: storageError } = await supabase.storage
-          .from('opportunity-attachments')
-          .remove(paths);
-
-        if (storageError) throw storageError;
-      }
-
-      toast.success('Opportunity deleted successfully');
-      navigate('/');
-    } catch (error: any) {
-      console.error('Error deleting opportunity:', error);
-      toast.error(error.message || 'Error deleting opportunity');
-    }
-  };
-
-  const handleEdit = () => {
-    navigate(`/admin?edit=${opportunity?.id}`);
   };
 
   const handleShare = (platform: string) => {
@@ -261,27 +228,6 @@ const OpportunityDetails = () => {
             </div>
             
             <DonationButton variant="coffee" />
-            
-            {isAdmin && (
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleEdit}
-                  className="flex items-center gap-2"
-                  variant="default"
-                >
-                  <Pencil className="w-4 h-4" />
-                  Edit
-                </Button>
-                <Button
-                  onClick={handleDelete}
-                  className="flex items-center gap-2"
-                  variant="destructive"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete
-                </Button>
-              </div>
-            )}
           </div>
         </div>
 

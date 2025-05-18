@@ -165,7 +165,7 @@ const News = () => {
                                     className="video-preview relative cursor-pointer transition-all duration-200 hover:shadow-lg"
                                     onClick={() => handleVideoToggle(`${news.id}-${index}`)}
                                   >
-                                    {/* YouTube-like preview with play button */}
+                                    {/* YouTube-style video preview with play button */}
                                     <div className="relative pb-[56.25%] bg-black">
                                       {/* Video thumbnail */}
                                       <div className="absolute inset-0 flex items-center justify-center bg-black">
@@ -179,22 +179,23 @@ const News = () => {
                                           }}
                                         />
                                         
-                                        {/* YouTube-like play button with hover effect */}
+                                        {/* Enhanced YouTube-like play button with red background */}
                                         <div className="absolute inset-0 flex items-center justify-center hover:bg-black/40 transition-colors duration-300">
-                                          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center transform transition-transform duration-300 hover:bg-red-700 hover:scale-110">
+                                          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center transform transition-transform duration-300 hover:bg-red-700 hover:scale-110 shadow-lg">
                                             <Play className="h-8 w-8 text-white ml-1" />
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                     
-                                    {/* Video title */}
+                                    {/* YouTube-style video title and info */}
                                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4">
                                       <p className="text-white font-medium text-lg truncate">
                                         {attachment.name || `Video ${index + 1}`}
                                       </p>
-                                      <p className="text-gray-300 text-sm">
-                                        Click to play
+                                      <p className="text-gray-300 text-sm flex items-center">
+                                        <span className="mr-2">Click to play</span>
+                                        <span className="bg-black/30 px-1 rounded text-xs">HD</span>
                                       </p>
                                     </div>
                                   </div>
