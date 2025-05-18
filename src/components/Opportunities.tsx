@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
@@ -10,7 +9,7 @@ import { toast } from 'sonner';
 interface Attachment {
   name: string;
   url: string;
-  type: 'image' | 'video';
+  type: string;
   path: string;
 }
 
@@ -23,6 +22,7 @@ interface Opportunity {
   description: string;
   attachments: Attachment[] | any; // Making it more flexible for different data types
   created_at: string;
+  external_url?: string;
 }
 
 const Opportunities = () => {
@@ -201,11 +201,34 @@ const Opportunities = () => {
       }
 
       if (data) {
+        console.log("Opportunities data from database:", data);
+        
         // Process all opportunities
-        const processedData = data.map(item => ({
-          ...item,
-          attachments: item.attachments || [] // Ensure attachments is always an array
-        }));
+        const processedData = data.map(item => {
+          console.log(`Processing opportunity ${item.id}:`, item);
+          let processedAttachments = [];
+          
+          // Ensure attachments is always a properly formatted array
+          if (item.attachments) {
+            if (Array.isArray(item.attachments)) {
+              processedAttachments = item.attachments;
+            } else if (typeof item.attachments === 'string') {
+              try {
+                processedAttachments = JSON.parse(item.attachments);
+              } catch (e) {
+                console.error("Error parsing attachments:", e);
+                processedAttachments = [];
+              }
+            }
+          }
+          
+          return {
+            ...item,
+            attachments: processedAttachments
+          };
+        });
+        
+        console.log("Processed opportunities:", processedData);
         
         // First 3 items are featured
         const featured = processedData.slice(0, 3);
@@ -315,7 +338,7 @@ const Opportunities = () => {
         {otherOpportunities.length > visibleCount && (
           <div className="flex justify-center mt-10">
             <Button 
-              onClick={loadMore}
+              onClick={() => setVisibleCount(prevCount => prevCount + 6)}
               variant="outline"
               className="border border-gray-300 hover:bg-gray-100 text-gray-800"
             >

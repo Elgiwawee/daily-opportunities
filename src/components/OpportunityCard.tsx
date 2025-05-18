@@ -11,7 +11,7 @@ import DonationButton from './DonationButton';
 interface Attachment {
   name: string;
   url: string;
-  type?: 'image' | 'video';
+  type?: string;
   path?: string;
 }
 
@@ -53,16 +53,23 @@ const OpportunityCard = ({
     console.log('Date parsing failed for:', deadline);
   }
 
-  // Fix to ensure attachments is always an array
+  // Fix to ensure attachments is always an array and properly processed
   const normalizedAttachments = Array.isArray(attachments) ? attachments : [];
+  console.log("OpportunityCard attachments:", normalizedAttachments);
   
   // Get proper image URL for card background
   const getCardImageUrl = () => {
-    if (normalizedAttachments.length > 0 && normalizedAttachments[0].url) {
-      return normalizedAttachments[0].url;
+    if (normalizedAttachments && normalizedAttachments.length > 0) {
+      const firstAttachment = normalizedAttachments[0];
+      // Check if the URL is directly available or needs to be accessed as a property
+      if (firstAttachment && firstAttachment.url) {
+        console.log("Using attachment URL:", firstAttachment.url);
+        return firstAttachment.url;
+      }
     }
     
     // Default images based on opportunity type
+    console.log("Using default image for type:", type);
     return type === 'scholarship' 
       ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
       : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
