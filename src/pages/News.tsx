@@ -116,10 +116,10 @@ const News = () => {
                     <div className="text-sm text-gray-500 mb-4">
                       {news.created_at && format(new Date(news.created_at), 'MMMM d, yyyy')}
                     </div>
-                    <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: news.body }} />
                     
+                    {/* Moved attachments to display first, before the content */}
                     {news.attachments && news.attachments.length > 0 && (
-                      <div className="mt-6 space-y-4">
+                      <div className="mb-6 space-y-4">
                         {news.attachments.map((attachment, index) => (
                           <div key={index} className="border rounded-lg overflow-hidden">
                             {attachment.type === 'image' ? (
@@ -218,6 +218,9 @@ const News = () => {
                         ))}
                       </div>
                     )}
+                    
+                    {/* News content now appears after the attachments */}
+                    <div className="prose max-w-none mt-4" dangerouslySetInnerHTML={{ __html: news.body }} />
                   </div>
                 </motion.div>
               ))}
