@@ -1,143 +1,157 @@
-
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
-import { motion } from 'framer-motion';
-import OpportunityCard from '../components/OpportunityCard';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import Layout from '@/components/Layout';
+import OpportunityCard from '@/components/OpportunityCard';
 import { Button } from '@/components/ui/button';
-import RegionFilter from '../components/RegionFilter';
-import { toast } from 'sonner';
-import DonationButton from '../components/DonationButton';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import { 
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useTranslation } from 'react-i18next';
-
-interface Job {
-  id: string;
-  title: string;
-  organization: string;
-  deadline: string | null;
-  type: 'job';
-  description: string;
-  attachments: any[] | null;
-  created_at: string;
-}
+import { Skeleton } from '@/components/ui/skeleton';
 
 const JobListings = () => {
   const { t } = useTranslation();
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
-  const [visibleCount, setVisibleCount] = useState(9);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [industryFilter, setIndustryFilter] = useState('all');
+  const [sortOption, setSortOption] = useState('newest');
+  const [limit, setLimit] = useState(9);
+  const navigate = useNavigate();
 
-  const fetchJobs = async () => {
-    try {
-      const { data, error } = await supabase
+  const { data: jobs, isLoading, error } = useQuery(
+    ['jobs', searchTerm, industryFilter, sortOption, limit],
+    async () => {
+      let query = supabase
         .from('opportunities')
-        .select('*')
+        .select('*', { count: 'exact' })
         .eq('type', 'job')
-        .order('created_at', { ascending: false });
-      
+        .ilike('title', `%${searchTerm}%`)
+        .range(0, limit - 1);
+
+      if (industryFilter !== 'all') {
+        query = query.eq('industry', industryFilter);
+      }
+
+      if (sortOption === 'newest') {
+        query = query.order('created_at', { ascending: false });
+      } else if (sortOption === 'oldest') {
+        query = query.order('created_at', { ascending: true });
+      } else if (sortOption === 'deadline') {
+        query = query.order('deadline', { ascending: true });
+      }
+
+      const { data, error, count } = await query;
+
       if (error) {
-        console.error("Database error:", error);
-        toast.error("Error loading jobs. Please try again later.");
-        throw error;
+        throw new Error(error.message);
       }
-      
-      // For debugging
-      console.log("Fetched jobs:", data?.length || 0);
-      
-      if (!data || data.length === 0) {
-        return [];
-      }
-      
-      // Filter by region if selected
-      if (selectedRegion) {
-        return (data as Job[]).filter(job => 
-          (job.description?.toLowerCase() || '').includes(selectedRegion.toLowerCase()) ||
-          (job.title?.toLowerCase() || '').includes(selectedRegion.toLowerCase())
-        );
-      }
-      
-      return data as Job[];
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-      toast.error("Failed to load jobs");
-      return [];
+
+      return { data, count };
     }
-  };
+  );
 
-  const { data: jobs = [], isLoading, error } = useQuery({
-    queryKey: ['jobs', selectedRegion],
-    queryFn: fetchJobs,
-  });
+  const filteredJobs = jobs?.data || [];
+  const totalCount = jobs?.count || 0;
 
-  const loadMore = () => {
-    setVisibleCount(prev => prev + 6);
+  const handleJobClick = (job) => {
+    navigate(`/opportunity/${job.id}`);
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      <div className="pt-36 pb-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12 text-center"
-          >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('jobs.title')}</h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              {t('jobs.subtitle')}
-            </p>
-            <div className="mt-6">
-              <DonationButton size="lg" />
-            </div>
-          </motion.div>
-
-          <RegionFilter
-            selectedRegion={selectedRegion}
-            setSelectedRegion={setSelectedRegion}
-          />
-
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-2">{t('jobs.title')}</h1>
+        <p className="text-gray-600 mb-6">{t('jobs.subtitle')}</p>
+        
+        {/* Search and filters */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="relative">
+            <Input
+              type="search"
+              placeholder={t('buttons.search')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          </div>
+          
+          <Select value={industryFilter} onValueChange={setIndustryFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by industry" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">All Industries</SelectItem>
+                <SelectItem value="technology">Technology</SelectItem>
+                <SelectItem value="healthcare">Healthcare</SelectItem>
+                <SelectItem value="education">Education</SelectItem>
+                <SelectItem value="finance">Finance</SelectItem>
+                <SelectItem value="nonprofit">Non-profit</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          
+          <Select value={sortOption} onValueChange={setSortOption}>
+            <SelectTrigger>
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="deadline">Deadline (Soonest)</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Jobs listing */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-12 text-red-500">
-              Error loading jobs. Please try again later.
-            </div>
-          ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-                {jobs.slice(0, visibleCount).map((job) => (
-                  <OpportunityCard
-                    key={job.id}
-                    {...job}
-                  />
-                ))}
-              </div>
-
-              {jobs.length > visibleCount && (
-                <div className="flex justify-center mt-10">
-                  <Button 
-                    onClick={loadMore}
-                    variant="outline"
-                    className="border border-olive-600 text-olive-700 hover:bg-olive-50"
-                  >
-                    {t('jobs.loadMore')}
-                  </Button>
+              {[...Array(9)].map((_, i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                  <Skeleton className="h-4 w-1/2" />
                 </div>
-              )}
-
-              {jobs.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-lg text-gray-500">{t('jobs.empty')}</p>
-                </div>
-              )}
+              ))}
             </>
+          ) : filteredJobs.length > 0 ? (
+            filteredJobs.map(job => (
+              <OpportunityCard
+                key={job.id}
+                opportunity={job}
+                onClick={handleJobClick}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-lg text-gray-500">{t('jobs.empty')}</p>
+            </div>
           )}
         </div>
+        
+        {/* Load more button */}
+        {!isLoading && filteredJobs.length > 0 && totalCount > limit && (
+          <div className="mt-8 flex justify-center">
+            <Button onClick={() => setLimit(prev => prev + 9)} className="px-6">
+              {t('jobs.loadMore')}
+            </Button>
+          </div>
+        )}
       </div>
-    </div>
+    </Layout>
   );
 };
 
