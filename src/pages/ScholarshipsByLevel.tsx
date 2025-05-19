@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -9,11 +10,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 
 const ScholarshipsByLevel = () => {
-  const { level: educationLevel } = useParams();
+  const { level: educationLevel } = useParams<{level: string}>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [limit, setLimit] = useState(9);
-  const [scholarships, setScholarships] = useState([]);
+  const [scholarships, setScholarships] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
 
   const levelName =
@@ -27,9 +28,11 @@ const ScholarshipsByLevel = () => {
       ? t('scholarships.level.postdoc')
       : '';
 
-  const { isLoading, error } = useQuery(
-    ['scholarshipsByLevel', educationLevel, limit],
-    async () => {
+  const { isLoading, error } = useQuery({
+    queryKey: ['scholarshipsByLevel', educationLevel, limit],
+    queryFn: async () => {
+      if (!educationLevel) return [];
+      
       const { data, error, count } = await supabase
         .from('opportunities')
         .select('*', { count: 'exact' })
@@ -46,7 +49,7 @@ const ScholarshipsByLevel = () => {
       setTotalCount(count || 0);
       return data;
     }
-  );
+  });
 
   useEffect(() => {
     if (educationLevel) {
@@ -54,12 +57,12 @@ const ScholarshipsByLevel = () => {
     }
   }, [educationLevel]);
 
-  const handleScholarshipClick = (scholarship) => {
+  const handleScholarshipClick = (scholarship: any) => {
     navigate(`/opportunity/${scholarship.id}`);
   };
 
   if (error) {
-    return <div className="text-red-500">Error: {error.message}</div>;
+    return <div className="text-red-500">Error: {(error as Error).message}</div>;
   }
 
   return (

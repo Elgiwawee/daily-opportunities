@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -15,9 +16,9 @@ const Scholarships = () => {
   const [limit, setLimit] = useState(9);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
 
-  const { data: scholarships, isLoading, error, refetch } = useQuery(
-    ['scholarships', limit, activeRegion],
-    async () => {
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['scholarships', limit, activeRegion],
+    queryFn: async () => {
       let query = supabase
         .from('opportunities')
         .select('*, country(name, flag)', { count: 'exact' })
@@ -37,16 +38,13 @@ const Scholarships = () => {
 
       return { data, count };
     },
-    {
-      keepPreviousData: true,
-    }
-  );
+    keepPreviousData: true,
+  });
 
-  const totalCount = scholarships?.count || 0;
+  const totalCount = data?.count || 0;
+  const filteredScholarships = data?.data || [];
 
-  const filteredScholarships = scholarships?.data || [];
-
-  const handleScholarshipClick = (scholarship) => {
+  const handleScholarshipClick = (scholarship: any) => {
     navigate(`/opportunity/${scholarship.id}`);
   };
 
