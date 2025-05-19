@@ -7,6 +7,8 @@ import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import DonationButton from './DonationButton';
+import { useTranslation } from 'react-i18next';
+import arSA from 'date-fns/locale/ar-SA';
 
 interface Attachment {
   name: string;
@@ -38,9 +40,11 @@ const OpportunityCard = ({
   featured = false,
   external_url,
 }: OpportunityCardProps) => {
+  const { t, i18n } = useTranslation();
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
+  const isRtl = i18n.language === 'ar';
   
   // Try to parse the deadline to a readable format
   let formattedDate = deadline;
@@ -48,7 +52,9 @@ const OpportunityCard = ({
     // Assuming deadline is stored in ISO format
     const date = new Date(deadline);
     if (!isNaN(date.getTime())) {
-      formattedDate = format(date, 'MMMM d, yyyy');
+      formattedDate = format(date, 'MMMM d, yyyy', { 
+        locale: isRtl ? arSA : undefined 
+      });
     }
   } catch (e) {
     // If parsing fails, use the original string
@@ -123,7 +129,7 @@ const OpportunityCard = ({
         break;
       case 'copy':
         navigator.clipboard.writeText(shareUrl).then(() => {
-          toast.success('Link copied to clipboard!');
+          toast.success(t('opportunity.copied'));
         });
         return;
       default:
@@ -169,11 +175,11 @@ const OpportunityCard = ({
         <div className={`absolute top-2 left-2 px-3 py-1 text-xs font-semibold text-white rounded ${
           type === 'scholarship' ? 'bg-blue-700' : 'bg-green-700'
         }`}>
-          {type === 'scholarship' ? 'Scholarship' : 'Job Opening'}
+          {type === 'scholarship' ? t('scholarships.title') : t('jobs.title')}
         </div>
         
         {/* Share button positioned away from navbar */}
-        <div className="absolute top-10 right-2">
+        <div className={`absolute top-10 ${isRtl ? 'left-2' : 'right-2'}`}>
           <div className="relative inline-block">
             <button 
               onClick={() => setShareMenuOpen(!shareMenuOpen)}
@@ -183,31 +189,31 @@ const OpportunityCard = ({
             </button>
             
             {shareMenuOpen && (
-              <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100">
+              <div className={`absolute ${isRtl ? 'left-0' : 'right-0'} mt-2 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100`}>
                 <div className="py-1">
                   <button
                     onClick={() => handleShare('facebook')}
                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
                   >
-                    Facebook
+                    {t('opportunity.share.facebook')}
                   </button>
                   <button
                     onClick={() => handleShare('twitter')}
                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
                   >
-                    Twitter
+                    {t('opportunity.share.twitter')}
                   </button>
                   <button
                     onClick={() => handleShare('whatsapp')}
                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
                   >
-                    WhatsApp
+                    {t('opportunity.share.whatsapp')}
                   </button>
                   <button
                     onClick={() => handleShare('copy')}
                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
                   >
-                    Copy Link
+                    {t('opportunity.share.copy')}
                   </button>
                 </div>
               </div>
@@ -229,7 +235,7 @@ const OpportunityCard = ({
             to={`/opportunity/${id}`}
             className="text-sm font-medium text-blue-700 hover:underline"
           >
-            {type === 'scholarship' ? 'How to Apply' : 'View Details'}
+            {type === 'scholarship' ? t('scholarships.howToApply') : t('jobs.viewDetails')}
           </Link>
           
           <div className="flex items-center gap-2">
@@ -242,7 +248,7 @@ const OpportunityCard = ({
               >
                 <a href={external_url} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="w-3 h-3" />
-                  Apply
+                  {t('buttons.apply')}
                 </a>
               </Button>
             )}
@@ -250,7 +256,7 @@ const OpportunityCard = ({
             <DonationButton 
               variant="outline" 
               size="sm" 
-              label="Support"
+              label={t('buttons.support')}
               className="text-amber-700 border-amber-200 hover:bg-amber-50"
             />
           </div>

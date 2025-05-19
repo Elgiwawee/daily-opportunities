@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,4 +99,65 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* RTL Support */
+html[dir="rtl"] {
+  /* Font family for Arabic text */
+  font-family: 'Tahoma', 'Segoe UI', Arial, sans-serif;
+}
+
+/* RTL overrides for specific components */
+html[dir="rtl"] .ltr-only {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .rtl-rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* RTL margin/padding swapping helpers */
+html[dir="rtl"] .rtl-mr-ml-swap {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+html[dir="rtl"] .rtl-ml-mr-swap {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+html[dir="rtl"] .rtl-pr-pl-swap {
+  padding-right: 0;
+  padding-left: 0.5rem;
+}
+
+html[dir="rtl"] .rtl-pl-pr-swap {
+  padding-left: 0;
+  padding-right: 0.5rem;
+}
+
+/* Add special font for Arabic content */
+@font-face {
+  font-family: 'Tajawal';
+  src: url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+  font-display: swap;
+}
+
+html[dir="rtl"] {
+  font-family: 'Tajawal', 'Tahoma', 'Segoe UI', sans-serif;
+}
+
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html[dir="rtl"] h5,
+html[dir="rtl"] h6 {
+  font-family: 'Tajawal', 'Tahoma', 'Segoe UI', sans-serif;
 }

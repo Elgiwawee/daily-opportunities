@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import RegionFilter from '../components/RegionFilter';
 import { toast } from 'sonner';
 import DonationButton from '../components/DonationButton';
+import { useTranslation } from 'react-i18next';
 
 interface Job {
   id: string;
@@ -22,6 +23,7 @@ interface Job {
 }
 
 const JobListings = () => {
+  const { t } = useTranslation();
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(9);
 
@@ -81,9 +83,9 @@ const JobListings = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Job Opportunities</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('jobs.title')}</h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Explore exciting job opportunities from various organizations and companies.
+              {t('jobs.subtitle')}
             </p>
             <div className="mt-6">
               <DonationButton size="lg" />
@@ -121,14 +123,14 @@ const JobListings = () => {
                     variant="outline"
                     className="border border-olive-600 text-olive-700 hover:bg-olive-50"
                   >
-                    Load More Jobs
+                    {t('jobs.loadMore')}
                   </Button>
                 </div>
               )}
 
               {jobs.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-lg text-gray-500">No job listings found. Please check back later.</p>
+                  <p className="text-lg text-gray-500">{t('jobs.empty')}</p>
                 </div>
               )}
             </>

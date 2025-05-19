@@ -1,0 +1,66 @@
+
+{
+  "app": {
+    "name": "Daily Opportunities"
+  },
+  "nav": {
+    "home": "Home",
+    "scholarships": "Scholarships",
+    "jobs": "Job Listings",
+    "news": "News",
+    "about": "About Us",
+    "contact": "Contact",
+    "disclaimer": "Disclaimer",
+    "login": "Login",
+    "admin": "Admin"
+  },
+  "buttons": {
+    "loadMore": "Load More",
+    "apply": "Apply",
+    "support": "Support",
+    "share": "Share",
+    "donate": "Donate",
+    "search": "Search"
+  },
+  "home": {
+    "hero": {
+      "title": "Find Your Path to Success",
+      "subtitle": "Discover scholarships and job opportunities worldwide"
+    }
+  },
+  "scholarships": {
+    "title": "Scholarships",
+    "subtitle": "Discover scholarship opportunities from around the world to fund your education.",
+    "empty": "No scholarships found for this region. Please try another region.",
+    "loadMore": "Load More Scholarships",
+    "howToApply": "How to Apply"
+  },
+  "jobs": {
+    "title": "Job Opportunities",
+    "subtitle": "Explore exciting job opportunities from various organizations and companies.",
+    "empty": "No job listings found. Please check back later.",
+    "loadMore": "Load More Jobs",
+    "viewDetails": "View Details"
+  },
+  "news": {
+    "title": "Latest News",
+    "subtitle": "Stay updated with the latest news and announcements about scholarships and job opportunities.",
+    "empty": "No news items found.",
+    "loadMore": "Load More News"
+  },
+  "opportunity": {
+    "deadline": "Deadline",
+    "organization": "Organization",
+    "share": {
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "whatsapp": "WhatsApp",
+      "copy": "Copy Link"
+    },
+    "copied": "Link copied to clipboard!"
+  },
+  "language": {
+    "en": "English",
+    "ar": "العربية"
+  }
+}

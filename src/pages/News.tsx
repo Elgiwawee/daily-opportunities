@@ -4,13 +4,12 @@ import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Play, Pause, Volume2, VolumeX, ChevronDown } from 'lucide-react';
-import { format } from 'date-fns';
-import { toast } from 'sonner';
+import { ChevronDown } from 'lucide-react';
 import { Json } from '@/integrations/supabase/types';
 import DonationButton from '../components/DonationButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import NewsItem from '../components/NewsItem';
+import { useTranslation } from 'react-i18next';
 
 interface Attachment {
   name: string;
@@ -29,6 +28,7 @@ interface NewsItem {
 }
 
 const News = () => {
+  const { t } = useTranslation();
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [visibleCount, setVisibleCount] = useState<number>(3);
@@ -58,7 +58,6 @@ const News = () => {
         })) as NewsItem[];
       } catch (error) {
         console.error("Failed to load news:", error);
-        toast.error("Failed to load news");
         return [];
       }
     },
@@ -99,9 +98,9 @@ const News = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Latest News</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('news.title')}</h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Stay updated with the latest news and announcements about scholarships and job opportunities.
+              {t('news.subtitle')}
             </p>
             <div className="mt-6">
               <DonationButton size="lg" />
@@ -144,7 +143,7 @@ const News = () => {
                     onClick={loadMore}
                     className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
                   >
-                    Load More News
+                    {t('news.loadMore')}
                     <ChevronDown className="h-4 w-4" />
                   </button>
                 </div>
@@ -152,7 +151,7 @@ const News = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-lg text-gray-500">No news items found.</p>
+              <p className="text-lg text-gray-500">{t('news.empty')}</p>
             </div>
           )}
         </div>

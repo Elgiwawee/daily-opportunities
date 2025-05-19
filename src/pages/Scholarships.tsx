@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import RegionFilter from '../components/RegionFilter';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface Opportunity {
   id: string;
@@ -21,6 +22,7 @@ interface Opportunity {
 }
 
 const Scholarships = () => {
+  const { t } = useTranslation();
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(9);
 
@@ -69,9 +71,9 @@ const Scholarships = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Scholarships</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('scholarships.title')}</h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Discover scholarship opportunities from around the world to fund your education.
+              {t('scholarships.subtitle')}
             </p>
           </motion.div>
 
@@ -106,14 +108,14 @@ const Scholarships = () => {
                     variant="outline"
                     className="border border-olive-600 text-olive-700 hover:bg-olive-50"
                   >
-                    Load More Scholarships
+                    {t('scholarships.loadMore')}
                   </Button>
                 </div>
               )}
 
               {scholarships.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-lg text-gray-500">No scholarships found for this region. Please try another region.</p>
+                  <p className="text-lg text-gray-500">{t('scholarships.empty')}</p>
                 </div>
               )}
             </>

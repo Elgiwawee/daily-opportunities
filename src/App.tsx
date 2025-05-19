@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,10 +21,23 @@ import Disclaimer from "./pages/Disclaimer";
 import CookieConsent from "./components/CookieConsent";
 import Donate from './pages/Donate';
 
+// Import i18n configuration
+import './i18n';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { setLanguageDirection } from './i18n';
+
 const queryClient = new QueryClient();
 
 // Create App component as a function component to properly use hooks
 const App = () => {
+  const { i18n } = useTranslation();
+
+  // Set the language direction when the app loads and when language changes
+  useEffect(() => {
+    setLanguageDirection(i18n.language);
+  }, [i18n.language]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>

@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import NotificationManager from './NotificationManager';
+import { useTranslation } from 'react-i18next';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -30,14 +31,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Navbar = () => {
+  const { t, i18n } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [scholarshipsOpen, setScholarshipsOpen] = useState(false);
   const isMobile = useIsMobile();
+  const isRtl = i18n.language === 'ar';
 
   useEffect(() => {
     // Check if the user is logged in
@@ -83,17 +87,17 @@ const Navbar = () => {
         <Link to="/" className="flex items-center gap-2">
           <img 
             src="/lovable-uploads/bfe4b900-aa37-433d-b636-2134c6bb921c.png" 
-            alt="Daily Opportunities Logo" 
+            alt={t('app.name')}
             className="h-10 w-auto"
           />
-          <span className="font-bold text-xl">Daily Opportunities</span>
+          <span className="font-bold text-xl">{t('app.name')}</span>
         </Link>
 
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center space-x-6">
           <Link to="/" className={cn("hover:text-olive-600 transition-colors", {
             'text-olive-600 font-semibold': location.pathname === '/'
-          })}>Home</Link>
+          })}>{t('nav.home')}</Link>
           
           {/* Scholarships dropdown */}
           <NavigationMenu>
@@ -104,7 +108,7 @@ const Navbar = () => {
                   {
                     'text-olive-600 font-semibold': location.pathname.includes('/scholarships')
                   }
-                )}>Scholarships</NavigationMenuTrigger>
+                )}>{t('nav.scholarships')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="w-[200px] p-2">
                     <Link
@@ -112,51 +116,51 @@ const Navbar = () => {
                       className="block px-3 py-2 hover:bg-gray-100 rounded-md"
                       onClick={closeMenu}
                     >
-                      All Scholarships
+                      {t('scholarships.title')}
                     </Link>
-                    <div className="font-medium px-3 py-2 text-sm">By Country</div>
+                    <div className="font-medium px-3 py-2 text-sm">{isRtl ? 'حسب الدولة' : 'By Country'}</div>
                     <Link
                       to="/scholarships/country/usa"
                       className="block px-3 py-2 hover:bg-gray-100 rounded-md"
                       onClick={closeMenu}
                     >
-                      USA
+                      {isRtl ? 'الولايات المتحدة' : 'USA'}
                     </Link>
                     <Link
                       to="/scholarships/country/uk"
                       className="block px-3 py-2 hover:bg-gray-100 rounded-md"
                       onClick={closeMenu}
                     >
-                      UK
+                      {isRtl ? 'المملكة المتحدة' : 'UK'}
                     </Link>
                     <Link
                       to="/scholarships/country/canada"
                       className="block px-3 py-2 hover:bg-gray-100 rounded-md"
                       onClick={closeMenu}
                     >
-                      Canada
+                      {isRtl ? 'كندا' : 'Canada'}
                     </Link>
-                    <div className="font-medium px-3 py-2 text-sm">By Level</div>
+                    <div className="font-medium px-3 py-2 text-sm">{isRtl ? 'حسب المستوى' : 'By Level'}</div>
                     <Link
                       to="/scholarships/level/undergraduate"
                       className="block px-3 py-2 hover:bg-gray-100 rounded-md"
                       onClick={closeMenu}
                     >
-                      Undergraduate
+                      {isRtl ? 'البكالوريوس' : 'Undergraduate'}
                     </Link>
                     <Link
                       to="/scholarships/level/masters"
                       className="block px-3 py-2 hover:bg-gray-100 rounded-md"
                       onClick={closeMenu}
                     >
-                      Master's
+                      {isRtl ? 'الماجستير' : 'Master\'s'}
                     </Link>
                     <Link
                       to="/scholarships/level/phd"
                       className="block px-3 py-2 hover:bg-gray-100 rounded-md"
                       onClick={closeMenu}
                     >
-                      PhD
+                      {isRtl ? 'الدكتوراه' : 'PhD'}
                     </Link>
                   </div>
                 </NavigationMenuContent>
@@ -166,27 +170,27 @@ const Navbar = () => {
           
           <Link to="/jobs" className={cn("hover:text-olive-600 transition-colors", {
             'text-olive-600 font-semibold': location.pathname === '/jobs'
-          })}>Job Listings</Link>
+          })}>{t('nav.jobs')}</Link>
           <Link to="/news" className={cn("hover:text-olive-600 transition-colors", {
             'text-olive-600 font-semibold': location.pathname === '/news'
-          })}>News</Link>
+          })}>{t('nav.news')}</Link>
           
           {/* More dropdown with About Us, Contact, and Disclaimer */}
           <Menubar className="border-none bg-transparent">
             <MenubarMenu>
               <MenubarTrigger className="hover:text-olive-600 transition-colors bg-transparent hover:bg-transparent focus:bg-transparent">
-                More <ChevronDown className="ml-1 h-4 w-4" />
+                {isRtl ? 'المزيد' : 'More'} <ChevronDown className="ml-1 h-4 w-4" />
               </MenubarTrigger>
               <MenubarContent>
                 <MenubarItem asChild>
-                  <Link to="/about">About Us</Link>
+                  <Link to="/about">{t('nav.about')}</Link>
                 </MenubarItem>
                 <MenubarItem asChild>
-                  <Link to="/contact">Contact</Link>
+                  <Link to="/contact">{t('nav.contact')}</Link>
                 </MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem asChild>
-                  <Link to="/disclaimer">Disclaimer</Link>
+                  <Link to="/disclaimer">{t('nav.disclaimer')}</Link>
                 </MenubarItem>
               </MenubarContent>
             </MenubarMenu>
@@ -195,11 +199,14 @@ const Navbar = () => {
           {/* Add notification manager */}
           <NotificationManager />
           
+          {/* Language switcher */}
+          <LanguageSwitcher />
+          
           {/* Search bar */}
           <form onSubmit={handleSearchSubmit} className="relative">
             <input
               type="search"
-              placeholder="Search"
+              placeholder={t('buttons.search')}
               value={searchTerm}
               onChange={handleSearchChange}
               className="border border-gray-300 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500"
@@ -214,13 +221,13 @@ const Navbar = () => {
             <Link to="/admin">
               <Button variant="outline" size="sm">
                 <User className="w-4 h-4 mr-2" />
-                Admin
+                {t('nav.admin')}
               </Button>
             </Link>
           ) : (
             <Link to="/auth">
               <Button variant="outline" size="sm">
-                Login
+                {t('nav.login')}
               </Button>
             </Link>
           )}
@@ -231,6 +238,11 @@ const Navbar = () => {
           {/* Add notification manager for mobile too */}
           <div className="mr-2">
             <NotificationManager />
+          </div>
+          
+          {/* Language switcher for mobile */}
+          <div className="mr-2">
+            <LanguageSwitcher />
           </div>
           
           <button onClick={toggleMenu}>
