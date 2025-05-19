@@ -4,11 +4,13 @@ import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Json } from '@/integrations/supabase/types';
 import DonationButton from '../components/DonationButton';
+import { Skeleton } from '@/components/ui/skeleton';
+import NewsItem from '../components/NewsItem';
 
 interface Attachment {
   name: string;
@@ -29,30 +31,42 @@ interface NewsItem {
 const News = () => {
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(false);
-
-  const { data: newsItems = [], isLoading } = useQuery({
+  const [visibleCount, setVisibleCount] = useState<number>(3);
+  
+  // Fetch news with pagination limit
+  const { data: allNewsItems = [], isLoading } = useQuery({
     queryKey: ['news'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('news_items')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
+      try {
+        const { data, error } = await supabase
+          .from('news_items')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error("Error fetching news:", error);
+          throw error;
+        }
+        
+        // Process and convert the attachments properly
+        return (data || []).map(item => ({
+          ...item,
+          // Ensure attachments is an array and has the correct type
+          attachments: Array.isArray(item.attachments) 
+            ? item.attachments.map((att: Json) => att as unknown as Attachment)
+            : []
+        })) as NewsItem[];
+      } catch (error) {
+        console.error("Failed to load news:", error);
         toast.error("Failed to load news");
-        throw error;
+        return [];
       }
-      
-      // Process and convert the attachments properly
-      return (data || []).map(item => ({
-        ...item,
-        // Ensure attachments is an array and has the correct type
-        attachments: Array.isArray(item.attachments) 
-          ? item.attachments.map((att: Json) => att as unknown as Attachment)
-          : []
-      })) as NewsItem[];
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
   });
+  
+  // Only show the number of news items based on visibleCount
+  const newsItems = allNewsItems.slice(0, visibleCount);
 
   const handleVideoToggle = (newsId: string) => {
     if (activeVideoId === newsId) {
@@ -69,6 +83,10 @@ const News = () => {
     videos.forEach(video => {
       video.muted = !isMuted;
     });
+  };
+  
+  const loadMore = () => {
+    setVisibleCount(prev => prev + 3);
   };
 
   return (
@@ -91,139 +109,46 @@ const News = () => {
           </motion.div>
 
           {isLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
+            <div className="space-y-10">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden p-6">
+                  <Skeleton className="h-8 w-2/3 mb-3" />
+                  <Skeleton className="h-4 w-1/4 mb-6" />
+                  <div className="space-y-4 mb-6">
+                    <Skeleton className="h-64 w-full rounded-lg" />
+                  </div>
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : newsItems.length > 0 ? (
             <div className="space-y-10">
               {newsItems.map((news) => (
-                <motion.div
+                <NewsItem 
                   key={news.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="bg-white rounded-lg shadow-md overflow-hidden"
-                >
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h2 className="text-2xl font-bold text-gray-900">{news.subject}</h2>
-                      <DonationButton 
-                        variant="outline"
-                        size="sm"
-                        label="Support"
-                      />
-                    </div>
-                    <div className="text-sm text-gray-500 mb-4">
-                      {news.created_at && format(new Date(news.created_at), 'MMMM d, yyyy')}
-                    </div>
-                    
-                    {/* Moved attachments to display first, before the content */}
-                    {news.attachments && news.attachments.length > 0 && (
-                      <div className="mb-6 space-y-4">
-                        {news.attachments.map((attachment, index) => (
-                          <div key={index} className="border rounded-lg overflow-hidden">
-                            {attachment.type === 'image' ? (
-                              <img 
-                                src={attachment.url} 
-                                alt={attachment.name || 'News image'} 
-                                className="w-full h-auto max-h-96 object-contain"
-                              />
-                            ) : attachment.type?.includes('video') ? (
-                              <div className="relative">
-                                {activeVideoId === `${news.id}-${index}` ? (
-                                  <div className="relative">
-                                    <div className="relative pb-[56.25%] h-0 overflow-hidden bg-black">
-                                      <video 
-                                        src={attachment.url}
-                                        controls
-                                        autoPlay
-                                        className="absolute top-0 left-0 w-full h-full object-contain"
-                                        muted={isMuted}
-                                        playsInline
-                                        preload="metadata"
-                                      />
-                                    </div>
-                                    <div className="absolute bottom-4 right-4 flex space-x-2">
-                                      <button 
-                                        onClick={() => handleVideoToggle(`${news.id}-${index}`)}
-                                        className="bg-white/80 hover:bg-white text-gray-700 p-2 rounded-full shadow"
-                                        aria-label="Pause video"
-                                      >
-                                        <Pause className="h-5 w-5" />
-                                      </button>
-                                      <button 
-                                        onClick={toggleMute}
-                                        className="bg-white/80 hover:bg-white text-gray-700 p-2 rounded-full shadow"
-                                        aria-label={isMuted ? "Unmute" : "Mute"}
-                                      >
-                                        {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-                                      </button>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div 
-                                    className="video-preview relative cursor-pointer transition-all duration-200 hover:shadow-lg"
-                                    onClick={() => handleVideoToggle(`${news.id}-${index}`)}
-                                  >
-                                    {/* YouTube-style video preview with play button */}
-                                    <div className="relative pb-[56.25%] bg-black">
-                                      {/* Video thumbnail */}
-                                      <div className="absolute inset-0 flex items-center justify-center bg-black">
-                                        <img 
-                                          src={`${attachment.url.split('.')[0]}.jpg`} 
-                                          alt="Video thumbnail"
-                                          className="w-full h-full object-cover"
-                                          onError={(e) => {
-                                            const target = e.target as HTMLImageElement;
-                                            target.src = "https://images.unsplash.com/photo-1516054575922-f0b8eeadec1a?ixlib=rb-4.0.3";
-                                          }}
-                                        />
-                                        
-                                        {/* Enhanced YouTube-like play button with red background */}
-                                        <div className="absolute inset-0 flex items-center justify-center hover:bg-black/40 transition-colors duration-300">
-                                          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center transform transition-transform duration-300 hover:bg-red-700 hover:scale-110 shadow-lg">
-                                            <Play className="h-8 w-8 text-white ml-1" />
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    
-                                    {/* YouTube-style video title and info */}
-                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4">
-                                      <p className="text-white font-medium text-lg truncate">
-                                        {attachment.name || `Video ${index + 1}`}
-                                      </p>
-                                      <p className="text-gray-300 text-sm flex items-center">
-                                        <span className="mr-2">Click to play</span>
-                                        <span className="bg-black/30 px-1 rounded text-xs">HD</span>
-                                      </p>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="p-4 flex items-center justify-between bg-gray-50">
-                                <span>{attachment.name}</span>
-                                <a 
-                                  href={attachment.url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 hover:underline"
-                                >
-                                  Download
-                                </a>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {/* News content now appears after the attachments */}
-                    <div className="prose max-w-none mt-4" dangerouslySetInnerHTML={{ __html: news.body }} />
-                  </div>
-                </motion.div>
+                  news={news}
+                  activeVideoId={activeVideoId}
+                  isMuted={isMuted}
+                  onVideoToggle={handleVideoToggle}
+                  onToggleMute={toggleMute}
+                />
               ))}
+              
+              {allNewsItems.length > visibleCount && (
+                <div className="flex justify-center mt-8">
+                  <button
+                    onClick={loadMore}
+                    className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
+                  >
+                    Load More News
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-12">
