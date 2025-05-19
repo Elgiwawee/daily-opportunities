@@ -4,7 +4,7 @@ import { Image, Video, ExternalLink, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import DonationButton from './DonationButton';
 
@@ -39,6 +39,8 @@ const OpportunityCard = ({
   external_url,
 }: OpportunityCardProps) => {
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(true);
   
   // Try to parse the deadline to a readable format
   let formattedDate = deadline;
@@ -55,24 +57,46 @@ const OpportunityCard = ({
 
   // Fix to ensure attachments is always an array and properly processed
   const normalizedAttachments = Array.isArray(attachments) ? attachments : [];
-  console.log("OpportunityCard attachments:", normalizedAttachments);
   
-  // Get proper image URL for card background
-  const getCardImageUrl = () => {
-    if (normalizedAttachments && normalizedAttachments.length > 0) {
-      const firstAttachment = normalizedAttachments[0];
-      // Check if the URL is directly available or needs to be accessed as a property
-      if (firstAttachment && firstAttachment.url) {
-        console.log("Using attachment URL:", firstAttachment.url);
-        return firstAttachment.url;
+  // Find and set the appropriate image URL for the card background
+  useEffect(() => {
+    const loadImage = () => {
+      setImageLoading(true);
+      
+      if (normalizedAttachments && normalizedAttachments.length > 0) {
+        const firstAttachment = normalizedAttachments[0];
+        
+        // Check if the URL is directly available or needs to be accessed as a property
+        if (firstAttachment && firstAttachment.url) {
+          console.log("Using attachment URL for opportunity card:", firstAttachment.url);
+          setImageUrl(firstAttachment.url);
+          return;
+        }
       }
-    }
-    
-    // Default images based on opportunity type
-    console.log("Using default image for type:", type);
-    return type === 'scholarship' 
+      
+      // Default images based on opportunity type
+      const defaultImageUrl = type === 'scholarship' 
+        ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+        : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
+      
+      console.log("Using default image for opportunity card:", defaultImageUrl);
+      setImageUrl(defaultImageUrl);
+    };
+
+    loadImage();
+  }, [normalizedAttachments, type]);
+
+  const handleImageError = () => {
+    console.log("Image failed to load, using fallback for type:", type);
+    const fallbackUrl = type === 'scholarship' 
       ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
       : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
+    setImageUrl(fallbackUrl);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
   };
 
   const handleShare = (platform: string) => {
@@ -81,14 +105,14 @@ const OpportunityCard = ({
     const shareUrl = `${baseUrl}/opportunity/${id}`;
     
     // Get image URL if available
-    const imageUrl = getCardImageUrl();
+    const shareImageUrl = imageUrl || '';
     
     let shareLink = '';
     
     switch (platform) {
       case 'facebook':
         // Facebook sharing with image
-        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(title)}&picture=${encodeURIComponent(imageUrl)}`;
+        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(title)}&picture=${encodeURIComponent(shareImageUrl)}`;
         break;
       case 'twitter':
         // Twitter doesn't directly support image sharing via URL parameters
@@ -123,19 +147,20 @@ const OpportunityCard = ({
       className={`overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:shadow-md ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
     >
       <div className="relative aspect-video w-full overflow-hidden">
-        <img
-          src={getCardImageUrl()}
-          alt={title}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            // Fallback if image fails to load
-            const target = e.target as HTMLImageElement;
-            console.log("Image failed to load, using fallback for type:", type);
-            target.src = type === 'scholarship' 
-              ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
-              : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
-          }}
-        />
+        {imageLoading && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
+        )}
+        
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt={title}
+            className="w-full h-full object-cover"
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+            loading="lazy"
+          />
+        )}
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
           <h3 className="text-lg md:text-xl font-bold text-white">{title}</h3>

@@ -35,6 +35,7 @@ const OpportunityDetails = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [activeMedia, setActiveMedia] = useState<{url: string, type: string} | null>(null);
+  const [mainImageLoading, setMainImageLoading] = useState(true);
 
   useEffect(() => {
     const checkIfAdmin = async () => {
@@ -56,11 +57,47 @@ const OpportunityDetails = () => {
 
       if (error) throw error;
       
+      // Normalize the attachments data
+      let normalizedAttachments: Attachment[] = [];
+      
+      if (data.attachments) {
+        if (Array.isArray(data.attachments)) {
+          normalizedAttachments = data.attachments.map(att => {
+            // Ensure each attachment has the required properties
+            if (typeof att === 'object' && att !== null) {
+              return {
+                name: att.name || 'Unnamed attachment',
+                url: att.url || '',
+                type: att.type || 'unknown',
+                path: att.path || ''
+              };
+            }
+            return {
+              name: 'Unnamed attachment',
+              url: '',
+              type: 'unknown',
+              path: ''
+            };
+          });
+        } else if (typeof data.attachments === 'string') {
+          try {
+            const parsedAttachments = JSON.parse(data.attachments);
+            if (Array.isArray(parsedAttachments)) {
+              normalizedAttachments = parsedAttachments;
+            }
+          } catch (e) {
+            console.error('Error parsing attachments:', e);
+          }
+        }
+      }
+      
+      console.log("Normalized attachments:", normalizedAttachments);
+      
       const formattedData = {
         ...data,
-        attachments: Array.isArray(data.attachments) ? data.attachments : [],
+        attachments: normalizedAttachments,
         external_url: data.external_url || null
-      } as unknown as Opportunity;
+      } as Opportunity;
       
       setOpportunity(formattedData);
       console.log("Fetched opportunity:", formattedData);
@@ -79,12 +116,22 @@ const OpportunityDetails = () => {
     const title = opportunity.title;
     const description = opportunity.description.substring(0, 100) + '...';
     
-    const imageUrl = opportunity.attachments && opportunity.attachments.length > 0 && 
-      opportunity.attachments[0].type.startsWith('image/')
-      ? opportunity.attachments[0].url
-      : `${window.location.origin}/${opportunity.type === 'scholarship' 
-          ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
-          : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40'}`;
+    let imageUrl = '';
+    if (opportunity.attachments && opportunity.attachments.length > 0) {
+      const firstAttachment = opportunity.attachments[0];
+      if (firstAttachment && firstAttachment.url && 
+         (firstAttachment.type?.startsWith('image/') || 
+          firstAttachment.type === 'image')) {
+        imageUrl = firstAttachment.url;
+      }
+    }
+    
+    // Use default image if no attachment image is available
+    if (!imageUrl) {
+      imageUrl = opportunity.type === 'scholarship' 
+        ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+        : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
+    }
     
     let shareUrl = '';
     
@@ -120,8 +167,21 @@ const OpportunityDetails = () => {
     setActiveMedia(null);
   };
 
-  const isVideo = (type: string) => type.startsWith('video/');
-  const isImage = (type: string) => type.startsWith('image/');
+  const isVideo = (type: string) => type?.startsWith('video/') || type === 'video';
+  const isImage = (type: string) => type?.startsWith('image/') || type === 'image';
+  
+  const handleMainImageLoad = () => {
+    setMainImageLoading(false);
+  };
+  
+  const handleMainImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    console.log("Main image failed to load, using fallback");
+    target.src = opportunity?.type === 'scholarship' 
+      ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+      : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
+    setMainImageLoading(false);
+  };
 
   if (loading) {
     return (
@@ -232,14 +292,23 @@ const OpportunityDetails = () => {
         </div>
 
         <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100">
-          {opportunity.attachments?.length > 0 && (
+          {opportunity.attachments?.length > 0 ? (
             <div className="aspect-video w-full overflow-hidden relative">
+              {mainImageLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-200 animate-pulse">
+                  <p className="text-gray-400">Loading image...</p>
+                </div>
+              )}
+              
               {isImage(opportunity.attachments[0].type) ? (
                 <img
                   src={opportunity.attachments[0].url}
                   alt={opportunity.title}
                   className="w-full h-full object-cover cursor-pointer"
                   onClick={() => openMediaViewer(opportunity.attachments[0].url, opportunity.attachments[0].type)}
+                  onLoad={handleMainImageLoad}
+                  onError={handleMainImageError}
+                  loading="lazy"
                 />
               ) : isVideo(opportunity.attachments[0].type) ? (
                 <div className="relative w-full h-full bg-black">
@@ -248,6 +317,12 @@ const OpportunityDetails = () => {
                     className="w-full h-full object-contain"
                     onClick={(e) => e.currentTarget.paused ? e.currentTarget.play() : e.currentTarget.pause()}
                     controls={false}
+                    onLoadedData={handleMainImageLoad}
+                    onError={() => {
+                      console.log("Video failed to load");
+                      setMainImageLoading(false);
+                    }}
+                    preload="metadata"
                   />
                   <div 
                     className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black bg-opacity-30 hover:bg-opacity-10 transition-all"
@@ -263,6 +338,18 @@ const OpportunityDetails = () => {
                   <p className="text-gray-500">File: {opportunity.attachments[0].name}</p>
                 </div>
               )}
+            </div>
+          ) : (
+            // Default image based on opportunity type if no attachments
+            <div className="aspect-video w-full overflow-hidden relative">
+              <img
+                src={opportunity.type === 'scholarship' 
+                  ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+                  : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40'}
+                alt={opportunity.title}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             </div>
           )}
 
@@ -323,6 +410,13 @@ const OpportunityDetails = () => {
                           alt={attachment.name}
                           className="w-full h-full object-cover cursor-pointer"
                           onClick={() => openMediaViewer(attachment.url, attachment.type)}
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = opportunity.type === 'scholarship' 
+                              ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+                              : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
+                          }}
                         />
                       ) : isVideo(attachment.type) ? (
                         <div className="relative w-full h-full">
