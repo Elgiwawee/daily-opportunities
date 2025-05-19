@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X, Coffee, CreditCard, DollarSign, Bitcoin, Wallet, Banknote, PoundSterling, CreditCardIcon, Coins, BadgeDollarSign, Euro, BadgePoundSterling, BadgeSwissFranc } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -103,17 +102,17 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
               <h3 className="font-medium text-gray-700">Cryptocurrency</h3>
               <div className="space-y-3 mt-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">USDT (TRC20)</label>
+                  <label className="block text-sm font-medium text-gray-700">Bitcoin (BTC)</label>
                   <div className="flex mt-1">
                     <input 
                       readOnly
-                      value="TLancr79aB2ZyNYTFSA3EgxVuTKqMrB6J3" 
+                      value="1FF37e2JiN7kwGfgrg4icDyP8sSrmJnLkS" 
                       className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-md text-sm"
                     />
                     <button 
                       className="ml-2 px-3 py-1 bg-gray-200 rounded-md text-sm"
                       onClick={() => {
-                        navigator.clipboard.writeText("TLancr79aB2ZyNYTFSA3EgxVuTKqMrB6J3");
+                        navigator.clipboard.writeText("1FF37e2JiN7kwGfgrg4icDyP8sSrmJnLkS");
                         toast.success("Address copied to clipboard");
                       }}
                     >
@@ -122,17 +121,17 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">BTC</label>
+                  <label className="block text-sm font-medium text-gray-700">USDT (TRC20)</label>
                   <div className="flex mt-1">
                     <input 
                       readOnly
-                      value="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" 
+                      value="TGpgH4LYQJ2LFfWcJzmaPkQd5m2m7g8DyB" 
                       className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-md text-sm"
                     />
                     <button 
                       className="ml-2 px-3 py-1 bg-gray-200 rounded-md text-sm"
                       onClick={() => {
-                        navigator.clipboard.writeText("bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh");
+                        navigator.clipboard.writeText("TGpgH4LYQJ2LFfWcJzmaPkQd5m2m7g8DyB");
                         toast.success("Address copied to clipboard");
                       }}
                     >
@@ -151,16 +150,16 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
         return (
           <div className="space-y-4">
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <h3 className="font-medium text-gray-700">Bank Transfer (Naira)</h3>
+              <h3 className="font-medium text-gray-700">Bank Transfer</h3>
               <div className="space-y-2 mt-2">
                 <p className="text-sm">
-                  <span className="font-medium">Bank Name:</span> First Bank Nigeria
+                  <span className="font-medium">Bank Name:</span> Opay
                 </p>
                 <p className="text-sm">
-                  <span className="font-medium">Account Number:</span> 12345678901
+                  <span className="font-medium">Account Number:</span> 610-207-4340
                 </p>
                 <p className="text-sm">
-                  <span className="font-medium">Account Name:</span> Scholarship Portal
+                  <span className="font-medium">Account Name:</span> Zaharaddeen Umar
                 </p>
               </div>
               <p className="mt-3 text-xs text-gray-500">
@@ -187,10 +186,10 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
               <h3 className="font-medium text-gray-700">Mobile Money</h3>
               <p className="text-sm text-gray-500 mt-1">
-                Send to this number: +234 8012345678
+                Send to this number: +2347040930552
               </p>
               <p className="mt-3 text-xs text-gray-500">
-                Available for MTN, Airtel, Glo, and 9mobile
+                Available for MTN transfers
               </p>
             </div>
           </div>

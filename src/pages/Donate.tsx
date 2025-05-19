@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
@@ -11,25 +10,20 @@ const Donate = () => {
   const cryptoAddresses = [
     {
       name: "Bitcoin (BTC)",
-      address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+      address: "1FF37e2JiN7kwGfgrg4icDyP8sSrmJnLkS",
       icon: <Bitcoin className="w-6 h-6 text-orange-500" />
     },
     {
       name: "USDT (TRC20)",
-      address: "TLancr79aB2ZyNYTFSA3EgxVuTKqMrB6J3",
+      address: "TGpgH4LYQJ2LFfWcJzmaPkQd5m2m7g8DyB",
       icon: <Bitcoin className="w-6 h-6 text-green-500" />
-    },
-    {
-      name: "Ethereum (ETH)",
-      address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-      icon: <Bitcoin className="w-6 h-6 text-purple-500" />
     }
   ];
 
   const bankDetails = {
-    name: "Scholarship Portal",
-    bankName: "First Bank Nigeria",
-    accountNumber: "12345678901"
+    name: "Zaharaddeen Umar",
+    bankName: "Opay",
+    accountNumber: "610-207-4340"
   };
   
   const copyToClipboard = (text: string) => {
@@ -49,8 +43,7 @@ const Donate = () => {
     { code: 'EUR', name: 'Euro', symbol: '€', icon: <Euro className="w-4 h-4 text-yellow-500" /> },
     { code: 'GBP', name: 'British Pound', symbol: '£', icon: <PoundSterling className="w-4 h-4 text-purple-500" /> },
     { code: 'USDT', name: 'Tether', symbol: 'USDT', icon: <Coins className="w-4 h-4 text-teal-500" /> },
-    { code: 'BTC', name: 'Bitcoin', symbol: 'BTC', icon: <Bitcoin className="w-4 h-4 text-orange-500" /> },
-    { code: 'ETH', name: 'Ethereum', symbol: 'ETH', icon: <Bitcoin className="w-4 h-4 text-indigo-500" /> }
+    { code: 'BTC', name: 'Bitcoin', symbol: 'BTC', icon: <Bitcoin className="w-4 h-4 text-orange-500" /> }
   ];
 
   return (
@@ -141,7 +134,7 @@ const Donate = () => {
                 <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                   <div className="flex items-center mb-3">
                     <Banknote className="w-5 h-5 text-amber-600 mr-2" />
-                    <h3 className="font-medium text-gray-800">Bank Transfer (Naira)</h3>
+                    <h3 className="font-medium text-gray-800">Bank Transfer</h3>
                   </div>
                   
                   <div className="space-y-3 mb-4">
@@ -166,11 +159,6 @@ const Donate = () => {
                       </div>
                     </div>
                   </div>
-                  
-                  <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-medium transition-colors flex items-center justify-center">
-                    <PoundSterling className="w-4 h-4 mr-2" />
-                    Generate Remita RRR
-                  </button>
                 </div>
                 
                 {/* Mobile Money Section */}
@@ -185,11 +173,11 @@ const Donate = () => {
                   </p>
                   
                   <div className="flex justify-between items-center text-sm mb-2">
-                    <span className="text-gray-600">Phone Number:</span>
+                    <span className="text-gray-600">MTN Phone Number:</span>
                     <div className="flex items-center">
-                      <span className="font-medium text-gray-800 mr-2">+234 8012345678</span>
+                      <span className="font-medium text-gray-800 mr-2">+2347040930552</span>
                       <button 
-                        onClick={() => copyToClipboard("+234 8012345678")}
+                        onClick={() => copyToClipboard("+2347040930552")}
                         className="text-amber-600 hover:text-amber-700 text-xs"
                       >
                         Copy
@@ -197,7 +185,7 @@ const Donate = () => {
                     </div>
                   </div>
                   <p className="text-xs text-gray-500">
-                    Available for MTN, Airtel, Glo, and 9mobile
+                    Available for MTN Money transfers
                   </p>
                 </div>
               </div>
