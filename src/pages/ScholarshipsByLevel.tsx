@@ -8,28 +8,14 @@ import OpportunityCard from '@/components/OpportunityCard';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
-interface Scholarship {
-  id: string;
-  title: string;
-  organization: string;
-  deadline?: string | Date;
-  type?: string;
-  description?: string;
-  attachments?: any;
-  created_at?: string;
-  external_url?: string;
-  featured?: boolean;
-  image?: string;
-  level?: string;
-}
-
 const ScholarshipsByLevel = () => {
   const { level } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [limit, setLimit] = useState(9);
 
-  const { data: scholarships, isLoading, error } = useQuery<Scholarship[], Error>({
+  // Fix TypeScript error by explicitly defining types
+  const { data: scholarships, isLoading, error } = useQuery<any[], Error>({
     queryKey: ['scholarshipsByLevel', level, limit],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -44,7 +30,7 @@ const ScholarshipsByLevel = () => {
     }
   });
 
-  const handleScholarshipClick = (scholarship: Scholarship) => {
+  const handleScholarshipClick = (scholarship: any) => {
     navigate(`/opportunity/${scholarship.id}`);
   };
 

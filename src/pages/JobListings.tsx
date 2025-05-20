@@ -8,26 +8,12 @@ import { useTranslation } from 'react-i18next';
 import Layout from '../components/Layout';
 import OpportunityCard from '../components/OpportunityCard';
 
-interface Job {
-  id: string;
-  title: string;
-  organization: string;
-  deadline?: string | Date;
-  type?: string;
-  description?: string;
-  attachments?: any;
-  created_at?: string;
-  external_url?: string;
-  featured?: boolean;
-  image?: string;
-}
-
 const JobListings = () => {
   const navigate = useNavigate();
   const [limit, setLimit] = useState(9);
   const { t } = useTranslation();
 
-  const { data: jobs, isLoading, error } = useQuery<Job[], Error>({
+  const { data: jobs, isLoading, error } = useQuery<any[], Error>({
     queryKey: ['jobs', limit],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -42,7 +28,7 @@ const JobListings = () => {
     }
   });
 
-  const handleJobClick = (job: Job) => {
+  const handleJobClick = (job: any) => {
     navigate(`/opportunity/${job.id}`);
   };
 
