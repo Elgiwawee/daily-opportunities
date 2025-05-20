@@ -20,8 +20,7 @@
     "support": "Support",
     "share": "Share",
     "donate": "Donate",
-    "search": "Search",
-    "viewDetails": "View Details"
+    "search": "Search"
   },
   "home": {
     "hero": {
@@ -33,7 +32,6 @@
     "title": "Scholarships",
     "subtitle": "Discover scholarship opportunities from around the world to fund your education.",
     "empty": "No scholarships found for this region. Please try another region.",
-    "emptyLevel": "No {{level}} level scholarships found.",
     "loadMore": "Load More Scholarships",
     "howToApply": "How to Apply"
   },
@@ -53,21 +51,7 @@
   "opportunity": {
     "deadline": "Deadline",
     "organization": "Organization",
-    "type": "Type",
-    "types": {
-      "scholarship": "Scholarship",
-      "job": "Job",
-      "internship": "Internship",
-      "fellowship": "Fellowship"
-    },
-    "featured": "Featured",
-    "attachments": "Attachments",
-    "attachment": "Attachment",
-    "file": "File",
-    "noDescription": "No description available",
-    "notFound": "Opportunity not found",
     "share": {
-      "title": "Share",
       "facebook": "Facebook",
       "twitter": "Twitter",
       "whatsapp": "WhatsApp",
@@ -75,17 +59,8 @@
     },
     "copied": "Link copied to clipboard!"
   },
-  "levels": {
-    "undergraduate": "undergraduate level programs",
-    "masters": "master's level programs",
-    "phd": "PhD level programs"
-  },
   "language": {
     "en": "English",
     "ar": "العربية"
-  },
-  "theme": {
-    "light": "Light",
-    "dark": "Dark"
   }
 }

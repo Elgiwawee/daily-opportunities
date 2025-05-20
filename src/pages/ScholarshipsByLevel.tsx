@@ -21,7 +21,6 @@ const ScholarshipsByLevel = () => {
     phd: 'PhD',
   }[level] || level : '';
 
-  // Fixed using the proper object format for useQuery
   const { data, isLoading } = useQuery({
     queryKey: ['scholarships', 'level', level, limit],
     queryFn: async () => {
@@ -53,7 +52,7 @@ const ScholarshipsByLevel = () => {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2">{levelTitle} {t('scholarships.title')}</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          {t('scholarships.subtitle')} - {t(`levels.${level}`)}
+          {t('scholarships.subtitle')} - {levelTitle} level programs.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -80,7 +79,7 @@ const ScholarshipsByLevel = () => {
           ) : (
             <div className="col-span-full text-center py-12">
               <p className="text-lg text-gray-500 dark:text-gray-400">
-                {t('scholarships.emptyLevel', { level: levelTitle.toLowerCase() })}
+                No {levelTitle.toLowerCase()} level scholarships found.
               </p>
             </div>
           )}

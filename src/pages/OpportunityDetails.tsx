@@ -1,4 +1,5 @@
 
+// Import necessary components and hooks
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -17,16 +18,11 @@ import { toast } from '@/components/ui/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import Layout from '@/components/Layout';
 import { useTranslation } from 'react-i18next';
-import { arSA } from 'date-fns/locale/ar-SA';
-import { enUS } from 'date-fns/locale/en-US';
 
 const OpportunityDetails = () => {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
   const [copied, setCopied] = useState(false);
-  
-  // Select locale based on current language
-  const locale = i18n.language === 'ar' ? arSA : enUS;
 
   const { data: opportunity, isLoading } = useQuery({
     queryKey: ['opportunity', id],
@@ -114,7 +110,7 @@ const OpportunityDetails = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Share2 className="h-4 w-4 mr-2" />
-                    {t('opportunity.share.title')}
+                    {t('opportunity.share.copy')}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -134,7 +130,7 @@ const OpportunityDetails = () => {
               </DropdownMenu>
             </div>
             
-            <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-300">
+            <div className="flex flex-wrap gap-4 text-gray-600">
               <div>
                 <span className="font-medium">{t('opportunity.organization')}:</span> {opportunity.organization}
               </div>
@@ -142,87 +138,51 @@ const OpportunityDetails = () => {
                 <span className="font-medium">{t('opportunity.deadline')}:</span> {opportunity.deadline}
               </div>
               <div>
-                <span className="font-medium">{t('opportunity.type')}:</span> {t(`opportunity.types.${opportunity.type}`)}
+                <span className="font-medium">Type:</span> {opportunity.type}
               </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-              <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: opportunity.description }}></div>
+            <div className="bg-white shadow rounded-lg p-6">
+              <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: opportunity.description }}></div>
             </div>
             
             {/* Display attachments if they exist */}
             {opportunity.attachments && Array.isArray(opportunity.attachments) && opportunity.attachments.length > 0 && (
               <div className="mt-8">
-                <h3 className="text-lg font-medium mb-4">{t('opportunity.attachments')} ({opportunity.attachments.length})</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <h3 className="text-lg font-medium mb-4">Attachments</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {opportunity.attachments.map((attachment: any, index: number) => {
                     // Handle both string and object attachment formats for backward compatibility
                     if (typeof attachment === 'string') {
                       return (
-                        <Card key={index} className="overflow-hidden">
+                        <Card key={index}>
                           <CardContent className="p-4">
                             <a 
                               href={attachment}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-blue-600 dark:text-blue-400 hover:underline flex items-center"
+                              className="text-blue-600 hover:underline flex items-center"
                             >
-                              {t('opportunity.attachment')} {index + 1}
+                              Document {index + 1}
                             </a>
                           </CardContent>
                         </Card>
                       );
                     } else {
-                      const name = getAttachmentProperty(attachment, 'name') || `${t('opportunity.file')} ${index + 1}`;
+                      const name = getAttachmentProperty(attachment, 'name') || `File ${index + 1}`;
                       const url = getAttachmentProperty(attachment, 'url') || '#';
-                      const type = getAttachmentProperty(attachment, 'type');
                       
                       return (
-                        <Card key={index} className="overflow-hidden">
+                        <Card key={index}>
                           <CardContent className="p-4">
-                            {type?.startsWith('image/') ? (
-                              <div className="relative">
-                                <a 
-                                  href={url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  <img 
-                                    src={url} 
-                                    alt={name} 
-                                    className="w-full h-32 object-cover mb-2 rounded" 
-                                  />
-                                  <p className="text-sm text-blue-600 dark:text-blue-400 hover:underline truncate">
-                                    {name}
-                                  </p>
-                                </a>
-                              </div>
-                            ) : type?.startsWith('video/') ? (
-                              <div>
-                                <video
-                                  src={url}
-                                  controls
-                                  className="w-full h-32 object-cover mb-2 rounded"
-                                />
-                                <a 
-                                  href={url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                                >
-                                  {name}
-                                </a>
-                              </div>
-                            ) : (
-                              <a 
-                                href={url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-blue-600 dark:text-blue-400 hover:underline flex items-center"
-                              >
-                                <span className="truncate">{name}</span>
-                              </a>
-                            )}
+                            <a 
+                              href={url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-blue-600 hover:underline flex items-center"
+                            >
+                              {name}
+                            </a>
                           </CardContent>
                         </Card>
                       );
@@ -245,7 +205,7 @@ const OpportunityDetails = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">{t('opportunity.notFound')}</p>
+            <p className="text-gray-600">Opportunity not found.</p>
           </div>
         )}
       </div>

@@ -38,7 +38,6 @@ const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters 
   const [currentLimit, setLimit] = useState(limit);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(region);
 
-  // Fixed the useQuery call to use the proper object format
   const { isLoading, error } = useQuery({
     queryKey: ['opportunities', activeTab, currentLimit, selectedRegion, featured],
     queryFn: async () => {
@@ -155,7 +154,7 @@ const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters 
                   <div className="relative h-full">
                     <div className="absolute -top-2 -right-2 z-10">
                       <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                        {t('opportunity.featured')}
+                        Featured
                       </span>
                     </div>
                     <OpportunityCard
