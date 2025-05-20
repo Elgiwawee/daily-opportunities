@@ -34,13 +34,13 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity, onClick 
   const locale = i18n.language === 'ar' ? arSA : enUS;
 
   return (
-    <Card className="h-full flex flex-col hover:shadow-md transition-shadow">
+    <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl font-bold line-clamp-2">{opportunity.title}</CardTitle>
           {opportunity.type && (
             <Badge variant="outline" className="ml-2">
-              {t(`opportunity.types.${opportunity.type}`)}
+              {opportunity.type}
             </Badge>
           )}
         </div>
