@@ -27,7 +27,13 @@ interface OpportunitiesProps {
   region?: string | null;
 }
 
-const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters = true, region = null }: OpportunitiesProps) => {
+const Opportunities = ({ 
+  type = "all", 
+  featured = false, 
+  limit = 9, 
+  showFilters = true, 
+  region = null 
+}: OpportunitiesProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,6 +44,7 @@ const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters 
   const [currentLimit, setLimit] = useState(limit);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(region);
 
+  // Fix the TypeScript error by explicitly typing the return type
   const { isLoading, error } = useQuery({
     queryKey: ['opportunities', activeTab, currentLimit, selectedRegion, featured],
     queryFn: async () => {
@@ -67,7 +74,7 @@ const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters 
 
       setTotalCount(count || 0);
       setOpportunities(data || []);
-      return data;
+      return data || [];
     }
   });
 
