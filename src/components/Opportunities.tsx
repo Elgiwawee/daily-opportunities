@@ -44,8 +44,8 @@ const Opportunities = ({
   const [currentLimit, setLimit] = useState(limit);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(region);
 
-  // Fix the TypeScript error by explicitly defining types
-  const { isLoading, error } = useQuery<any[], Error>({
+  // Fix the TypeScript error by explicitly typing the return type
+  const { isLoading, error } = useQuery({
     queryKey: ['opportunities', activeTab, currentLimit, selectedRegion, featured],
     queryFn: async () => {
       let query = supabase
