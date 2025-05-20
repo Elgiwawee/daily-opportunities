@@ -1,21 +1,21 @@
 
-import React from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@/components/ui/button';
 
 export interface RegionFilterProps {
-  onRegionChange: (region: string | null) => void;
-  activeRegion: string | null;
+  selectedRegion: string | null;
+  setSelectedRegion: Dispatch<SetStateAction<string | null>>;
 }
 
-const RegionFilter = ({ onRegionChange, activeRegion }: RegionFilterProps) => {
+const RegionFilter = ({ selectedRegion, setSelectedRegion }: RegionFilterProps) => {
   const regions = [
-    { id: 'all', name: 'All Regions' },
-    { id: 'africa', name: 'Africa' },
-    { id: 'asia', name: 'Asia' },
-    { id: 'europe', name: 'Europe' },
-    { id: 'north_america', name: 'North America' },
-    { id: 'south_america', name: 'South America' },
-    { id: 'oceania', name: 'Oceania' },
+    { id: 'All', name: 'All Regions' },
+    { id: 'Africa', name: 'Africa' },
+    { id: 'Asia', name: 'Asia' },
+    { id: 'Europe', name: 'Europe' },
+    { id: 'North America', name: 'North America' },
+    { id: 'South America', name: 'South America' },
+    { id: 'Oceania', name: 'Oceania' },
   ];
 
   return (
@@ -23,9 +23,9 @@ const RegionFilter = ({ onRegionChange, activeRegion }: RegionFilterProps) => {
       {regions.map((region) => (
         <Button
           key={region.id}
-          onClick={() => onRegionChange(region.id === 'all' ? null : region.id)}
-          variant={activeRegion === (region.id === 'all' ? null : region.id) ? 'default' : 'outline'}
-          className={activeRegion === (region.id === 'all' ? null : region.id) 
+          onClick={() => setSelectedRegion(region.id === 'All' ? null : region.id)}
+          variant={selectedRegion === region.id || (region.id === 'All' && selectedRegion === null) ? 'default' : 'outline'}
+          className={selectedRegion === region.id || (region.id === 'All' && selectedRegion === null) 
             ? 'bg-olive-600 hover:bg-olive-700' 
             : 'border border-olive-600 text-olive-700 hover:bg-olive-50'}
         >

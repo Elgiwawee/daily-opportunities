@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -27,9 +26,9 @@ const JobListings = () => {
   const [limit, setLimit] = useState(9);
   const navigate = useNavigate();
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['jobs', searchTerm, industryFilter, sortOption, limit],
-    queryFn: async () => {
+  const { data: jobs, isLoading, error } = useQuery(
+    ['jobs', searchTerm, industryFilter, sortOption, limit],
+    async () => {
       let query = supabase
         .from('opportunities')
         .select('*', { count: 'exact' })
@@ -57,12 +56,12 @@ const JobListings = () => {
 
       return { data, count };
     }
-  });
+  );
 
-  const filteredJobs = data?.data || [];
-  const totalCount = data?.count || 0;
+  const filteredJobs = jobs?.data || [];
+  const totalCount = jobs?.count || 0;
 
-  const handleJobClick = (job: any) => {
+  const handleJobClick = (job) => {
     navigate(`/opportunity/${job.id}`);
   };
 

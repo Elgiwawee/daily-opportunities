@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -10,11 +9,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 
 const ScholarshipsByCountry = () => {
-  const { country } = useParams<{country: string}>();
+  const { country } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [limit, setLimit] = useState(9);
-  const [scholarships, setScholarships] = useState<any[]>([]);
+  const [scholarships, setScholarships] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
 
   const countryName =
@@ -43,36 +42,34 @@ const ScholarshipsByCountry = () => {
       ? 'https://flagcdn.com/w320/de.png'
       : null;
 
-  const { isLoading, error } = useQuery({
-    queryKey: ['scholarships', country, limit],
-    queryFn: async () => {
-      if (!country) return [];
-      
-      const { data, error, count } = await supabase
-        .from('opportunities')
-        .select('*', { count: 'exact' })
-        .eq('type', 'scholarship')
-        .eq('region', country)
-        .range(0, limit - 1)
-        .order('created_at', { ascending: false });
+  const fetchScholarships = async () => {
+    const { data, error, count } = await supabase
+      .from('opportunities')
+      .select('*', { count: 'exact' })
+      .eq('type', 'scholarship')
+      .eq('region', country)
+      .range(0, limit - 1)
+      .order('created_at', { ascending: false });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      setScholarships(data || []);
-      setTotalCount(count || 0);
-      return data;
+    if (error) {
+      console.error('Error fetching scholarships:', error);
+      return;
     }
-  });
+
+    setScholarships(data || []);
+    setTotalCount(count || 0);
+  };
+
+  const { isLoading, isError } = useQuery(
+    ['scholarships', country, limit],
+    fetchScholarships
+  );
 
   useEffect(() => {
-    if (country) {
-      setLimit(9); // Reset limit when country changes
-    }
-  }, [country]);
+    fetchScholarships();
+  }, [country, limit]);
 
-  const handleScholarshipClick = (scholarship: any) => {
+  const handleScholarshipClick = (scholarship) => {
     navigate(`/opportunity/${scholarship.id}`);
   };
 

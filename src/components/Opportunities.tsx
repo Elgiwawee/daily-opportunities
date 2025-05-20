@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -31,16 +30,16 @@ const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters 
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState<"scholarship" | "job" | "all">(type);
-  const [opportunities, setOpportunities] = useState<any[]>([]);
-  const [filteredOpportunities, setFilteredOpportunities] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState(type);
+  const [opportunities, setOpportunities] = useState([]);
+  const [filteredOpportunities, setFilteredOpportunities] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentLimit, setLimit] = useState(limit);
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(region);
+  const [selectedRegion, setSelectedRegion] = useState(region || 'all');
 
-  const { isLoading, error } = useQuery({
-    queryKey: ['opportunities', activeTab, currentLimit, selectedRegion, featured],
-    queryFn: async () => {
+  const { isLoading, error } = useQuery(
+    ['opportunities', activeTab, currentLimit, selectedRegion, featured],
+    async () => {
       let query = supabase
         .from('opportunities')
         .select('*', { count: 'exact' })
@@ -69,7 +68,7 @@ const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters 
       setOpportunities(data || []);
       return data;
     }
-  });
+  );
 
   useEffect(() => {
     // Apply search filter
@@ -87,14 +86,14 @@ const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters 
 
   useEffect(() => {
     // Fetch data when region changes
-    setSelectedRegion(region || null);
+    setSelectedRegion(region || 'all');
   }, [region]);
 
-  const handleOpportunityClick = (opportunity: any) => {
+  const handleOpportunityClick = (opportunity) => {
     navigate(`/opportunity/${opportunity.id}`);
   };
 
-  const handleRegionChange = (newRegion: string | null) => {
+  const handleRegionChange = (newRegion) => {
     setSelectedRegion(newRegion);
   };
 
@@ -103,7 +102,7 @@ const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters 
       {showFilters && (
         <div>
           <Tabs value={activeTab} onValueChange={(value) => {
-            setActiveTab(value as "scholarship" | "job" | "all");
+            setActiveTab(value);
             navigate(`/?type=${value}`);
           }}>
             <TabsList>
