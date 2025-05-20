@@ -1,6 +1,8 @@
 
 import React from 'react';
 import Navbar from './Navbar';
+import LanguageSwitcher from './LanguageSwitcher';
+import ThemeSwitcher from './ThemeSwitcher';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,7 +19,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-600 dark:text-gray-400">
             <div className="mb-4 md:mb-0">© 2025 Scholarship Portal. All rights reserved.</div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
+              <div className="flex items-center space-x-2">
+                <ThemeSwitcher showLabel={false} />
+                <LanguageSwitcher />
+              </div>
               <a href="/about" className="hover:text-gray-900 dark:hover:text-gray-200">About</a>
               <a href="/contact" className="hover:text-gray-900 dark:hover:text-gray-200">Contact</a>
               <a href="/disclaimer" className="hover:text-gray-900 dark:hover:text-gray-200">Disclaimer</a>
