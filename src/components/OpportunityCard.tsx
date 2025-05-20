@@ -10,24 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { arSA } from 'date-fns/locale/ar-SA';
 import { enUS } from 'date-fns/locale/en-US';
 
-// Define proper type for opportunity prop
-interface OpportunityCardProps {
-  opportunity: {
-    id: string;
-    title: string;
-    organization: string;
-    deadline?: string | Date;
-    type?: string;
-    description?: string;
-    attachments?: any;
-    created_at?: string;
-    external_url?: string;
-    featured?: boolean;
-  };
-  onClick: (opportunity: any) => void;
-}
-
-const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity, onClick }) => {
+const OpportunityCard = ({ opportunity, onClick }) => {
   const { t, i18n } = useTranslation();
 
   // Select locale based on current language

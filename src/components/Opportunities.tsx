@@ -1,185 +1,352 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Search, Filter } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import RegionFilter from './RegionFilter';
-import { useTranslation } from 'react-i18next';
+import { ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
 
-interface OpportunitiesProps {
-  type?: "scholarship" | "job" | "all";
-  featured?: boolean;
-  limit?: number;
-  showFilters?: boolean;
-  region?: string | null;
+interface Attachment {
+  name: string;
+  url: string;
+  type: string;
+  path: string;
 }
 
-const Opportunities = ({ type = "all", featured = false, limit = 9, showFilters = true, region = null }: OpportunitiesProps) => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState(type);
-  const [opportunities, setOpportunities] = useState([]);
-  const [filteredOpportunities, setFilteredOpportunities] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [currentLimit, setLimit] = useState(limit);
-  const [selectedRegion, setSelectedRegion] = useState(region || 'all');
+interface Opportunity {
+  id: string;
+  title: string;
+  organization: string;
+  deadline: string;
+  type: 'scholarship' | 'job';
+  description: string;
+  attachments: Attachment[] | any; // Making it more flexible for different data types
+  created_at: string;
+  external_url?: string;
+}
 
-  const { isLoading, error } = useQuery(
-    ['opportunities', activeTab, currentLimit, selectedRegion, featured],
-    async () => {
-      let query = supabase
-        .from('opportunities')
-        .select('*', { count: 'exact' })
-        .order('created_at', { ascending: false })
-        .range(0, currentLimit - 1);
-
-      if (activeTab !== 'all') {
-        query = query.eq('type', activeTab);
-      }
-
-      if (selectedRegion !== 'all' && selectedRegion !== null) {
-        query = query.eq('region', selectedRegion);
-      }
-
-      if (featured) {
-        query = query.eq('featured', true);
-      }
-
-      const { data, error, count } = await query;
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      setTotalCount(count || 0);
-      setOpportunities(data || []);
-      return data;
-    }
+const Opportunities = () => {
+  const [featuredOpportunities, setFeaturedOpportunities] = useState<Opportunity[]>([]);
+  const [otherOpportunities, setOtherOpportunities] = useState<Opportunity[]>([]);
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [lastNotificationTime, setLastNotificationTime] = useState<number>(
+    parseInt(localStorage.getItem('lastNotificationTime') || '0')
   );
 
   useEffect(() => {
-    // Apply search filter
-    const filtered = opportunities.filter(opportunity =>
-      opportunity.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredOpportunities(filtered);
-  }, [searchTerm, opportunities]);
+    // Initial fetch of opportunities
+    fetchOpportunities();
+    
+    // Prompt for notifications on page load after a delay
+    const timer = setTimeout(() => {
+      promptForNotifications();
+    }, 5000);
+    
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('opportunities-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all changes (insert, update, delete)
+          schema: 'public',
+          table: 'opportunities'
+        },
+        (payload) => {
+          console.log('Real-time change:', payload);
+          // Refresh the opportunities list when any change occurs
+          fetchOpportunities();
+          
+          // Show notification for new opportunities
+          if (payload.eventType === 'INSERT') {
+            const newOpportunity = payload.new as Opportunity;
+            showNewOpportunityNotification(newOpportunity);
+          }
+        }
+      )
+      .subscribe();
 
-  useEffect(() => {
-    // Reset limit when tab changes
-    setLimit(limit);
-    setActiveTab(type);
-  }, [type, limit]);
+    // Cleanup subscription
+    return () => {
+      supabase.removeChannel(channel);
+      clearTimeout(timer);
+    };
+  }, []);
 
-  useEffect(() => {
-    // Fetch data when region changes
-    setSelectedRegion(region || 'all');
-  }, [region]);
-
-  const handleOpportunityClick = (opportunity) => {
-    navigate(`/opportunity/${opportunity.id}`);
+  const promptForNotifications = () => {
+    // Only prompt if they haven't been asked recently (in the last 3 days)
+    const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    
+    if (now - lastNotificationTime > THREE_DAYS) {
+      // Only prompt if not already granted
+      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        toast(
+          'Never miss new opportunities!',
+          {
+            description: 'Get notified when new scholarships and jobs are posted.',
+            action: {
+              label: 'Enable Notifications',
+              onClick: () => {
+                requestNotificationPermission();
+                // Update the last notification time
+                setLastNotificationTime(now);
+                localStorage.setItem('lastNotificationTime', now.toString());
+              }
+            },
+            duration: 10000,
+          }
+        );
+      }
+    }
+  };
+  
+  const requestNotificationPermission = async () => {
+    try {
+      const result = await Notification.requestPermission();
+      if (result === 'granted') {
+        // Subscribe the user to push notifications
+        subscribeUserToPush();
+      }
+    } catch (error) {
+      console.error('Error requesting permission:', error);
+    }
+  };
+  
+  const subscribeUserToPush = async () => {
+    try {
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        const registration = await navigator.serviceWorker.ready;
+        
+        // Subscribe to push
+        const subscriptionOptions = {
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(
+            // In real implementation, this key should come from your server
+            'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U'
+          )
+        };
+        
+        const subscription = await registration.pushManager.subscribe(subscriptionOptions);
+        
+        // Save the subscription to your server
+        await saveSubscription(subscription);
+        
+        toast.success('You will now be notified about new opportunities!');
+      }
+    } catch (error) {
+      console.error('Failed to subscribe to push notifications:', error);
+    }
   };
 
-  const handleRegionChange = (newRegion) => {
-    setSelectedRegion(newRegion);
+  // Helper function for creating application server key
+  const urlBase64ToUint8Array = (base64String) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+    
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  };
+
+  // Save subscription to database
+  const saveSubscription = async (subscription) => {
+    const subscriptionJSON = subscription.toJSON();
+    const endpoint = subscription.endpoint;
+    const p256dh = subscriptionJSON.keys?.p256dh;
+    const auth = subscriptionJSON.keys?.auth;
+
+    if (!p256dh || !auth) {
+      throw new Error('Invalid subscription keys');
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+      
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .upsert({ 
+          endpoint, 
+          p256dh, 
+          auth, 
+          user_id: userId || null
+        }, { 
+          onConflict: 'endpoint' 
+        });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error saving subscription:', error);
+      throw error;
+    }
+  };
+
+  const fetchOpportunities = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        toast.error('Error fetching opportunities. Please try again later.');
+        throw error;
+      }
+
+      if (data) {
+        console.log("Opportunities data from database:", data);
+        
+        // Process all opportunities
+        const processedData = data.map(item => {
+          console.log(`Processing opportunity ${item.id}:`, item);
+          let processedAttachments = [];
+          
+          // Ensure attachments is always a properly formatted array
+          if (item.attachments) {
+            if (Array.isArray(item.attachments)) {
+              processedAttachments = item.attachments;
+            } else if (typeof item.attachments === 'string') {
+              try {
+                processedAttachments = JSON.parse(item.attachments);
+              } catch (e) {
+                console.error("Error parsing attachments:", e);
+                processedAttachments = [];
+              }
+            }
+          }
+          
+          return {
+            ...item,
+            attachments: processedAttachments
+          };
+        });
+        
+        console.log("Processed opportunities:", processedData);
+        
+        // First 3 items are featured
+        const featured = processedData.slice(0, 3);
+        // Rest of the items
+        const others = processedData.slice(3);
+        
+        setFeaturedOpportunities(featured as Opportunity[]);
+        setOtherOpportunities(others as Opportunity[]);
+      }
+    } catch (error) {
+      console.error('Error fetching opportunities:', error);
+    }
+  };
+
+  const showNewOpportunityNotification = (opportunity: Opportunity) => {
+    // Show toast notification for all users
+    toast(
+      `New ${opportunity.type}: ${opportunity.title}`,
+      {
+        description: `From ${opportunity.organization}`,
+        action: {
+          label: 'View',
+          onClick: () => window.location.href = `/opportunity/${opportunity.id}`
+        },
+        duration: 10000,
+      }
+    );
+    
+    // Try to show push notification if available and permission granted
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      try {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.showNotification(`New ${opportunity.type}: ${opportunity.title}`, {
+            body: `From ${opportunity.organization}`,
+            icon: '/og-image.png',
+            badge: '/favicon.ico',
+            data: {
+              url: `/opportunity/${opportunity.id}`
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Error showing notification:', error);
+      }
+    }
+  };
+
+  const loadMore = () => {
+    setVisibleCount(prevCount => prevCount + 6);
+  };
+
+  // Function to determine where to place ads
+  const renderAdPlaceholder = (index: number) => {
+    // Show ad after every 3 opportunities
+    if ((index + 1) % 3 === 0) {
+      return (
+        <div key={`ad-${index}`} className="col-span-1 md:col-span-3 bg-gray-100 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-500 font-medium">Advertisement</p>
+            <p className="text-sm text-gray-400">Ad space available</p>
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
-    <div className="container mx-auto px-4">
-      {showFilters && (
-        <div>
-          <Tabs value={activeTab} onValueChange={(value) => {
-            setActiveTab(value);
-            navigate(`/?type=${value}`);
-          }}>
-            <TabsList>
-              <TabsTrigger value="all">{t('nav.home')}</TabsTrigger>
-              <TabsTrigger value="scholarship">{t('scholarships.title')}</TabsTrigger>
-              <TabsTrigger value="job">{t('jobs.title')}</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <div className="relative mt-4">
-            <Input
-              type="search"
-              placeholder={t('buttons.search')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+    <div className="py-8 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Featured Section */}
+        <div className="mb-12">
+          <div className="bg-gray-800 text-white py-2 px-4 inline-block mb-6">
+            <h2 className="text-lg font-bold">RECOMMENDED</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredOpportunities.map((opportunity) => (
+              <OpportunityCard 
+                key={opportunity.id} 
+                {...opportunity} 
+                featured={true} 
+              />
+            ))}
+          </div>
+          
+          {/* Ad banner below featured section */}
+          <div className="my-8 bg-gray-100 rounded-lg p-6 text-center">
+            <p className="text-gray-500 font-medium">Advertisement</p>
+            <div className="h-[120px] flex items-center justify-center">
+              <p className="text-sm text-gray-400">Premium ad space</p>
             </div>
           </div>
-
-          <RegionFilter onRegionChange={handleRegionChange} activeRegion={selectedRegion} />
         </div>
-      )}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {isLoading ? (
-          <>
-            {[...Array(9)].map((_, i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-48 w-full bg-gray-200 animate-pulse rounded-md"></div>
-                <div className="h-4 w-3/4 bg-gray-200 animate-pulse rounded-md"></div>
-                <div className="h-4 w-1/2 bg-gray-200 animate-pulse rounded-md"></div>
-                <div className="h-4 w-5/6 bg-gray-200 animate-pulse rounded-md"></div>
-              </div>
-            ))}
-          </>
-        ) : filteredOpportunities.length === 0 ? (
-          <div className="col-span-3 text-center py-12">
-            <p className="text-lg text-gray-500">{t('scholarships.empty')}</p>
+
+        {/* Other Opportunities */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {otherOpportunities.slice(0, visibleCount).map((opportunity, index) => (
+            <>
+              <OpportunityCard key={opportunity.id} {...opportunity} />
+              {renderAdPlaceholder(index)}
+            </>
+          ))}
+        </div>
+
+        {/* Load More Button */}
+        {otherOpportunities.length > visibleCount && (
+          <div className="flex justify-center mt-10">
+            <Button 
+              onClick={() => setVisibleCount(prevCount => prevCount + 6)}
+              variant="outline"
+              className="border border-gray-300 hover:bg-gray-100 text-gray-800"
+            >
+              Load more <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
           </div>
-        ) : (
-          <>
-            {filteredOpportunities.map((opportunity) => (
-              <div key={opportunity.id} className="h-full">
-                {featured && opportunity.featured ? (
-                  <div className="relative h-full">
-                    <div className="absolute -top-2 -right-2 z-10">
-                      <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                        Featured
-                      </span>
-                    </div>
-                    <OpportunityCard
-                      opportunity={opportunity}
-                      onClick={handleOpportunityClick}
-                    />
-                  </div>
-                ) : (
-                  <OpportunityCard
-                    opportunity={opportunity}
-                    onClick={handleOpportunityClick}
-                  />
-                )}
-              </div>
-            ))}
-          </>
         )}
       </div>
-      
-      {!isLoading && filteredOpportunities.length > 0 && totalCount > filteredOpportunities.length && (
-        <div className="mt-8 flex justify-center">
-          <Button onClick={() => setLimit(prev => prev + 9)} className="px-6">
-            {t('buttons.loadMore')}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

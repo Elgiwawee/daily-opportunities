@@ -20,6 +20,9 @@ import Explainer from "./pages/Explainer";
 import Disclaimer from "./pages/Disclaimer";
 import CookieConsent from "./components/CookieConsent";
 import Donate from './pages/Donate';
+
+// Import i18n configuration
+import './i18n';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setLanguageDirection } from './i18n';
