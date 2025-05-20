@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { Support } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 
 // Import specific exports from date-fns locales (not default exports)
 import { arSA } from 'date-fns/locale/ar-SA';
@@ -94,7 +94,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity, onClick 
           {t('opportunity.howToApply')}
         </Button>
         <Button variant="outline" className="px-2">
-          <Support className="h-5 w-5" />
+          <HelpCircle className="h-5 w-5" />
         </Button>
       </CardFooter>
     </Card>
