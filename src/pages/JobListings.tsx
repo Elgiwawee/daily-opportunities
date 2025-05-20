@@ -1,92 +1,143 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import Navbar from '../components/Navbar';
+import { motion } from 'framer-motion';
+import OpportunityCard from '../components/OpportunityCard';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import RegionFilter from '../components/RegionFilter';
+import { toast } from 'sonner';
+import DonationButton from '../components/DonationButton';
 import { useTranslation } from 'react-i18next';
-import Layout from '../components/Layout';
-import OpportunityCard from '../components/OpportunityCard';
 
 interface Job {
   id: string;
   title: string;
   organization: string;
-  deadline?: string | Date;
-  type?: string;
-  description?: string;
-  attachments?: any;
-  created_at?: string;
-  external_url?: string;
-  featured?: boolean;
-  image?: string;
+  deadline: string | null;
+  type: 'job';
+  description: string;
+  attachments: any[] | null;
+  created_at: string;
 }
 
 const JobListings = () => {
-  const navigate = useNavigate();
-  const [limit, setLimit] = useState(9);
   const { t } = useTranslation();
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(9);
 
-  const { data: jobs, isLoading, error } = useQuery<Job[], Error>({
-    queryKey: ['jobs', limit],
-    queryFn: async () => {
+  const fetchJobs = async () => {
+    try {
       const { data, error } = await supabase
         .from('opportunities')
         .select('*')
         .eq('type', 'job')
-        .order('created_at', { ascending: false })
-        .limit(limit);
-        
-      if (error) throw error;
-      return data || [];
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error("Database error:", error);
+        toast.error("Error loading jobs. Please try again later.");
+        throw error;
+      }
+      
+      // For debugging
+      console.log("Fetched jobs:", data?.length || 0);
+      
+      if (!data || data.length === 0) {
+        return [];
+      }
+      
+      // Filter by region if selected
+      if (selectedRegion) {
+        return (data as Job[]).filter(job => 
+          (job.description?.toLowerCase() || '').includes(selectedRegion.toLowerCase()) ||
+          (job.title?.toLowerCase() || '').includes(selectedRegion.toLowerCase())
+        );
+      }
+      
+      return data as Job[];
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      toast.error("Failed to load jobs");
+      return [];
     }
+  };
+
+  const { data: jobs = [], isLoading, error } = useQuery({
+    queryKey: ['jobs', selectedRegion],
+    queryFn: fetchJobs,
   });
 
-  const handleJobClick = (job: Job) => {
-    navigate(`/opportunity/${job.id}`);
+  const loadMore = () => {
+    setVisibleCount(prev => prev + 6);
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">{t('jobs.title')}</h1>
-        <p className="text-gray-600 mb-8">{t('jobs.subtitle')}</p>
-        
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(limit)].map((_, i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-48 w-full bg-gray-200 animate-pulse rounded-md"></div>
-                <div className="h-4 w-3/4 bg-gray-200 animate-pulse rounded-md"></div>
-                <div className="h-4 w-1/2 bg-gray-200 animate-pulse rounded-md"></div>
-                <div className="h-4 w-5/6 bg-gray-200 animate-pulse rounded-md"></div>
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <div className="pt-36 pb-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12 text-center"
+          >
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('jobs.title')}</h1>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              {t('jobs.subtitle')}
+            </p>
+            <div className="mt-6">
+              <DonationButton size="lg" />
+            </div>
+          </motion.div>
+
+          <RegionFilter
+            selectedRegion={selectedRegion}
+            setSelectedRegion={setSelectedRegion}
+          />
+
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12 text-red-500">
+              Error loading jobs. Please try again later.
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                {jobs.slice(0, visibleCount).map((job) => (
+                  <OpportunityCard
+                    key={job.id}
+                    {...job}
+                  />
+                ))}
               </div>
-            ))}
-          </div>
-        ) : jobs && jobs.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {jobs.map((job) => (
-                <OpportunityCard
-                  key={job.id}
-                  opportunity={job}
-                  onClick={handleJobClick}
-                />
-              ))}
-            </div>
-            <div className="mt-8 flex justify-center">
-              <Button onClick={() => setLimit(prev => prev + 9)} className="px-6">
-                {t('jobs.loadMore')}
-              </Button>
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-xl text-gray-500">{t('jobs.empty')}</p>
-          </div>
-        )}
+
+              {jobs.length > visibleCount && (
+                <div className="flex justify-center mt-10">
+                  <Button 
+                    onClick={loadMore}
+                    variant="outline"
+                    className="border border-olive-600 text-olive-700 hover:bg-olive-50"
+                  >
+                    {t('jobs.loadMore')}
+                  </Button>
+                </div>
+              )}
+
+              {jobs.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-lg text-gray-500">{t('jobs.empty')}</p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

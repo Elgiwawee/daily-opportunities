@@ -1,195 +1,173 @@
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import { motion } from 'framer-motion';
+import OpportunityCard from '../components/OpportunityCard';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import Layout from '@/components/Layout';
-import OpportunityCard from '@/components/OpportunityCard';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useTranslation } from 'react-i18next';
+import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+interface Opportunity {
+  id: string;
+  title: string;
+  organization: string;
+  deadline: string | null;
+  type: 'scholarship' | 'job';
+  description: string;
+  attachments: any[] | null;
+  created_at: string;
+}
+
+const countryKeywords: Record<string, string[]> = {
+  'usa': ['usa', 'united states', 'america', 'american', 'u.s.', 'u.s.a.'],
+  'uk': ['uk', 'united kingdom', 'britain', 'british', 'england', 'scotland', 'wales'],
+  'canada': ['canada', 'canadian']
+};
 
 const ScholarshipsByCountry = () => {
-  const { country } = useParams<{country: string}>();
+  const { country } = useParams<{ country: string }>();
+  const [visibleCount, setVisibleCount] = useState(9);
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const [limit, setLimit] = useState(9);
-  const [scholarships, setScholarships] = useState<any[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-
-  const countryName =
-    country === 'usa'
-      ? 'USA'
-      : country === 'uk'
-      ? 'UK'
-      : country === 'canada'
-      ? 'Canada'
-      : country === 'australia'
-      ? 'Australia'
-      : country === 'germany'
-      ? 'Germany'
-      : 'Unknown Country';
-
-  const countryFlag =
-    country === 'usa'
-      ? 'https://flagcdn.com/w320/us.png'
-      : country === 'uk'
-      ? 'https://flagcdn.com/w320/gb.png'
-      : country === 'canada'
-      ? 'https://flagcdn.com/w320/ca.png'
-      : country === 'australia'
-      ? 'https://flagcdn.com/w320/au.png'
-      : country === 'germany'
-      ? 'https://flagcdn.com/w320/de.png'
-      : null;
-
-  const { isLoading, error } = useQuery({
-    queryKey: ['scholarships', country, limit],
-    queryFn: async () => {
-      if (!country) return [];
-      
-      const { data, error, count } = await supabase
-        .from('opportunities')
-        .select('*', { count: 'exact' })
-        .eq('type', 'scholarship')
-        .eq('region', country)
-        .range(0, limit - 1)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      setScholarships(data || []);
-      setTotalCount(count || 0);
-      return data;
-    }
-  });
-
+  
+  // Validate country parameter
   useEffect(() => {
-    if (country) {
-      setLimit(9); // Reset limit when country changes
+    if (country && !countryKeywords[country.toLowerCase()]) {
+      navigate('/scholarships', { replace: true });
+      toast.error(`Invalid country filter: ${country}`);
     }
-  }, [country]);
-
-  const handleScholarshipClick = (scholarship: any) => {
-    navigate(`/opportunity/${scholarship.id}`);
+  }, [country, navigate]);
+  
+  const fetchScholarships = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .eq('type', 'scholarship')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error("Database error:", error);
+        toast.error("Error loading scholarships. Please try again later.");
+        throw error;
+      }
+      
+      // For debugging
+      console.log("Fetched scholarships:", data?.length || 0);
+      console.log("Current country param:", country);
+      
+      if (!data || data.length === 0) {
+        return [];
+      }
+      
+      // Filter by country if specified
+      if (country && countryKeywords[country.toLowerCase()]) {
+        const keywords = countryKeywords[country.toLowerCase()];
+        console.log("Filtering by country keywords:", keywords);
+        
+        const filtered = (data as Opportunity[]).filter(scholarship => {
+          const descLower = scholarship.description?.toLowerCase() || '';
+          const titleLower = scholarship.title?.toLowerCase() || '';
+          const orgLower = scholarship.organization?.toLowerCase() || '';
+          
+          return keywords.some(keyword => 
+            descLower.includes(keyword) || 
+            titleLower.includes(keyword) ||
+            orgLower.includes(keyword)
+          );
+        });
+        
+        console.log(`Filtered to ${filtered.length} scholarships for ${country}`);
+        return filtered;
+      }
+      
+      return data as Opportunity[];
+    } catch (error) {
+      console.error("Error fetching scholarships:", error);
+      toast.error("Failed to load scholarships");
+      return [];
+    }
   };
 
-  const filteredScholarships = scholarships.filter((scholarship) =>
-    scholarship.type === 'scholarship'
-  );
+  const { data: scholarships = [], isLoading, error } = useQuery({
+    queryKey: ['scholarships-by-country', country],
+    queryFn: fetchScholarships,
+  });
+
+  const loadMore = () => {
+    setVisibleCount(prev => prev + 6);
+  };
+
+  const formatCountry = (country: string | undefined) => {
+    if (!country) return 'All Countries';
+    if (country.toLowerCase() === 'usa') return 'USA';
+    if (country.toLowerCase() === 'uk') return 'UK';
+    if (country.toLowerCase() === 'canada') return 'Canada';
+    return country;
+  };
+
+  const countryTitle = formatCountry(country);
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">
-              {countryName} {t('scholarships.title')}
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <div className="pt-36 pb-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12 text-center"
+          >
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              Scholarships in {countryTitle}
             </h1>
-            <p className="text-gray-600">
-              {t('scholarships.subtitle')}
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Discover scholarship opportunities in {countryTitle}.
             </p>
-          </div>
-          
-          {/* Add country flag if available */}
-          {countryFlag && (
-            <div className="hidden md:block">
-              <img 
-                src={countryFlag} 
-                alt={`${countryName} flag`} 
-                className="h-16 w-auto shadow-sm rounded"
-              />
-            </div>
-          )}
-        </div>
+          </motion.div>
 
-        <div className="flex flex-wrap gap-2 mb-6">
-          {/* Country switcher buttons */}
-          <Button 
-            variant={country === 'usa' ? 'default' : 'outline'} 
-            onClick={() => navigate('/scholarships/country/usa')}
-            className="text-sm"
-          >
-            USA
-          </Button>
-          <Button 
-            variant={country === 'uk' ? 'default' : 'outline'} 
-            onClick={() => navigate('/scholarships/country/uk')}
-            className="text-sm"
-          >
-            UK
-          </Button>
-          <Button 
-            variant={country === 'canada' ? 'default' : 'outline'} 
-            onClick={() => navigate('/scholarships/country/canada')}
-            className="text-sm"
-          >
-            Canada
-          </Button>
-          <Button 
-            variant={country === 'australia' ? 'default' : 'outline'} 
-            onClick={() => navigate('/scholarships/country/australia')}
-            className="text-sm"
-          >
-            Australia
-          </Button>
-          <Button 
-            variant={country === 'germany' ? 'default' : 'outline'} 
-            onClick={() => navigate('/scholarships/country/germany')}
-            className="text-sm"
-          >
-            Germany
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/scholarships')}
-            className="text-sm"
-          >
-            All Countries
-          </Button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {isLoading ? (
-            <>
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="space-y-3">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-                  <Skeleton className="h-4 w-4/6" />
-                </div>
-              ))}
-            </>
-          ) : filteredScholarships.length > 0 ? (
-            filteredScholarships.map(scholarship => (
-              <OpportunityCard
-                key={scholarship.id}
-                opportunity={scholarship}
-                onClick={handleScholarshipClick}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12">
-              <p className="text-lg text-gray-500">
-                {t('scholarships.empty')}
-              </p>
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
             </div>
+          ) : error ? (
+            <div className="text-center py-12 text-red-500">
+              Error loading scholarships. Please try again later.
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                {scholarships.slice(0, visibleCount).map((scholarship) => (
+                  <OpportunityCard
+                    key={scholarship.id}
+                    {...scholarship}
+                  />
+                ))}
+              </div>
+
+              {scholarships.length > visibleCount && (
+                <div className="flex justify-center mt-10">
+                  <Button 
+                    onClick={loadMore}
+                    variant="outline"
+                    className="border border-olive-600 text-olive-700 hover:bg-olive-50"
+                  >
+                    Load More Scholarships
+                  </Button>
+                </div>
+              )}
+
+              {scholarships.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-lg text-gray-500">No scholarships found for {countryTitle}. Please check back later.</p>
+                </div>
+              )}
+            </>
           )}
         </div>
-        
-        {/* Load more button */}
-        {!isLoading && filteredScholarships.length > 0 && totalCount > limit && (
-          <div className="mt-8 flex justify-center">
-            <Button onClick={() => setLimit(prev => prev + 9)} className="px-6">
-              {t('scholarships.loadMore')}
-            </Button>
-          </div>
-        )}
       </div>
-    </Layout>
+    </div>
   );
 };
 
