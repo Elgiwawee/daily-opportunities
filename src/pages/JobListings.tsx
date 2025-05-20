@@ -6,28 +6,47 @@ import { supabase } from '@/integrations/supabase/client';
 import Layout from '@/components/Layout';
 import OpportunityCard from '@/components/OpportunityCard';
 import { Button } from '@/components/ui/button';
-import RegionFilter from '@/components/RegionFilter';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import { 
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const JobListings = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [industryFilter, setIndustryFilter] = useState('all');
+  const [sortOption, setSortOption] = useState('newest');
   const [limit, setLimit] = useState(9);
-  const [activeRegion, setActiveRegion] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['jobs', limit, activeRegion],
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['jobs', searchTerm, industryFilter, sortOption, limit],
     queryFn: async () => {
       let query = supabase
         .from('opportunities')
         .select('*', { count: 'exact' })
         .eq('type', 'job')
-        .order('created_at', { ascending: false })
+        .ilike('title', `%${searchTerm}%`)
         .range(0, limit - 1);
 
-      if (activeRegion) {
-        query = query.eq('region', activeRegion);
+      if (industryFilter !== 'all') {
+        query = query.eq('industry', industryFilter);
+      }
+
+      if (sortOption === 'newest') {
+        query = query.order('created_at', { ascending: false });
+      } else if (sortOption === 'oldest') {
+        query = query.order('created_at', { ascending: true });
+      } else if (sortOption === 'deadline') {
+        query = query.order('deadline', { ascending: true });
       }
 
       const { data, error, count } = await query;
@@ -40,27 +59,64 @@ const JobListings = () => {
     }
   });
 
+  const filteredJobs = data?.data || [];
   const totalCount = data?.count || 0;
-  const jobs = data?.data || [];
 
   const handleJobClick = (job: any) => {
     navigate(`/opportunity/${job.id}`);
-  };
-
-  const handleRegionChange = (region: string | null) => {
-    setActiveRegion(region);
-    setLimit(9); // Reset limit when region changes
   };
 
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2">{t('jobs.title')}</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">{t('jobs.subtitle')}</p>
+        <p className="text-gray-600 mb-6">{t('jobs.subtitle')}</p>
         
-        <RegionFilter onRegionChange={handleRegionChange} activeRegion={activeRegion} />
+        {/* Search and filters */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="relative">
+            <Input
+              type="search"
+              placeholder={t('buttons.search')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          </div>
+          
+          <Select value={industryFilter} onValueChange={setIndustryFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by industry" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">All Industries</SelectItem>
+                <SelectItem value="technology">Technology</SelectItem>
+                <SelectItem value="healthcare">Healthcare</SelectItem>
+                <SelectItem value="education">Education</SelectItem>
+                <SelectItem value="finance">Finance</SelectItem>
+                <SelectItem value="nonprofit">Non-profit</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          
+          <Select value={sortOption} onValueChange={setSortOption}>
+            <SelectTrigger>
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="deadline">Deadline (Soonest)</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {/* Jobs listing */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isLoading ? (
             <>
               {[...Array(9)].map((_, i) => (
@@ -68,13 +124,12 @@ const JobListings = () => {
                   <Skeleton className="h-4 w-3/4" />
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-5/6" />
-                  <Skeleton className="h-4 w-4/6" />
-                  <Skeleton className="h-4 w-2/6" />
+                  <Skeleton className="h-4 w-1/2" />
                 </div>
               ))}
             </>
-          ) : jobs.length > 0 ? (
-            jobs.map(job => (
+          ) : filteredJobs.length > 0 ? (
+            filteredJobs.map(job => (
               <OpportunityCard
                 key={job.id}
                 opportunity={job}
@@ -83,13 +138,13 @@ const JobListings = () => {
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-lg text-gray-500 dark:text-gray-400">{t('jobs.empty')}</p>
+              <p className="text-lg text-gray-500">{t('jobs.empty')}</p>
             </div>
           )}
         </div>
         
         {/* Load more button */}
-        {!isLoading && jobs.length > 0 && totalCount > limit && (
+        {!isLoading && filteredJobs.length > 0 && totalCount > limit && (
           <div className="mt-8 flex justify-center">
             <Button onClick={() => setLimit(prev => prev + 9)} className="px-6">
               {t('jobs.loadMore')}

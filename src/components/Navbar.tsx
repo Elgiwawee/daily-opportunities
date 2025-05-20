@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search, User, ChevronDown } from 'lucide-react';
@@ -31,7 +32,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import LanguageSwitcher from './LanguageSwitcher';
-import ThemeSwitcher from './ThemeSwitcher';
 
 const Navbar = () => {
   const { t, i18n } = useTranslation();
@@ -81,7 +81,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50">
+    <nav className="fixed w-full bg-white border-b border-gray-200 z-50">
       <div className="flex justify-between items-center py-4 px-6 max-w-7xl mx-auto">
         {/* Logo and site name */}
         <Link to="/" className="flex items-center gap-2">
@@ -90,13 +90,13 @@ const Navbar = () => {
             alt={t('app.name')}
             className="h-10 w-auto"
           />
-          <span className="font-bold text-xl dark:text-white">{t('app.name')}</span>
+          <span className="font-bold text-xl">{t('app.name')}</span>
         </Link>
 
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/" className={cn("hover:text-olive-600 dark:hover:text-olive-400 transition-colors dark:text-gray-300", {
-            'text-olive-600 dark:text-olive-400 font-semibold': location.pathname === '/'
+          <Link to="/" className={cn("hover:text-olive-600 transition-colors", {
+            'text-olive-600 font-semibold': location.pathname === '/'
           })}>{t('nav.home')}</Link>
           
           {/* Scholarships dropdown */}
@@ -196,8 +196,8 @@ const Navbar = () => {
             </MenubarMenu>
           </Menubar>
           
-          {/* Add theme switcher */}
-          <ThemeSwitcher />
+          {/* Add notification manager */}
+          <NotificationManager />
           
           {/* Language switcher */}
           <LanguageSwitcher />
@@ -209,7 +209,7 @@ const Navbar = () => {
               placeholder={t('buttons.search')}
               value={searchTerm}
               onChange={handleSearchChange}
-              className="border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500"
+              className="border border-gray-300 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500"
             />
             <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
@@ -240,11 +240,6 @@ const Navbar = () => {
             <NotificationManager />
           </div>
           
-          {/* Add theme switcher for mobile */}
-          <div className="mr-2">
-            <ThemeSwitcher />
-          </div>
-          
           {/* Language switcher for mobile */}
           <div className="mr-2">
             <LanguageSwitcher />
@@ -252,9 +247,9 @@ const Navbar = () => {
           
           <button onClick={toggleMenu}>
             {isMenuOpen ? (
-              <X className="h-6 w-6 dark:text-white" />
+              <X className="h-6 w-6" />
             ) : (
-              <Menu className="h-6 w-6 dark:text-white" />
+              <Menu className="h-6 w-6" />
             )}
           </button>
         </div>
@@ -262,7 +257,7 @@ const Navbar = () => {
 
       {/* Mobile navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4">
+        <div className="md:hidden bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex flex-col space-y-4">
             <Link to="/" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Home</Link>
             
@@ -353,7 +348,7 @@ const Navbar = () => {
                 placeholder="Search"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500 w-full"
+                className="border border-gray-300 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500 w-full"
               />
               <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />

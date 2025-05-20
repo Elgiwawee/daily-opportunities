@@ -37,7 +37,8 @@ const Scholarships = () => {
       }
 
       return { data, count };
-    }
+    },
+    keepPreviousData: true,
   });
 
   const totalCount = data?.count || 0;
@@ -50,13 +51,14 @@ const Scholarships = () => {
   const handleRegionChange = (region: string | null) => {
     setActiveRegion(region);
     setLimit(9); // Reset limit when region changes
+    refetch(); // Trigger refetch when region changes
   };
 
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2">{t('scholarships.title')}</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">{t('scholarships.subtitle')}</p>
+        <p className="text-gray-600 mb-6">{t('scholarships.subtitle')}</p>
         
         <RegionFilter onRegionChange={handleRegionChange} activeRegion={activeRegion} />
         
@@ -83,7 +85,7 @@ const Scholarships = () => {
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-lg text-gray-500 dark:text-gray-400">{t('scholarships.empty')}</p>
+              <p className="text-lg text-gray-500">{t('scholarships.empty')}</p>
             </div>
           )}
         </div>
