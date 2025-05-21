@@ -66,7 +66,7 @@ const ScholarshipsByLevel = () => {
         const keywords = levelKeywords[level.toLowerCase()];
         console.log("Filtering by keywords:", keywords);
         
-        const filtered = (data as Opportunity[]).filter(scholarship => {
+        const filtered = data.filter(scholarship => {
           const descLower = scholarship.description?.toLowerCase() || '';
           const titleLower = scholarship.title?.toLowerCase() || '';
           
@@ -76,7 +76,7 @@ const ScholarshipsByLevel = () => {
         });
         
         console.log(`Filtered to ${filtered.length} scholarships for ${level} level`);
-        return filtered;
+        return filtered as Opportunity[];
       }
       
       return data as Opportunity[];
