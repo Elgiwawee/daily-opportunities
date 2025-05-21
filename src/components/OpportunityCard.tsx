@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { Image, Video, ExternalLink, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -8,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import DonationButton from './DonationButton';
 import { useTranslation } from 'react-i18next';
-import arSA from 'date-fns/locale/ar-SA';
+import { arSA } from 'date-fns/locale/ar-SA';
 
 interface Attachment {
   name: string;

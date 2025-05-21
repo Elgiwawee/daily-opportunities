@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,20 +10,20 @@ import DonationButton from '../components/DonationButton';
 interface Attachment {
   name: string;
   url: string;
-  type: string;
-  path: string;
+  type?: string;
+  path?: string;
 }
 
 interface Opportunity {
   id: string;
   title: string;
   organization: string;
-  deadline: string;
+  deadline: string | null;
   type: 'scholarship' | 'job';
   description: string;
-  attachments: Attachment[];
+  attachments: Attachment[] | null;
   created_at: string;
-  external_url: string | null;
+  external_url?: string;
 }
 
 const OpportunityDetails = () => {
