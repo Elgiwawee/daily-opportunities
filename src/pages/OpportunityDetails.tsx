@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -152,7 +151,7 @@ const OpportunityDetails = () => {
                     <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.applyNow')}</h2>
                     <Button asChild className="bg-olive-600 hover:bg-olive-700">
                       <a href={opportunity.external_url} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                        {t('opportunityDetails.visitWebsite')}
+                        Click here to apply
                         <ExternalLink className="ml-2 h-4 w-4" />
                       </a>
                     </Button>
