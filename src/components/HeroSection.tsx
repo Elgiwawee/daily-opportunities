@@ -16,13 +16,6 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            {t('hero.title')}
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto">
-            {t('hero.subtitle')}
-          </p>
-          
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -33,7 +26,7 @@ const HeroSection = () => {
                 to="/scholarships"
                 className="bg-olive-600 hover:bg-olive-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform inline-block"
               >
-                {t('hero.findScholarships')}
+                Find Scholarships
               </Link>
             </motion.div>
             
@@ -46,7 +39,7 @@ const HeroSection = () => {
                 to="/jobs"
                 className="bg-white hover:bg-gray-50 text-olive-700 border-2 border-olive-600 px-8 py-4 rounded-lg font-semibold text-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform inline-block"
               >
-                {t('hero.exploreJobs')}
+                Explore Jobs
               </Link>
             </motion.div>
           </div>
