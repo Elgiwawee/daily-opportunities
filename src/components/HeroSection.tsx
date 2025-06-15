@@ -1,59 +1,55 @@
 
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const HeroSection = () => {
+  const { t } = useTranslation();
+
   return (
-    <div className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-indigo-100 to-white">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px)] bg-[size:3rem_1px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-      </div>
+    <div className="relative bg-gradient-to-br from-olive-50 to-olive-100 py-20 overflow-hidden">
+      <div className="absolute inset-0 bg-white/70 backdrop-blur-sm"></div>
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-        <motion.span
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-8"
-        >
-          Find Your Perfect Opportunity
-        </motion.span>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl sm:text-6xl font-bold text-gray-900 mb-6 tracking-tight"
-        >
-          Global Scholarships & Jobs
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto"
-        >
-          Discover opportunities from around the world, curated just for you.
-        </motion.p>
-
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          transition={{ duration: 0.8 }}
         >
-          <a
-            href="#scholarships"
-            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-700 hover:bg-blue-800 transition-all shadow-lg hover:shadow-xl"
-          >
-            Find Scholarships
-          </a>
-          <a
-            href="#jobs"
-            className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-md hover:shadow-lg"
-          >
-            Explore Jobs
-          </a>
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            {t('hero.title')}
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto">
+            {t('hero.subtitle')}
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <Link
+                to="/scholarships"
+                className="bg-olive-600 hover:bg-olive-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform inline-block"
+              >
+                {t('hero.findScholarships')}
+              </Link>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <Link
+                to="/jobs"
+                className="bg-white hover:bg-gray-50 text-olive-700 border-2 border-olive-600 px-8 py-4 rounded-lg font-semibold text-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform inline-block"
+              >
+                {t('hero.exploreJobs')}
+              </Link>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </div>

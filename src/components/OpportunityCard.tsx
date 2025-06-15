@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
 import { Image, Video, ExternalLink, Share2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import DonationButton from './DonationButton';
 import { useTranslation } from 'react-i18next';
-import { arSA } from 'date-fns/locale/ar-SA';
+import { arSA } from 'date-fns/locale';
+import OpportunityModal from './OpportunityModal';
 
 interface Attachment {
   name: string;
@@ -43,6 +43,7 @@ const OpportunityCard = ({
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const isRtl = i18n.language === 'ar';
   
   // Try to parse the deadline to a readable format
@@ -143,125 +144,134 @@ const OpportunityCard = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.3 }}
-      className={`overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:shadow-md ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
-    >
-      <div className="relative aspect-video w-full overflow-hidden">
-        {imageLoading && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
-        )}
-        
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-full h-full object-cover"
-            onError={handleImageError}
-            onLoad={handleImageLoad}
-            loading="lazy"
-          />
-        )}
-        
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
-          <h3 className="text-lg md:text-xl font-bold text-white">{title}</h3>
-        </div>
-        
-        <div className={`absolute top-2 left-2 px-3 py-1 text-xs font-semibold text-white rounded ${
-          type === 'scholarship' ? 'bg-blue-700' : 'bg-green-700'
-        }`}>
-          {type === 'scholarship' ? t('scholarships.title') : t('jobs.title')}
-        </div>
-        
-        {/* Share button positioned away from navbar */}
-        <div className={`absolute top-10 ${isRtl ? 'left-2' : 'right-2'}`}>
-          <div className="relative inline-block">
-            <button 
-              onClick={() => setShareMenuOpen(!shareMenuOpen)}
-              className="flex items-center justify-center bg-white/80 hover:bg-white text-gray-700 p-1.5 rounded-full"
-            >
-              <Share2 className="w-4 h-4" />
-            </button>
-            
-            {shareMenuOpen && (
-              <div className={`absolute ${isRtl ? 'left-0' : 'right-0'} mt-2 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100`}>
-                <div className="py-1">
-                  <button
-                    onClick={() => handleShare('facebook')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
-                  >
-                    {t('opportunity.share.facebook')}
-                  </button>
-                  <button
-                    onClick={() => handleShare('twitter')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
-                  >
-                    {t('opportunity.share.twitter')}
-                  </button>
-                  <button
-                    onClick={() => handleShare('whatsapp')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
-                  >
-                    {t('opportunity.share.whatsapp')}
-                  </button>
-                  <button
-                    onClick={() => handleShare('copy')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
-                  >
-                    {t('opportunity.share.copy')}
-                  </button>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        whileHover={{ y: -5 }}
+        transition={{ duration: 0.3 }}
+        className={`overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:shadow-md ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
+      >
+        <div className="relative aspect-video w-full overflow-hidden">
+          {imageLoading && (
+            <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
+          )}
+          
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt={title}
+              className="w-full h-full object-cover"
+              onError={handleImageError}
+              onLoad={handleImageLoad}
+              loading="lazy"
+            />
+          )}
+          
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
+            <h3 className="text-lg md:text-xl font-bold text-white">{title}</h3>
+          </div>
+          
+          <div className={`absolute top-2 left-2 px-3 py-1 text-xs font-semibold text-white rounded ${
+            type === 'scholarship' ? 'bg-blue-700' : 'bg-green-700'
+          }`}>
+            {type === 'scholarship' ? t('scholarships.title') : t('jobs.title')}
+          </div>
+          
+          {/* Share button positioned away from navbar */}
+          <div className={`absolute top-10 ${isRtl ? 'left-2' : 'right-2'}`}>
+            <div className="relative inline-block">
+              <button 
+                onClick={() => setShareMenuOpen(!shareMenuOpen)}
+                className="flex items-center justify-center bg-white/80 hover:bg-white text-gray-700 p-1.5 rounded-full"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+              
+              {shareMenuOpen && (
+                <div className={`absolute ${isRtl ? 'left-0' : 'right-0'} mt-2 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100`}>
+                  <div className="py-1">
+                    <button
+                      onClick={() => handleShare('facebook')}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    >
+                      {t('opportunity.share.facebook')}
+                    </button>
+                    <button
+                      onClick={() => handleShare('twitter')}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    >
+                      {t('opportunity.share.twitter')}
+                    </button>
+                    <button
+                      onClick={() => handleShare('whatsapp')}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    >
+                      {t('opportunity.share.whatsapp')}
+                    </button>
+                    <button
+                      onClick={() => handleShare('copy')}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    >
+                      {t('opportunity.share.copy')}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-700">{organization}</span>
-          <span className="text-xs text-gray-500">{formattedDate}</span>
-        </div>
         
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description}</p>
-        
-        <div className="flex justify-between items-center mt-2">
-          <Link
-            to={`/opportunity/${id}`}
-            className="text-sm font-medium text-blue-700 hover:underline"
-          >
-            {type === 'scholarship' ? t('scholarships.howToApply') : t('jobs.viewDetails')}
-          </Link>
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-700">{organization}</span>
+            <span className="text-xs text-gray-500">{formattedDate}</span>
+          </div>
           
-          <div className="flex items-center gap-2">
-            {external_url && (
-              <Button 
+          <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description}</p>
+          
+          <div className="flex justify-between items-center mt-2">
+            <Button
+              onClick={() => setModalOpen(true)}
+              className="text-sm font-medium text-blue-700 hover:underline bg-transparent border-none p-0 h-auto"
+              variant="ghost"
+            >
+              How to Apply
+            </Button>
+            
+            <div className="flex items-center gap-2">
+              {external_url && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1 text-blue-700 border-blue-200 hover:bg-blue-50"
+                  asChild
+                >
+                  <a href={external_url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="w-3 h-3" />
+                    {t('buttons.apply')}
+                  </a>
+                </Button>
+              )}
+              
+              <DonationButton 
                 variant="outline" 
                 size="sm" 
-                className="flex items-center gap-1 text-blue-700 border-blue-200 hover:bg-blue-50"
-                asChild
-              >
-                <a href={external_url} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-3 h-3" />
-                  {t('buttons.apply')}
-                </a>
-              </Button>
-            )}
-            
-            <DonationButton 
-              variant="outline" 
-              size="sm" 
-              label={t('buttons.support')}
-              className="text-amber-700 border-amber-200 hover:bg-amber-50"
-            />
+                label={t('buttons.support')}
+                className="text-amber-700 border-amber-200 hover:bg-amber-50"
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+
+      <OpportunityModal
+        opportunityId={id}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
+    </>
   );
 };
 
