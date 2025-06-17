@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -10,6 +10,7 @@ import DonationButton from '../components/DonationButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import NewsItem from '../components/NewsItem';
 import { useTranslation } from 'react-i18next';
+import { updateMetaTags } from '@/utils/metaUtils';
 
 interface Attachment {
   name: string;
@@ -32,6 +33,59 @@ const News = () => {
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [visibleCount, setVisibleCount] = useState<number>(3);
+  
+  useEffect(() => {
+    // Check for shared news URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedNewsId = urlParams.get('news');
+    
+    if (sharedNewsId) {
+      // Find and update meta tags for shared news
+      fetchSharedNews(sharedNewsId);
+    }
+  }, []);
+
+  const fetchSharedNews = async (newsId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('news_items')
+        .select('*')
+        .eq('id', newsId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching shared news:', error);
+        return;
+      }
+
+      if (data) {
+        // Process attachments to get image URL
+        let imageUrl = '';
+        if (data.attachments && Array.isArray(data.attachments) && data.attachments.length > 0) {
+          const firstAttachment = data.attachments[0];
+          if (firstAttachment && typeof firstAttachment === 'object' && 'url' in firstAttachment) {
+            imageUrl = firstAttachment.url as string;
+          }
+        }
+        
+        // If no attachment image, use default news image
+        if (!imageUrl) {
+          imageUrl = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c';
+        }
+
+        // Update meta tags for social sharing
+        updateMetaTags({
+          title: data.subject,
+          description: data.body,
+          imageUrl: imageUrl,
+          id: data.id,
+          type: 'news'
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching shared news:', error);
+    }
+  };
   
   // Fetch news with pagination limit
   const { data: allNewsItems = [], isLoading } = useQuery({

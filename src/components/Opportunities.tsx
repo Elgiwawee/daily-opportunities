@@ -101,8 +101,8 @@ const Opportunities = () => {
         let imageUrl = '';
         if (data.attachments && Array.isArray(data.attachments) && data.attachments.length > 0) {
           const firstAttachment = data.attachments[0];
-          if (firstAttachment && firstAttachment.url) {
-            imageUrl = firstAttachment.url;
+          if (firstAttachment && typeof firstAttachment === 'object' && 'url' in firstAttachment) {
+            imageUrl = firstAttachment.url as string;
           }
         }
         

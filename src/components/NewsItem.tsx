@@ -1,9 +1,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import DonationButton from './DonationButton';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface Attachment {
   name: string;
@@ -53,6 +55,33 @@ const NewsItem = ({ news, activeVideoId, isMuted, onVideoToggle, onToggleMute }:
     };
   }, [imagesLoaded]);
 
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/?news=${news.id}`;
+    const shareData = {
+      title: news.subject,
+      text: news.body.substring(0, 100) + '...',
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback to copying link
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (error) {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Link copied to clipboard!');
+      } catch (clipboardError) {
+        toast.error('Unable to share or copy link');
+      }
+    }
+  };
+
   return (
     <motion.div
       ref={articleRef}
@@ -65,11 +94,22 @@ const NewsItem = ({ news, activeVideoId, isMuted, onVideoToggle, onToggleMute }:
       <div className="p-6">
         <div className="flex justify-between items-start mb-3">
           <h2 className="text-2xl font-bold text-gray-900">{news.subject}</h2>
-          <DonationButton 
-            variant="outline"
-            size="sm"
-            label="Support"
-          />
+          <div className="flex gap-2">
+            <Button
+              onClick={handleShare}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Share2 className="h-4 w-4" />
+              Share
+            </Button>
+            <DonationButton 
+              variant="outline"
+              size="sm"
+              label="Support"
+            />
+          </div>
         </div>
         <div className="text-sm text-gray-500 mb-4">
           {news.created_at && format(new Date(news.created_at), 'MMMM d, yyyy')}

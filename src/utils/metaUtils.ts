@@ -1,29 +1,42 @@
 
-export const updateMetaTags = (opportunity: {
+export const updateMetaTags = (content: {
   title: string;
-  organization: string;
+  organization?: string;
   description: string;
   imageUrl?: string;
   id: string;
+  type?: 'opportunity' | 'news';
 }) => {
   const baseUrl = window.location.origin;
+  const isNews = content.type === 'news';
+  
+  // Create appropriate title and URL
+  const pageTitle = isNews 
+    ? content.title 
+    : `${content.title} - ${content.organization}`;
+  
+  const pageUrl = isNews 
+    ? `${baseUrl}/?news=${content.id}`
+    : `${baseUrl}/?opportunity=${content.id}`;
   
   // Update Open Graph tags
-  updateMetaTag('og:title', `${opportunity.title} - ${opportunity.organization}`);
-  updateMetaTag('og:description', opportunity.description.substring(0, 160));
-  updateMetaTag('og:url', `${baseUrl}/?opportunity=${opportunity.id}`);
+  updateMetaTag('og:title', pageTitle);
+  updateMetaTag('og:description', content.description.substring(0, 160));
+  updateMetaTag('og:url', pageUrl);
   
-  if (opportunity.imageUrl) {
-    updateMetaTag('og:image', opportunity.imageUrl);
-    updateMetaTag('twitter:image', opportunity.imageUrl);
+  if (content.imageUrl) {
+    updateMetaTag('og:image', content.imageUrl);
+    updateMetaTag('twitter:image', content.imageUrl);
   }
   
   // Update Twitter Card tags
-  updateMetaTag('twitter:title', `${opportunity.title} - ${opportunity.organization}`);
-  updateMetaTag('twitter:description', opportunity.description.substring(0, 160));
+  updateMetaTag('twitter:title', pageTitle);
+  updateMetaTag('twitter:description', content.description.substring(0, 160));
   
   // Update page title
-  document.title = `${opportunity.title} - Daily Opportunities`;
+  document.title = isNews 
+    ? `${content.title} - Daily Opportunities News`
+    : `${content.title} - Daily Opportunities`;
 };
 
 const updateMetaTag = (property: string, content: string) => {
