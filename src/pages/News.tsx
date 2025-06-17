@@ -72,8 +72,23 @@ const News = () => {
         
         // If no attachment image, use default news image
         if (!imageUrl) {
-          imageUrl = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c';
+          imageUrl = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=630&fit=crop';
         }
+
+        // Ensure imageUrl has proper dimensions for social sharing
+        if (imageUrl && !imageUrl.includes('w=1200')) {
+          if (imageUrl.includes('unsplash.com')) {
+            imageUrl += imageUrl.includes('?') ? '&w=1200&h=630&fit=crop' : '?w=1200&h=630&fit=crop';
+          }
+        }
+
+        console.log('Updating meta tags for shared news:', {
+          title: data.subject,
+          description: data.body,
+          imageUrl: imageUrl,
+          id: data.id,
+          type: 'news'
+        });
 
         // Update meta tags for social sharing
         updateMetaTags({

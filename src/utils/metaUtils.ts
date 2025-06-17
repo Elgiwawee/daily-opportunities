@@ -12,46 +12,73 @@ export const updateMetaTags = (content: {
   
   // Create appropriate title and URL
   const pageTitle = isNews 
-    ? content.title 
-    : `${content.title} - ${content.organization}`;
+    ? `${content.title} - Daily Opportunities News`
+    : `${content.title} - ${content.organization} - Daily Opportunities`;
   
   const pageUrl = isNews 
     ? `${baseUrl}/?news=${content.id}`
     : `${baseUrl}/?opportunity=${content.id}`;
   
+  // Clean description - remove HTML tags and limit length
+  const cleanDescription = content.description
+    .replace(/<[^>]*>/g, '')
+    .substring(0, 160)
+    .trim();
+  
+  // Update document title
+  document.title = pageTitle;
+  
   // Update Open Graph tags
   updateMetaTag('og:title', pageTitle);
-  updateMetaTag('og:description', content.description.substring(0, 160));
+  updateMetaTag('og:description', cleanDescription);
   updateMetaTag('og:url', pageUrl);
+  updateMetaTag('og:type', 'website');
+  updateMetaTag('og:site_name', 'Daily Opportunities');
   
   if (content.imageUrl) {
     updateMetaTag('og:image', content.imageUrl);
-    updateMetaTag('twitter:image', content.imageUrl);
+    updateMetaTag('og:image:width', '1200');
+    updateMetaTag('og:image:height', '630');
+    updateMetaTag('og:image:type', 'image/jpeg');
   }
   
   // Update Twitter Card tags
+  updateMetaTag('twitter:card', 'summary_large_image');
   updateMetaTag('twitter:title', pageTitle);
-  updateMetaTag('twitter:description', content.description.substring(0, 160));
+  updateMetaTag('twitter:description', cleanDescription);
+  updateMetaTag('twitter:site', '@DailyOpportunities');
   
-  // Update page title
-  document.title = isNews 
-    ? `${content.title} - Daily Opportunities News`
-    : `${content.title} - Daily Opportunities`;
+  if (content.imageUrl) {
+    updateMetaTag('twitter:image', content.imageUrl);
+  }
+  
+  // Update standard meta tags
+  updateMetaTag('description', cleanDescription);
+  
+  // Add WhatsApp specific meta tags
+  if (content.imageUrl) {
+    updateMetaTag('image', content.imageUrl);
+  }
 };
 
 const updateMetaTag = (property: string, content: string) => {
-  let meta = document.querySelector(`meta[property="${property}"]`) || 
-             document.querySelector(`meta[name="${property}"]`);
+  // Remove existing meta tag
+  let existingMeta = document.querySelector(`meta[property="${property}"]`) || 
+                     document.querySelector(`meta[name="${property}"]`);
   
-  if (!meta) {
-    meta = document.createElement('meta');
-    if (property.startsWith('og:') || property.startsWith('twitter:')) {
-      meta.setAttribute('property', property);
-    } else {
-      meta.setAttribute('name', property);
-    }
-    document.head.appendChild(meta);
+  if (existingMeta) {
+    existingMeta.remove();
+  }
+  
+  // Create new meta tag
+  const meta = document.createElement('meta');
+  
+  if (property.startsWith('og:') || property.startsWith('twitter:')) {
+    meta.setAttribute('property', property);
+  } else {
+    meta.setAttribute('name', property);
   }
   
   meta.setAttribute('content', content);
+  document.head.appendChild(meta);
 };
