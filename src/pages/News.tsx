@@ -33,6 +33,7 @@ const News = () => {
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [visibleCount, setVisibleCount] = useState<number>(3);
+  const [expandedNewsId, setExpandedNewsId] = useState<string | null>(null);
   
   useEffect(() => {
     // Check for shared news URL parameter
@@ -40,6 +41,7 @@ const News = () => {
     const sharedNewsId = urlParams.get('news');
     
     if (sharedNewsId) {
+      setExpandedNewsId(sharedNewsId);
       // Find and update meta tags for shared news
       fetchSharedNews(sharedNewsId);
     }
@@ -188,6 +190,10 @@ const News = () => {
                   isMuted={isMuted}
                   onVideoToggle={handleVideoToggle}
                   onToggleMute={toggleMute}
+                  expandedNewsId={expandedNewsId}
+                  onToggleExpand={(newsId) => {
+                    setExpandedNewsId(expandedNewsId === newsId ? null : newsId);
+                  }}
                 />
               ))}
               
