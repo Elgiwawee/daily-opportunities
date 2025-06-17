@@ -104,20 +104,22 @@ const OpportunityCard = ({
 
   const handleShare = (platform: string) => {
     const baseUrl = window.location.origin;
-    const shareUrl = `${baseUrl}/opportunity/${id}`;
+    // Create share URL that opens homepage with opportunity expanded
+    const shareUrl = `${baseUrl}/?opportunity=${id}`;
     const shareImageUrl = imageUrl || '';
+    const shareText = `${title} - ${organization}`;
     
     let shareLink = '';
     
     switch (platform) {
       case 'facebook':
-        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(title)}&picture=${encodeURIComponent(shareImageUrl)}`;
+        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
         break;
       case 'twitter':
-        shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`;
+        shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
         break;
       case 'whatsapp':
-        shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' - ' + shareUrl)}`;
+        shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' - ' + shareUrl)}`;
         break;
       case 'copy':
         navigator.clipboard.writeText(shareUrl).then(() => {
@@ -142,6 +144,11 @@ const OpportunityCard = ({
            'name' in attachments[0] &&
            'url' in attachments[0];
   };
+
+  // Check if this opportunity should be expanded based on URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const expandedOpportunityId = urlParams.get('opportunity');
+  const shouldExpand = expandedOpportunityId === id;
 
   return (
     <motion.div
@@ -229,7 +236,7 @@ const OpportunityCard = ({
         
         <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description}</p>
         
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible className="w-full" defaultValue={shouldExpand ? "details" : undefined}>
           <AccordionItem value="details" className="border-none">
             <AccordionTrigger className="text-sm font-medium text-blue-700 hover:underline bg-transparent border-none p-0 h-auto hover:no-underline">
               How to Apply
@@ -248,6 +255,18 @@ const OpportunityCard = ({
                     <span>{type === 'scholarship' ? 'Scholarship' : 'Job'}</span>
                   </div>
                 </div>
+                
+                {/* Enhanced image display section */}
+                {imageUrl && (
+                  <div className="mb-4">
+                    <img
+                      src={imageUrl}
+                      alt={title}
+                      className="w-full max-w-md mx-auto rounded-lg shadow-md object-cover"
+                      style={{ maxHeight: '300px' }}
+                    />
+                  </div>
+                )}
                 
                 <div className="prose prose-sm max-w-none">
                   <h4 className="font-semibold mb-2">Description</h4>

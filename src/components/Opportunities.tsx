@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { updateMetaTags } from '@/utils/metaUtils';
 
 interface Attachment {
   name: string;
@@ -36,6 +37,15 @@ const Opportunities = () => {
   useEffect(() => {
     // Initial fetch of opportunities
     fetchOpportunities();
+    
+    // Check for shared opportunity URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedOpportunityId = urlParams.get('opportunity');
+    
+    if (sharedOpportunityId) {
+      // Find and update meta tags for shared opportunity
+      fetchSharedOpportunity(sharedOpportunityId);
+    }
     
     // Prompt for notifications on page load after a delay
     const timer = setTimeout(() => {
@@ -72,6 +82,50 @@ const Opportunities = () => {
       clearTimeout(timer);
     };
   }, []);
+
+  const fetchSharedOpportunity = async (opportunityId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .eq('id', opportunityId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching shared opportunity:', error);
+        return;
+      }
+
+      if (data) {
+        // Process attachments to get image URL
+        let imageUrl = '';
+        if (data.attachments && Array.isArray(data.attachments) && data.attachments.length > 0) {
+          const firstAttachment = data.attachments[0];
+          if (firstAttachment && firstAttachment.url) {
+            imageUrl = firstAttachment.url;
+          }
+        }
+        
+        // If no attachment image, use default based on type
+        if (!imageUrl) {
+          imageUrl = data.type === 'scholarship' 
+            ? 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1' 
+            : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40';
+        }
+
+        // Update meta tags for social sharing
+        updateMetaTags({
+          title: data.title,
+          organization: data.organization,
+          description: data.description,
+          imageUrl: imageUrl,
+          id: data.id
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching shared opportunity:', error);
+    }
+  };
 
   const promptForNotifications = () => {
     // Only prompt if they haven't been asked recently (in the last 3 days)
