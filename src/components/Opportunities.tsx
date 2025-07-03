@@ -382,7 +382,7 @@ const Opportunities = () => {
     if ((index + 1) % 3 === 0) {
       return (
         <div key={`ad-${index}`} className="col-span-1 md:col-span-3 bg-gray-100 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
-          <AdSenseAd slot="1234567890" style={{ minHeight: '200px', width: '100%' }} />
+          <AdSenseAd slot="2585894567" style={{ minHeight: '200px', width: '100%' }} />
         </div>
       );
     }
@@ -410,7 +410,7 @@ const Opportunities = () => {
           
           {/* Ad banner below featured section */}
           <div className="my-8 bg-gray-100 rounded-lg p-6 text-center min-h-[120px]">
-            <AdSenseAd slot="9876543210" style={{ minHeight: '120px', width: '100%' }} />
+            <AdSenseAd slot="2585894567" style={{ minHeight: '120px', width: '100%' }} />
           </div>
         </div>
 
