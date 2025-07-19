@@ -139,11 +139,13 @@ const Opportunities = () => {
             : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=630&fit=crop';
         }
 
-        // Ensure imageUrl has proper dimensions for social sharing
-        if (imageUrl && !imageUrl.includes('w=1200')) {
-          if (imageUrl.includes('unsplash.com')) {
-            imageUrl += imageUrl.includes('?') ? '&w=1200&h=630&fit=crop' : '?w=1200&h=630&fit=crop';
-          }
+        // For Supabase storage URLs, ensure they're properly formatted for social sharing
+        if (imageUrl && imageUrl.includes('supabase.co/storage')) {
+          // Keep the original Supabase URL as is - it should work for social sharing
+          console.log('Using Supabase image:', imageUrl);
+        } else if (imageUrl && imageUrl.includes('unsplash.com') && !imageUrl.includes('w=1200')) {
+          // Only modify Unsplash URLs
+          imageUrl += imageUrl.includes('?') ? '&w=1200&h=630&fit=crop' : '?w=1200&h=630&fit=crop';
         }
 
         console.log('Updating meta tags for shared opportunity:', {
