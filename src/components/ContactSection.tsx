@@ -44,7 +44,19 @@ const ContactSection = () => {
       color: 'text-green-600 hover:text-green-700'
     },
     {
-      name: 'WhatsApp Group',
+      name: 'WhatsApp Group 1',
+      url: 'https://chat.whatsapp.com/I4IiWpHjlIi4HPf8h0eVss',
+      icon: Users,
+      color: 'text-green-600 hover:text-green-700'
+    },
+    {
+      name: 'WhatsApp Group 2',
+      url: 'https://chat.whatsapp.com/HqYT7FF4HAZ7taWX3t7LjU',
+      icon: Users,
+      color: 'text-green-600 hover:text-green-700'
+    },
+    {
+      name: 'WhatsApp Group 3',
       url: 'https://chat.whatsapp.com/LQEOZd7WmWh3QTZs8w2',
       icon: Users,
       color: 'text-green-600 hover:text-green-700'
