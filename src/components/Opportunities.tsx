@@ -64,12 +64,12 @@ const Opportunities = () => {
     // Initial fetch of opportunities
     fetchOpportunities();
     
-    // Check for shared opportunity URL parameter
+    // Check for shared opportunity URL parameter immediately on page load
     const urlParams = new URLSearchParams(window.location.search);
     const sharedOpportunityId = urlParams.get('opportunity');
     
     if (sharedOpportunityId) {
-      // Find and update meta tags for shared opportunity
+      // Fetch and update meta tags for shared opportunity as soon as possible
       fetchSharedOpportunity(sharedOpportunityId);
     }
     
@@ -153,8 +153,22 @@ const Opportunities = () => {
           organization: data.organization,
           description: data.description,
           imageUrl: imageUrl,
-          id: data.id
+          id: data.id,
+          attachments: data.attachments
         });
+
+        // Verify the image URL is accessible
+        if (imageUrl && imageUrl.includes('supabase.co/storage')) {
+          console.log('Full Supabase image URL:', imageUrl);
+          // Test if the image is accessible
+          fetch(imageUrl, { method: 'HEAD' })
+            .then(response => {
+              console.log('Image accessibility test:', response.status, response.statusText);
+            })
+            .catch(error => {
+              console.error('Image not accessible:', error);
+            });
+        }
 
         // Update meta tags for social sharing
         updateMetaTags({

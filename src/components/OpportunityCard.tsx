@@ -1,6 +1,7 @@
 
 import { motion } from 'framer-motion';
 import { Image, Video, ExternalLink, Share2, Calendar, Clock, MapPin, Download } from 'lucide-react';
+import { generateShareableLink, copyShareLink } from '../utils/shareLinkGenerator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -102,36 +103,38 @@ const OpportunityCard = ({
     setImageLoading(false);
   };
 
-  const handleShare = (platform: string) => {
-    const baseUrl = window.location.origin;
-    // Create share URL that opens homepage with opportunity expanded
-    const shareUrl = `${baseUrl}/?opportunity=${id}`;
-    const shareImageUrl = imageUrl || '';
-    const shareText = `${title} - ${organization}`;
+  const handleShare = async (platform: string) => {
+    const opportunity = {
+      id,
+      title,
+      organization,
+      description,
+      imageUrl,
+      type
+    };
     
-    let shareLink = '';
+    const links = generateShareableLink(opportunity);
     
     switch (platform) {
       case 'facebook':
-        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        window.open(links.facebook, '_blank', 'width=600,height=400');
         break;
       case 'twitter':
-        shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+        window.open(links.twitter, '_blank', 'width=600,height=400');
         break;
       case 'whatsapp':
-        shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' - ' + shareUrl)}`;
+        window.open(links.whatsapp, '_blank', 'width=600,height=400');
         break;
       case 'copy':
-        navigator.clipboard.writeText(shareUrl).then(() => {
-          toast.success(t('opportunity.copied'));
-        });
-        return;
+        const result = await copyShareLink(opportunity);
+        if (result.success) {
+          toast.success(result.message);
+        } else {
+          toast.error(result.message);
+        }
+        break;
       default:
         break;
-    }
-    
-    if (shareLink) {
-      window.open(shareLink, '_blank', 'width=600,height=400');
     }
     
     setShareMenuOpen(false);
