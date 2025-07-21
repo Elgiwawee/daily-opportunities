@@ -59,12 +59,13 @@
                         .substring(0, 160)
                         .trim();
                     
-                    // Update meta tags
+                    // Update meta tags with clean URLs
+                    const cleanUrl = `${window.location.origin}/?opportunity=${opportunityId}`;
                     updateMetaTag('description', cleanDescription);
                     updateMetaTag('og:title', `${opportunity.title} - ${opportunity.organization} - Daily Opportunities`);
                     updateMetaTag('og:description', cleanDescription);
                     updateMetaTag('og:image', imageUrl);
-                    updateMetaTag('og:url', window.location.href);
+                    updateMetaTag('og:url', cleanUrl);
                     updateMetaTag('twitter:title', `${opportunity.title} - ${opportunity.organization}`);
                     updateMetaTag('twitter:description', cleanDescription);
                     updateMetaTag('twitter:image', imageUrl);
