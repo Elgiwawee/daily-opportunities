@@ -40,16 +40,26 @@
             .then(data => {
                 if (data && data.length > 0) {
                     const opportunity = data[0];
+                    console.log('Opportunity data:', opportunity);
+                    console.log('Attachments:', opportunity.attachments);
                     
                     // Update page title and meta tags
                     document.title = `${opportunity.title} - ${opportunity.organization} - Daily Opportunities`;
                     
                     // Get image URL
                     let imageUrl = 'https://daily-opportunities.lovable.app/og-image.png';
-                    if (opportunity.attachments && Array.isArray(opportunity.attachments) && opportunity.attachments.length > 0) {
+                    if (opportunity.attachments && opportunity.attachments.length > 0) {
+                        // Handle both array of objects and array of strings
                         const firstAttachment = opportunity.attachments[0];
-                        if (firstAttachment && typeof firstAttachment === 'object' && firstAttachment.url) {
+                        if (typeof firstAttachment === 'string') {
+                            imageUrl = firstAttachment;
+                        } else if (firstAttachment && typeof firstAttachment === 'object' && firstAttachment.url) {
                             imageUrl = firstAttachment.url;
+                        }
+                        
+                        // If it's a Supabase storage URL, make sure it's publicly accessible
+                        if (imageUrl && imageUrl.includes('supabase')) {
+                            imageUrl = imageUrl;
                         }
                     }
                     
