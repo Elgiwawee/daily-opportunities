@@ -83,3 +83,6 @@ url = ""
 
 [functions]
 send-notifications = {}
+
+[functions.share-opportunity]
+verify_jwt = false
