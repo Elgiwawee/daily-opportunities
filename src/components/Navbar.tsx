@@ -174,6 +174,9 @@ const Navbar = () => {
           <Link to="/news" className={cn("hover:text-olive-600 transition-colors", {
             'text-olive-600 font-semibold': location.pathname === '/news'
           })}>{t('nav.news')}</Link>
+          <Link to="/blog" className={cn("hover:text-olive-600 transition-colors", {
+            'text-olive-600 font-semibold': location.pathname.includes('/blog')
+          })}>Blog</Link>
           
           {/* More dropdown with About Us, Contact, and Disclaimer */}
           <Menubar className="border-none bg-transparent">
@@ -337,6 +340,7 @@ const Navbar = () => {
             
             <Link to="/jobs" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Job Listings</Link>
             <Link to="/news" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">News</Link>
+            <Link to="/blog" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Blog</Link>
             <Link to="/about" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">About Us</Link>
             <Link to="/contact" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Contact</Link>
             <Link to="/disclaimer" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Disclaimer</Link>
