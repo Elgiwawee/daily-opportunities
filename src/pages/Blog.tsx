@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { BlogPostForm } from '@/components/BlogPostForm';
-import { Plus, Heart, MessageCircle, Share2, User, Calendar, ChevronRight } from 'lucide-react';
+import Navbar from '@/components/Navbar';
+import { Plus, Heart, MessageCircle, Share2, User, Calendar, ChevronRight, ArrowLeft } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -184,14 +185,26 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/30">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-glow text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-6 animate-fade-in">
-              {t('Blog & Insights')}
-            </h1>
+      <Navbar />
+      <div className="pt-20"> {/* Added padding to account for fixed navbar */}
+        {/* Hero Section */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-glow text-white">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative container mx-auto px-4 py-20">
+            <div className="max-w-4xl mx-auto">
+              {/* Back button */}
+              <Link 
+                to="/" 
+                className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors"
+              >
+                <ArrowLeft className="mr-2 h-5 w-5" />
+                Back to Home
+              </Link>
+              
+              <div className="text-center">
+                <h1 className="text-5xl font-bold mb-6 animate-fade-in">
+                  {t('Blog & Insights')}
+                </h1>
             <p className="text-xl opacity-90 mb-8 animate-fade-in animation-delay-200">
               Discover trending topics, share your thoughts, and connect with our community
             </p>
@@ -203,14 +216,15 @@ const Blog = () => {
                 className="animate-fade-in animation-delay-400 hover-scale"
               >
                 <Plus className="mr-2 h-5 w-5" />
-                Create Post
-              </Button>
-            )}
+                  Create Post
+                </Button>
+              )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8">
         {/* Blog Post Form Modal */}
         {showForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -329,6 +343,7 @@ const Blog = () => {
               ))}
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>
