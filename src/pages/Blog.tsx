@@ -6,9 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { BlogPostForm } from '@/components/BlogPostForm';
 import Navbar from '@/components/Navbar';
-import { Plus, Heart, MessageCircle, Share2, User, Calendar, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Heart, MessageCircle, Share2, User, Calendar, ChevronRight, ArrowLeft } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -30,18 +29,9 @@ const Blog = () => {
   const { toast } = useToast();
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [user, setUser] = useState<any>(null);
-
   useEffect(() => {
-    fetchUser();
     fetchBlogPosts();
   }, []);
-
-  const fetchUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
-  };
 
   const fetchBlogPosts = async () => {
     try {
@@ -56,7 +46,7 @@ const Blog = () => {
 
       if (error) throw error;
 
-      // Get like counts and user likes for each post
+      // Get like counts for each post
       const postsWithCounts = await Promise.all(
         (posts || []).map(async (post) => {
           const { count: likesCount } = await supabase
@@ -69,22 +59,11 @@ const Blog = () => {
             .select('*', { count: 'exact', head: true })
             .eq('blog_post_id', post.id);
 
-          let userLiked = false;
-          if (user) {
-            const { data: likeData } = await supabase
-              .from('blog_likes')
-              .select('id')
-              .eq('blog_post_id', post.id)
-              .eq('user_id', user.id)
-              .maybeSingle();
-            userLiked = !!likeData;
-          }
-
           return {
             ...post,
             likes_count: likesCount || 0,
             comments_count: commentsCount || 0,
-            user_liked: userLiked,
+            user_liked: false, // Default to false since no user authentication on public page
           };
         })
       );
@@ -103,53 +82,11 @@ const Blog = () => {
   };
 
   const handleLike = async (postId: string) => {
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to like posts",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const post = blogPosts.find(p => p.id === postId);
-      if (!post) return;
-
-      if (post.user_liked) {
-        // Unlike
-        await supabase
-          .from('blog_likes')
-          .delete()
-          .eq('blog_post_id', postId)
-          .eq('user_id', user.id);
-      } else {
-        // Like
-        await supabase
-          .from('blog_likes')
-          .insert({ blog_post_id: postId, user_id: user.id });
-      }
-
-      // Update local state
-      setBlogPosts(posts =>
-        posts.map(p =>
-          p.id === postId
-            ? {
-                ...p,
-                user_liked: !p.user_liked,
-                likes_count: p.user_liked ? p.likes_count - 1 : p.likes_count + 1,
-              }
-            : p
-        )
-      );
-    } catch (error) {
-      console.error('Error toggling like:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update like",
-        variant: "destructive",
-      });
-    }
+    toast({
+      title: "Authentication required",
+      description: "Please sign in to like posts",
+      variant: "destructive",
+    });
   };
 
   const handleShare = async (post: BlogPost) => {
@@ -208,38 +145,12 @@ const Blog = () => {
             <p className="text-xl opacity-90 mb-8 animate-fade-in animation-delay-200">
               Discover trending topics, share your thoughts, and connect with our community
             </p>
-            {user && (
-              <Button
-                onClick={() => setShowForm(true)}
-                size="lg"
-                variant="secondary"
-                className="animate-fade-in animation-delay-400 hover-scale"
-              >
-                <Plus className="mr-2 h-5 w-5" />
-                  Create Post
-                </Button>
-              )}
               </div>
             </div>
           </div>
         </div>
 
         <div className="container mx-auto px-4 py-8">
-        {/* Blog Post Form Modal */}
-        {showForm && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-background rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <BlogPostForm
-                onSuccess={() => {
-                  setShowForm(false);
-                  fetchBlogPosts();
-                }}
-                onCancel={() => setShowForm(false)}
-              />
-            </div>
-          </div>
-        )}
-
         {/* Blog Posts Grid */}
         <div className="max-w-6xl mx-auto">
           {blogPosts.length === 0 ? (
@@ -248,13 +159,7 @@ const Blog = () => {
                 <MessageCircle className="h-16 w-16 text-muted-foreground" />
               </div>
               <h3 className="text-2xl font-semibold mb-4">No blog posts yet</h3>
-              <p className="text-muted-foreground mb-8">Be the first to share your thoughts with the community!</p>
-              {user && (
-                <Button onClick={() => setShowForm(true)} size="lg">
-                  <Plus className="mr-2 h-5 w-5" />
-                  Create First Post
-                </Button>
-              )}
+              <p className="text-muted-foreground mb-8">Stay tuned for upcoming posts!</p>
             </div>
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
