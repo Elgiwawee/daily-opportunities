@@ -57,11 +57,15 @@
                             imageUrl = firstAttachment.url;
                         }
                         
-                        // If it's a Supabase storage URL, make sure it's publicly accessible
+                        // Ensure proper image URL format for social media crawlers
                         if (imageUrl && imageUrl.includes('supabase')) {
-                            imageUrl = imageUrl;
+                            // Make sure the URL is clean and accessible
+                            imageUrl = imageUrl.split('?')[0]; // Remove any query parameters
+                            console.log('Using Supabase image URL:', imageUrl);
                         }
                     }
+                    
+                    console.log('Final image URL:', imageUrl);
                     
                     // Clean description
                     const cleanDescription = opportunity.description
