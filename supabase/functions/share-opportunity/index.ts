@@ -60,41 +60,19 @@ serve(async (req) => {
       });
     }
 
-    // Extract and format image URL for social media compatibility
+    // Extract image URL from attachments
     let imageUrl = 'https://daily-opportunities.lovable.app/og-image.png';
-    let imageType = 'image/png';
-    
     if (opportunity.attachments && opportunity.attachments.length > 0) {
       const firstAttachment = opportunity.attachments[0];
-      let rawImageUrl = '';
-      
       if (typeof firstAttachment === 'string') {
-        rawImageUrl = firstAttachment;
+        imageUrl = firstAttachment;
       } else if (firstAttachment && typeof firstAttachment === 'object' && firstAttachment.url) {
-        rawImageUrl = firstAttachment.url;
+        imageUrl = firstAttachment.url;
       }
       
-      if (rawImageUrl && rawImageUrl.includes('supabase')) {
-        // Clean URL and ensure public access
-        const cleanUrl = rawImageUrl.split('?')[0];
-        // Make sure it's the public URL format
-        if (cleanUrl.includes('/storage/v1/object/public/')) {
-          imageUrl = cleanUrl;
-          // Detect image type from URL
-          if (cleanUrl.toLowerCase().includes('.jpg') || cleanUrl.toLowerCase().includes('.jpeg')) {
-            imageType = 'image/jpeg';
-          } else if (cleanUrl.toLowerCase().includes('.png')) {
-            imageType = 'image/png';
-          } else if (cleanUrl.toLowerCase().includes('.webp')) {
-            imageType = 'image/webp';
-          }
-        }
-      } else if (rawImageUrl) {
-        imageUrl = rawImageUrl;
-        // Detect type for external URLs too
-        if (rawImageUrl.toLowerCase().includes('.jpg') || rawImageUrl.toLowerCase().includes('.jpeg')) {
-          imageType = 'image/jpeg';
-        }
+      // Clean up the URL (remove query parameters for better compatibility)
+      if (imageUrl && imageUrl.includes('supabase')) {
+        imageUrl = imageUrl.split('?')[0];
       }
     }
 
@@ -136,10 +114,6 @@ serve(async (req) => {
     
     <!-- WhatsApp -->
     <meta property="image" content="${imageUrl}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="${imageType}" />
-    <meta property="og:image:secure_url" content="${imageUrl}" />
     
     <!-- Redirect to main app after 2 seconds -->
     <meta http-equiv="refresh" content="2;url=${appUrl}">
