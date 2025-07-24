@@ -9,8 +9,8 @@ export const generateShareableLink = (opportunity: {
 }) => {
   const baseUrl = window.location.origin;
   
-  // Use the edge function for proper social media meta tags
-  const shareUrl = `https://mkcvqqaumfwyrkurfohh.supabase.co/functions/v1/share-opportunity?id=${opportunity.id}`;
+  // Use the special share page that has proper meta tags for social media crawlers
+  const shareUrl = `${baseUrl}/share-opportunity.html?id=${opportunity.id}`;
   
   // Regular app URL for direct access
   const fallbackUrl = `${baseUrl}/?opportunity=${opportunity.id}`;

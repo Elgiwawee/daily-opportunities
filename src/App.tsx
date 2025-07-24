@@ -18,7 +18,6 @@ import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import Explainer from "./pages/Explainer";
 import Disclaimer from "./pages/Disclaimer";
-import Blog from "./pages/Blog";
 import CookieConsent from "./components/CookieConsent";
 import Donate from './pages/Donate';
 
@@ -60,7 +59,6 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/explainer" element={<Explainer />} />
-          <Route path="/blog" element={<Blog />} />
           <Route path="/donate" element={<Donate />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
