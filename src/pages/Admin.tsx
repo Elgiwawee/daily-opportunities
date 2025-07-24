@@ -4,17 +4,15 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { OpportunityForm } from '@/components/OpportunityForm';
 import OpportunityTable from '@/components/OpportunityTable';
-import { BlogPostForm } from '@/components/BlogPostForm';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Home, Plus, X, Newspaper, FileText } from "lucide-react";
+import { Home, Plus, X, Newspaper } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [showBlogForm, setShowBlogForm] = useState(false);
   const [editingOpportunity, setEditingOpportunity] = useState<any>(null);
 
   useEffect(() => {
@@ -109,14 +107,6 @@ const Admin = () => {
                   Manage News
                 </Button>
               </Link>
-              <Button 
-                onClick={() => setShowBlogForm(!showBlogForm)}
-                variant="outline" 
-                className="ml-4 flex items-center gap-2"
-              >
-                <FileText size={16} />
-                {showBlogForm ? 'Close Blog Form' : 'Create Blog Post'}
-              </Button>
             </div>
             <div className="flex items-center space-x-4">
               <Button
@@ -152,19 +142,6 @@ const Admin = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {showBlogForm && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Create Blog Post</h2>
-            <BlogPostForm
-              onSuccess={() => {
-                setShowBlogForm(false);
-                toast.success('Blog post created successfully!');
-              }}
-              onCancel={() => setShowBlogForm(false)}
-            />
-          </div>
-        )}
-
         {showForm && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4">
