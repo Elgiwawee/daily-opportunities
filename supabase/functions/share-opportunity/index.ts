@@ -114,6 +114,9 @@ serve(async (req) => {
     
     <!-- WhatsApp -->
     <meta property="image" content="${imageUrl}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
     
     <!-- Redirect to main app after 2 seconds -->
     <meta http-equiv="refresh" content="2;url=${appUrl}">
