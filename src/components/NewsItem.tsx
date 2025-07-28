@@ -42,6 +42,7 @@ const NewsItem = ({
   onToggleExpand 
 }: NewsItemProps) => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const articleRef = useRef<HTMLDivElement>(null);
   
   // Intersection observer to load images only when they come into view
@@ -66,31 +67,39 @@ const NewsItem = ({
     };
   }, [imagesLoaded]);
 
-  const handleShare = async () => {
+  const handleShare = (platform: string) => {
     const shareUrl = `${window.location.origin}/?news=${news.id}`;
-    const shareData = {
-      title: news.subject,
-      text: news.body.substring(0, 100) + '...',
-      url: shareUrl,
-    };
-
-    try {
-      if (navigator.share && navigator.canShare(shareData)) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback to copying link
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success('Link copied to clipboard!');
-      }
-    } catch (error) {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success('Link copied to clipboard!');
-      } catch (clipboardError) {
-        toast.error('Unable to share or copy link');
-      }
+    const shareText = `${news.subject} - ${news.body.substring(0, 100)}...`;
+    
+    let shareLink = '';
+    
+    switch (platform) {
+      case 'facebook':
+        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        break;
+      case 'twitter':
+        shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+        break;
+      case 'whatsapp':
+        shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' - ' + shareUrl)}`;
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          toast.success('Link copied to clipboard!');
+        }).catch(() => {
+          toast.error('Unable to copy link');
+        });
+        setShareMenuOpen(false);
+        return;
+      default:
+        break;
     }
+    
+    if (shareLink) {
+      window.open(shareLink, '_blank', 'width=600,height=400');
+    }
+    
+    setShareMenuOpen(false);
   };
 
   // Get first image for preview
@@ -131,14 +140,47 @@ const NewsItem = ({
         </div>
         
         <div className="absolute top-2 right-2">
-          <Button
-            onClick={handleShare}
-            variant="outline"
-            size="sm"
-            className="bg-white/80 hover:bg-white text-gray-700"
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
+          <div className="relative inline-block">
+            <Button
+              onClick={() => setShareMenuOpen(!shareMenuOpen)}
+              variant="outline"
+              size="sm"
+              className="bg-white/80 hover:bg-white text-gray-700"
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+            
+            {shareMenuOpen && (
+              <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100">
+                <div className="py-1">
+                  <button
+                    onClick={() => handleShare('facebook')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  >
+                    Facebook
+                  </button>
+                  <button
+                    onClick={() => handleShare('twitter')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  >
+                    Twitter
+                  </button>
+                  <button
+                    onClick={() => handleShare('whatsapp')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  >
+                    WhatsApp
+                  </button>
+                  <button
+                    onClick={() => handleShare('copy')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  >
+                    Copy Link
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -302,15 +344,48 @@ const NewsItem = ({
         
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center gap-2">
-            <Button
-              onClick={handleShare}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 text-blue-700 border-blue-200 hover:bg-blue-50"
-            >
-              <Share2 className="h-4 w-4" />
-              Share
-            </Button>
+            <div className="relative inline-block">
+              <Button
+                onClick={() => setShareMenuOpen(!shareMenuOpen)}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 text-blue-700 border-blue-200 hover:bg-blue-50"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
+              
+              {shareMenuOpen && (
+                <div className="absolute left-0 bottom-full mb-2 w-36 bg-white rounded-md shadow-lg z-10 border border-gray-100">
+                  <div className="py-1">
+                    <button
+                      onClick={() => handleShare('facebook')}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    >
+                      Facebook
+                    </button>
+                    <button
+                      onClick={() => handleShare('twitter')}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    >
+                      Twitter
+                    </button>
+                    <button
+                      onClick={() => handleShare('whatsapp')}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    >
+                      WhatsApp
+                    </button>
+                    <button
+                      onClick={() => handleShare('copy')}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    >
+                      Copy Link
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
             
             <DonationButton 
               variant="outline" 

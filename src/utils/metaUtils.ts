@@ -40,6 +40,7 @@ export const updateMetaTags = (content: {
     updateMetaTag('og:image:width', '1200');
     updateMetaTag('og:image:height', '630');
     updateMetaTag('og:image:type', 'image/jpeg');
+    updateMetaTag('og:image:alt', `${content.title} - ${content.organization || 'Daily Opportunities'}`);
   }
   
   // Update Twitter Card tags

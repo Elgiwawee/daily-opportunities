@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
@@ -26,6 +27,31 @@ interface Opportunity {
   external_url?: string;
 }
 
+// AdSense component
+const AdSenseAd = ({ slot, style = {} }: { slot: string; style?: React.CSSProperties }) => {
+  useEffect(() => {
+    try {
+      // Push the ad if adsbygoogle is available
+      if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+      }
+    } catch (error) {
+      console.error('AdSense error:', error);
+    }
+  }, []);
+
+  return (
+    <ins
+      className="adsbygoogle"
+      style={{ display: 'block', ...style }}
+      data-ad-client="ca-pub-1418673216471192"
+      data-ad-slot={slot}
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    />
+  );
+};
+
 const Opportunities = () => {
   const [featuredOpportunities, setFeaturedOpportunities] = useState<Opportunity[]>([]);
   const [otherOpportunities, setOtherOpportunities] = useState<Opportunity[]>([]);
@@ -38,12 +64,12 @@ const Opportunities = () => {
     // Initial fetch of opportunities
     fetchOpportunities();
     
-    // Check for shared opportunity URL parameter
+    // Check for shared opportunity URL parameter immediately on page load
     const urlParams = new URLSearchParams(window.location.search);
     const sharedOpportunityId = urlParams.get('opportunity');
     
     if (sharedOpportunityId) {
-      // Find and update meta tags for shared opportunity
+      // Fetch and update meta tags for shared opportunity as soon as possible
       fetchSharedOpportunity(sharedOpportunityId);
     }
     
@@ -113,11 +139,13 @@ const Opportunities = () => {
             : 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=630&fit=crop';
         }
 
-        // Ensure imageUrl has proper dimensions for social sharing
-        if (imageUrl && !imageUrl.includes('w=1200')) {
-          if (imageUrl.includes('unsplash.com')) {
-            imageUrl += imageUrl.includes('?') ? '&w=1200&h=630&fit=crop' : '?w=1200&h=630&fit=crop';
-          }
+        // For Supabase storage URLs, ensure they're properly formatted for social sharing
+        if (imageUrl && imageUrl.includes('supabase.co/storage')) {
+          // Keep the original Supabase URL as is - it should work for social sharing
+          console.log('Using Supabase image:', imageUrl);
+        } else if (imageUrl && imageUrl.includes('unsplash.com') && !imageUrl.includes('w=1200')) {
+          // Only modify Unsplash URLs
+          imageUrl += imageUrl.includes('?') ? '&w=1200&h=630&fit=crop' : '?w=1200&h=630&fit=crop';
         }
 
         console.log('Updating meta tags for shared opportunity:', {
@@ -125,8 +153,22 @@ const Opportunities = () => {
           organization: data.organization,
           description: data.description,
           imageUrl: imageUrl,
-          id: data.id
+          id: data.id,
+          attachments: data.attachments
         });
+
+        // Verify the image URL is accessible
+        if (imageUrl && imageUrl.includes('supabase.co/storage')) {
+          console.log('Full Supabase image URL:', imageUrl);
+          // Test if the image is accessible
+          fetch(imageUrl, { method: 'HEAD' })
+            .then(response => {
+              console.log('Image accessibility test:', response.status, response.statusText);
+            })
+            .catch(error => {
+              console.error('Image not accessible:', error);
+            });
+        }
 
         // Update meta tags for social sharing
         updateMetaTags({
@@ -356,10 +398,7 @@ const Opportunities = () => {
     if ((index + 1) % 3 === 0) {
       return (
         <div key={`ad-${index}`} className="col-span-1 md:col-span-3 bg-gray-100 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-gray-500 font-medium">Advertisement</p>
-            <p className="text-sm text-gray-400">Ad space available</p>
-          </div>
+          <AdSenseAd slot="2585894567" style={{ minHeight: '200px', width: '100%' }} />
         </div>
       );
     }
@@ -386,11 +425,8 @@ const Opportunities = () => {
           </div>
           
           {/* Ad banner below featured section */}
-          <div className="my-8 bg-gray-100 rounded-lg p-6 text-center">
-            <p className="text-gray-500 font-medium">Advertisement</p>
-            <div className="h-[120px] flex items-center justify-center">
-              <p className="text-sm text-gray-400">Premium ad space</p>
-            </div>
+          <div className="my-8 bg-gray-100 rounded-lg p-6 text-center min-h-[120px]">
+            <AdSenseAd slot="2585894567" style={{ minHeight: '120px', width: '100%' }} />
           </div>
         </div>
 

@@ -32,12 +32,16 @@ const AdminNews = () => {
 
   const checkUser = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      console.log("Current user:", user); // Debug log
+      if (error || !user) {
+        console.log("No user found, redirecting to auth"); // Debug log
         navigate("/auth");
+        return;
       }
       setIsLoading(false);
     } catch (error) {
+      console.error("Auth error:", error); // Debug log
       navigate("/auth");
     }
   };
@@ -50,8 +54,10 @@ const AdminNews = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
+      console.log("Fetched news items:", data); // Debug log
       setNewsItems(data as NewsItem[]);
     } catch (error: any) {
+      console.error("Error fetching news:", error); // Debug log
       toast.error(error.message || "Failed to fetch news items");
     }
   };
