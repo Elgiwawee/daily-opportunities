@@ -18,25 +18,25 @@ import { cn } from '@/lib/utils';
 
 // Navigation configuration
 const navItems = [
-  { href: '/', label: 'nav.home', key: 'home' },
+  { href: '/', label: 'Home', key: 'home' },
   { 
     href: '/scholarships', 
-    label: 'nav.scholarships', 
+    label: 'Scholarships', 
     key: 'scholarships',
     submenu: [
-      { href: '/scholarships', label: 'nav.allScholarships' },
-      { href: '/scholarships/country/usa', label: 'nav.usaScholarships' },
-      { href: '/scholarships/country/canada', label: 'nav.canadaScholarships' },
-      { href: '/scholarships/country/uk', label: 'nav.ukScholarships' },
-      { href: '/scholarships/level/undergraduate', label: 'nav.undergraduate' },
-      { href: '/scholarships/level/graduate', label: 'nav.graduate' },
+      { href: '/scholarships', label: 'All Scholarships' },
+      { href: '/scholarships/country/usa', label: 'USA Scholarships' },
+      { href: '/scholarships/country/canada', label: 'Canada Scholarships' },
+      { href: '/scholarships/country/uk', label: 'UK Scholarships' },
+      { href: '/scholarships/level/undergraduate', label: 'Undergraduate' },
+      { href: '/scholarships/level/graduate', label: 'Graduate' },
     ]
   },
-  { href: '/jobs', label: 'nav.jobs', key: 'jobs' },
-  { href: '/news', label: 'nav.news', key: 'news' },
-  { href: '/blog', label: 'nav.blog', key: 'blog' },
-  { href: '/about', label: 'nav.about', key: 'about' },
-  { href: '/contact', label: 'nav.contact', key: 'contact' },
+  { href: '/jobs', label: 'Jobs', key: 'jobs' },
+  { href: '/news', label: 'News', key: 'news' },
+  { href: '/blog', label: 'Blog', key: 'blog' },
+  { href: '/about', label: 'About', key: 'about' },
+  { href: '/contact', label: 'Contact', key: 'contact' },
 ];
 
 const Navbar = () => {
@@ -98,7 +98,7 @@ const Navbar = () => {
                   isActiveRoute(item.href) && "bg-accent text-accent-foreground"
                 )}
               >
-                {t(item.label)}
+                {item.label}
                 <ChevronDown className="ml-1 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
@@ -106,7 +106,7 @@ const Navbar = () => {
               {item.submenu.map((subItem) => (
                 <DropdownMenuItem key={subItem.href} asChild>
                   <Link to={subItem.href} className="w-full">
-                    {t(subItem.label)}
+                    {subItem.label}
                   </Link>
                 </DropdownMenuItem>
               ))}
@@ -122,7 +122,7 @@ const Navbar = () => {
               isActiveRoute(item.href) && "bg-accent text-accent-foreground"
             )}
           >
-            <Link to={item.href}>{t(item.label)}</Link>
+            <Link to={item.href}>{item.label}</Link>
           </Button>
         )
       ))}
@@ -143,8 +143,8 @@ const Navbar = () => {
                     "w-full justify-between h-12 text-base font-medium",
                     isActiveRoute(item.href) && "bg-accent text-accent-foreground"
                   )}
-                >
-                  {t(item.label)}
+                  >
+                  {item.label}
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -156,7 +156,7 @@ const Navbar = () => {
                       className="w-full"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      {t(subItem.label)}
+                      {subItem.label}
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -172,7 +172,7 @@ const Navbar = () => {
               )}
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <Link to={item.href}>{t(item.label)}</Link>
+              <Link to={item.href}>{item.label}</Link>
             </Button>
           )}
         </div>
@@ -192,7 +192,7 @@ const Navbar = () => {
               className="h-8 w-8 object-contain"
             />
             <span className="hidden font-bold text-lg sm:inline-block">
-              {t('nav.siteName', 'اپورچونیٹی ہنٹر')}
+              اپورچونیٹی ہنٹر
             </span>
           </Link>
         </div>
@@ -208,7 +208,7 @@ const Navbar = () => {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder={t('nav.searchPlaceholder')}
+                placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-8 w-64"
@@ -230,17 +230,17 @@ const Navbar = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem asChild>
-                    <Link to="/admin">{t('nav.admin')}</Link>
+                    <Link to="/admin">Admin</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    {t('nav.logout')}
+                    Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Button asChild variant="default" size="sm">
-                <Link to="/auth">{t('nav.login')}</Link>
+                <Link to="/auth">Login</Link>
               </Button>
             )}
           </div>
@@ -259,7 +259,7 @@ const Navbar = () => {
             <SheetContent side="right" className="w-80">
               <SheetHeader>
                 <SheetTitle className="text-left">
-                  {t('nav.siteName', 'اپورچونیٹی ہنٹر')}
+                  اپورچونیٹی ہنٹر
                 </SheetTitle>
               </SheetHeader>
               
@@ -269,7 +269,7 @@ const Navbar = () => {
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="search"
-                    placeholder={t('nav.searchPlaceholder')}
+                    placeholder="Search..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-8"
@@ -289,18 +289,18 @@ const Navbar = () => {
                     <Button variant="ghost" asChild className="w-full justify-start">
                       <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
                         <Settings className="mr-2 h-4 w-4" />
-                        {t('nav.admin')}
+                        Admin
                       </Link>
                     </Button>
                     <Button variant="ghost" onClick={handleLogout} className="w-full justify-start">
                       <LogOut className="mr-2 h-4 w-4" />
-                      {t('nav.logout')}
+                      Logout
                     </Button>
                   </div>
                 ) : (
                   <Button asChild className="w-full">
                     <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                      {t('nav.login')}
+                      Login
                     </Link>
                   </Button>
                 )}
