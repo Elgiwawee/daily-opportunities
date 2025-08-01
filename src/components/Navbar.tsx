@@ -1,378 +1,319 @@
-
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, User, ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Search, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import NotificationManager from './NotificationManager';
-import { useTranslation } from 'react-i18next';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
-import { useIsMobile } from '@/hooks/use-mobile';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+
+// Navigation configuration
+const navItems = [
+  { href: '/', label: 'nav.home', key: 'home' },
+  { 
+    href: '/scholarships', 
+    label: 'nav.scholarships', 
+    key: 'scholarships',
+    submenu: [
+      { href: '/scholarships', label: 'nav.allScholarships' },
+      { href: '/scholarships/country/usa', label: 'nav.usaScholarships' },
+      { href: '/scholarships/country/canada', label: 'nav.canadaScholarships' },
+      { href: '/scholarships/country/uk', label: 'nav.ukScholarships' },
+      { href: '/scholarships/level/undergraduate', label: 'nav.undergraduate' },
+      { href: '/scholarships/level/graduate', label: 'nav.graduate' },
+    ]
+  },
+  { href: '/jobs', label: 'nav.jobs', key: 'jobs' },
+  { href: '/news', label: 'nav.news', key: 'news' },
+  { href: '/blog', label: 'nav.blog', key: 'blog' },
+  { href: '/about', label: 'nav.about', key: 'about' },
+  { href: '/contact', label: 'nav.contact', key: 'contact' },
+];
 
 const Navbar = () => {
-  const { t, i18n } = useTranslation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [scholarshipsOpen, setScholarshipsOpen] = useState(false);
-  const isMobile = useIsMobile();
-  const isRtl = i18n.language === 'ar';
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { t } = useTranslation();
 
+  // Check authentication state
   useEffect(() => {
-    // Check if the user is logged in
-    const checkAuth = async () => {
+    const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsLoggedIn(!!session);
     };
 
-    checkAuth();
+    checkUser();
 
-    // Subscribe to auth state changes
-    supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
     });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  // Helper functions
+  const isActiveRoute = (href: string) => {
+    if (href === '/') return location.pathname === '/';
+    return location.pathname.startsWith(href);
   };
 
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  const toggleScholarshipsDropdown = () => {
-    setScholarshipsOpen(!scholarshipsOpen);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Implement search logic here
-    console.log('Search term:', searchTerm);
+    if (searchTerm.trim()) {
+      navigate(`/scholarships?search=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm('');
+      setIsMobileMenuOpen(false);
+    }
   };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+    setIsMobileMenuOpen(false);
+  };
+
+  // Desktop Navigation Component
+  const DesktopNav = () => (
+    <div className="hidden md:flex items-center space-x-1">
+      {navItems.map((item) => (
+        item.submenu ? (
+          <DropdownMenu key={item.key}>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className={cn(
+                  "h-10 px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                  isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                )}
+              >
+                {t(item.label)}
+                <ChevronDown className="ml-1 h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              {item.submenu.map((subItem) => (
+                <DropdownMenuItem key={subItem.href} asChild>
+                  <Link to={subItem.href} className="w-full">
+                    {t(subItem.label)}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button
+            key={item.key}
+            variant="ghost"
+            asChild
+            className={cn(
+              "h-10 px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+              isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+            )}
+          >
+            <Link to={item.href}>{t(item.label)}</Link>
+          </Button>
+        )
+      ))}
+    </div>
+  );
+
+  // Mobile Navigation Component
+  const MobileNav = () => (
+    <div className="flex flex-col space-y-2 p-4">
+      {navItems.map((item) => (
+        <div key={item.key}>
+          {item.submenu ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className={cn(
+                    "w-full justify-between h-12 text-base font-medium",
+                    isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                  )}
+                >
+                  {t(item.label)}
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-full">
+                {item.submenu.map((subItem) => (
+                  <DropdownMenuItem key={subItem.href} asChild>
+                    <Link 
+                      to={subItem.href} 
+                      className="w-full"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {t(subItem.label)}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              variant="ghost"
+              asChild
+              className={cn(
+                "w-full justify-start h-12 text-base font-medium",
+                isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+              )}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Link to={item.href}>{t(item.label)}</Link>
+            </Button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <nav className="fixed w-full bg-white border-b border-gray-200 z-50">
-      <div className="flex justify-between items-center py-4 px-6 max-w-7xl mx-auto">
-        {/* Logo and site name */}
-        <Link to="/" className="flex items-center gap-2">
-          <img 
-            src="/lovable-uploads/bfe4b900-aa37-433d-b636-2134c6bb921c.png" 
-            alt={t('app.name')}
-            className="h-10 w-auto"
-          />
-          <span className="font-bold text-xl">{t('app.name')}</span>
-        </Link>
-
-        {/* Desktop navigation */}
-        <div className="hidden md:flex items-center space-x-6">
-          <Link to="/" className={cn("hover:text-olive-600 transition-colors", {
-            'text-olive-600 font-semibold': location.pathname === '/'
-          })}>{t('nav.home')}</Link>
-          
-          {/* Scholarships dropdown */}
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className={cn(
-                  "hover:text-olive-600 transition-colors bg-transparent hover:bg-transparent focus:bg-transparent",
-                  {
-                    'text-olive-600 font-semibold': location.pathname.includes('/scholarships')
-                  }
-                )}>{t('nav.scholarships')}</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="w-[200px] p-2">
-                    <Link
-                      to="/scholarships"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
-                      onClick={closeMenu}
-                    >
-                      {t('scholarships.title')}
-                    </Link>
-                    <div className="font-medium px-3 py-2 text-sm">{isRtl ? 'حسب الدولة' : 'By Country'}</div>
-                    <Link
-                      to="/scholarships/country/usa"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
-                      onClick={closeMenu}
-                    >
-                      {isRtl ? 'الولايات المتحدة' : 'USA'}
-                    </Link>
-                    <Link
-                      to="/scholarships/country/uk"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
-                      onClick={closeMenu}
-                    >
-                      {isRtl ? 'المملكة المتحدة' : 'UK'}
-                    </Link>
-                    <Link
-                      to="/scholarships/country/canada"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
-                      onClick={closeMenu}
-                    >
-                      {isRtl ? 'كندا' : 'Canada'}
-                    </Link>
-                    <div className="font-medium px-3 py-2 text-sm">{isRtl ? 'حسب المستوى' : 'By Level'}</div>
-                    <Link
-                      to="/scholarships/level/undergraduate"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
-                      onClick={closeMenu}
-                    >
-                      {isRtl ? 'البكالوريوس' : 'Undergraduate'}
-                    </Link>
-                    <Link
-                      to="/scholarships/level/masters"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
-                      onClick={closeMenu}
-                    >
-                      {isRtl ? 'الماجستير' : 'Master\'s'}
-                    </Link>
-                    <Link
-                      to="/scholarships/level/phd"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded-md"
-                      onClick={closeMenu}
-                    >
-                      {isRtl ? 'الدكتوراه' : 'PhD'}
-                    </Link>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          
-          <Link to="/jobs" className={cn("hover:text-olive-600 transition-colors", {
-            'text-olive-600 font-semibold': location.pathname === '/jobs'
-          })}>{t('nav.jobs')}</Link>
-          <Link to="/news" className={cn("hover:text-olive-600 transition-colors", {
-            'text-olive-600 font-semibold': location.pathname === '/news'
-          })}>{t('nav.news')}</Link>
-          
-          {/* More dropdown with About Us, Contact, and Disclaimer */}
-          <Menubar className="border-none bg-transparent">
-            <MenubarMenu>
-              <MenubarTrigger className="hover:text-olive-600 transition-colors bg-transparent hover:bg-transparent focus:bg-transparent">
-                {isRtl ? 'المزيد' : 'More'} <ChevronDown className="ml-1 h-4 w-4" />
-              </MenubarTrigger>
-              <MenubarContent>
-                <MenubarItem asChild>
-                  <Link to="/about">{t('nav.about')}</Link>
-                </MenubarItem>
-                <MenubarItem asChild>
-                  <Link to="/contact">{t('nav.contact')}</Link>
-                </MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem asChild>
-                  <Link to="/disclaimer">{t('nav.disclaimer')}</Link>
-                </MenubarItem>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>
-          
-          {/* Add notification manager */}
-          <NotificationManager />
-          
-          {/* Language switcher */}
-          <LanguageSwitcher />
-          
-          {/* Search bar */}
-          <form onSubmit={handleSearchSubmit} className="relative">
-            <input
-              type="search"
-              placeholder={t('buttons.search')}
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="border border-gray-300 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500"
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Logo and Brand */}
+        <div className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="/coffee-icon.png" 
+              alt="Logo" 
+              className="h-8 w-8 object-contain"
             />
-            <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+            <span className="hidden font-bold text-lg sm:inline-block">
+              {t('nav.siteName', 'اپورچونیٹی ہنٹر')}
+            </span>
+          </Link>
+        </div>
+
+        {/* Desktop Navigation */}
+        <DesktopNav />
+
+        {/* Desktop Actions */}
+        <div className="hidden md:flex items-center space-x-2">
+          {/* Search */}
+          <form onSubmit={handleSearchSubmit} className="flex items-center space-x-2">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={t('nav.searchPlaceholder')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8 w-64"
+              />
             </div>
           </form>
 
-          {/* Authentication buttons */}
-          {isLoggedIn ? (
-            <Link to="/admin">
-              <Button variant="outline" size="sm">
-                <User className="w-4 h-4 mr-2" />
-                {t('nav.admin')}
+          {/* User Actions */}
+          <div className="flex items-center space-x-1">
+            <NotificationManager />
+            <LanguageSwitcher />
+            
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">{t('nav.admin')}</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {t('nav.logout')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button asChild variant="default" size="sm">
+                <Link to="/auth">{t('nav.login')}</Link>
               </Button>
-            </Link>
-          ) : (
-            <Link to="/auth">
-              <Button variant="outline" size="sm">
-                {t('nav.login')}
-              </Button>
-            </Link>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Mobile menu button */}
-        <div className="md:hidden flex items-center">
-          {/* Add notification manager for mobile too */}
-          <div className="mr-2">
-            <NotificationManager />
-          </div>
-          
-          {/* Language switcher for mobile */}
-          <div className="mr-2">
-            <LanguageSwitcher />
-          </div>
-          
-          <button onClick={toggleMenu}>
-            {isMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+        {/* Mobile Menu */}
+        <div className="flex md:hidden items-center space-x-2">
+          <LanguageSwitcher />
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-80">
+              <SheetHeader>
+                <SheetTitle className="text-left">
+                  {t('nav.siteName', 'اپورچونیٹی ہنٹر')}
+                </SheetTitle>
+              </SheetHeader>
+              
+              {/* Mobile Search */}
+              <form onSubmit={handleSearchSubmit} className="mt-6">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder={t('nav.searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-8"
+                  />
+                </div>
+              </form>
+
+              {/* Mobile Navigation */}
+              <div className="mt-6">
+                <MobileNav />
+              </div>
+
+              {/* Mobile Auth Section */}
+              <div className="mt-6 pt-6 border-t">
+                {isLoggedIn ? (
+                  <div className="space-y-2">
+                    <Button variant="ghost" asChild className="w-full justify-start">
+                      <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        {t('nav.admin')}
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" onClick={handleLogout} className="w-full justify-start">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      {t('nav.logout')}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button asChild className="w-full">
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                      {t('nav.login')}
+                    </Link>
+                  </Button>
+                )}
+              </div>
+
+              {/* Mobile Notifications */}
+              <div className="mt-4">
+                <NotificationManager />
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-
-      {/* Mobile navigation */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex flex-col space-y-4">
-            <Link to="/" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Home</Link>
-            
-            {/* Scholarships dropdown - now using DropdownMenu for mobile */}
-            <div className="py-2">
-              <div className="flex items-center justify-between">
-                <button 
-                  onClick={toggleScholarshipsDropdown} 
-                  className={cn(
-                    "hover:text-olive-600 transition-colors flex items-center", 
-                    { 'text-olive-600 font-semibold': location.pathname.includes('/scholarships') }
-                  )}
-                >
-                  Scholarships
-                  <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform", {
-                    "transform rotate-180": scholarshipsOpen
-                  })} />
-                </button>
-              </div>
-              
-              {scholarshipsOpen && (
-                <div className="ml-4 mt-2 space-y-2 bg-white rounded-md shadow-sm border border-gray-100">
-                  <Link
-                    to="/scholarships"
-                    onClick={closeMenu}
-                    className="block px-3 py-2 hover:bg-gray-100"
-                  >
-                    All Scholarships
-                  </Link>
-                  <div className="text-sm font-medium text-gray-700 px-3 pt-2">By Country</div>
-                  <Link
-                    to="/scholarships/country/usa"
-                    onClick={closeMenu}
-                    className="block px-3 py-2 hover:bg-gray-100"
-                  >
-                    USA
-                  </Link>
-                  <Link
-                    to="/scholarships/country/uk"
-                    onClick={closeMenu}
-                    className="block px-3 py-2 hover:bg-gray-100"
-                  >
-                    UK
-                  </Link>
-                  <Link
-                    to="/scholarships/country/canada"
-                    onClick={closeMenu}
-                    className="block px-3 py-2 hover:bg-gray-100"
-                  >
-                    Canada
-                  </Link>
-                  <div className="text-sm font-medium text-gray-700 px-3 pt-2">By Level</div>
-                  <Link
-                    to="/scholarships/level/undergraduate"
-                    onClick={closeMenu}
-                    className="block px-3 py-2 hover:bg-gray-100"
-                  >
-                    Undergraduate
-                  </Link>
-                  <Link
-                    to="/scholarships/level/masters"
-                    onClick={closeMenu}
-                    className="block px-3 py-2 hover:bg-gray-100"
-                  >
-                    Master's
-                  </Link>
-                  <Link
-                    to="/scholarships/level/phd"
-                    onClick={closeMenu}
-                    className="block px-3 py-2 hover:bg-gray-100"
-                  >
-                    PhD
-                  </Link>
-                </div>
-              )}
-            </div>
-            
-            <Link to="/jobs" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Job Listings</Link>
-            <Link to="/news" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">News</Link>
-            <Link to="/about" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">About Us</Link>
-            <Link to="/contact" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Contact</Link>
-            <Link to="/disclaimer" onClick={closeMenu} className="hover:text-olive-600 transition-colors block py-2">Disclaimer</Link>
-            
-            {/* Search bar */}
-            <form onSubmit={handleSearchSubmit} className="relative">
-              <input
-                type="search"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="border border-gray-300 rounded-md px-3 py-2 pl-10 focus:outline-none focus:border-olive-500 w-full"
-              />
-              <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
-              </div>
-            </form>
-
-            {/* Authentication buttons */}
-            {isLoggedIn ? (
-              <Link to="/admin" onClick={closeMenu}>
-                <Button variant="outline" size="sm" className="w-full">
-                  <User className="w-4 h-4 mr-2" />
-                  Admin
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/auth" onClick={closeMenu}>
-                <Button variant="outline" size="sm" className="w-full">
-                  Login
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
     </nav>
   );
 };

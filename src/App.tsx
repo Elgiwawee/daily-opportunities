@@ -20,6 +20,7 @@ import Explainer from "./pages/Explainer";
 import Disclaimer from "./pages/Disclaimer";
 import CookieConsent from "./components/CookieConsent";
 import Donate from './pages/Donate';
+import Blog from './pages/Blog';
 
 // Import i18n configuration
 import './i18n';
@@ -60,6 +61,7 @@ const App = () => {
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/explainer" element={<Explainer />} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
