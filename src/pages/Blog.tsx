@@ -252,21 +252,13 @@ const Blog = () => {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Error",
-          description: "Please login to comment",
-          variant: "destructive",
-        });
-        return;
-      }
-
+      
       const { error } = await (supabase as any)
         .from('blog_comments')
         .insert({
           blog_post_id: postId,
           comment: commentText,
-          created_by: user.id
+          created_by: user?.id || null // Allow null for visitors
         });
 
       if (error) throw error;
