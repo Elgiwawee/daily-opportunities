@@ -24,6 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import AdSenseAd from '@/components/AdSenseAd';
 
 interface BlogPost {
   id: string;
@@ -454,151 +455,158 @@ const Blog = () => {
           </Card>
         ) : (
           <div className="space-y-8 max-w-4xl mx-auto">
-            {posts.map((post) => (
-              <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
-                        {post.title}
-                      </CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <User className="h-4 w-4" />
-                          👨‍💼 Admin
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          📅 {new Date(post.created_at).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Social Tags */}
-                    {post.social_tags && post.social_tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {post.social_tags.map((tag) => {
-                          const platform = socialPlatforms.find(p => p.name === tag);
-                          return platform ? (
-                            <Badge key={tag} variant="secondary" className="gap-1">
-                              <platform.icon className="h-3 w-3" />
-                              {tag}
-                            </Badge>
-                          ) : null;
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="prose max-w-none mb-6">
-                    <p className="whitespace-pre-wrap leading-relaxed">{post.body}</p>
-                  </div>
-                  
-                  {/* Attachments */}
-                  {post.attachments && post.attachments.length > 0 && (
-                    <div className="mb-6">
-                      {post.attachments.map((attachment: any, index: number) => (
-                        <div key={index} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                          <Upload className="h-4 w-4" />
-                          <a 
-                            href={attachment.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            📎 {attachment.name}
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {/* Actions */}
-                  <div className="flex items-center gap-4 mb-6">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleLike(post.id)}
-                      className="gap-1 hover:bg-red-50 hover:border-red-200"
-                    >
-                      <Heart className={`h-4 w-4 ${getUserLiked(post.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                      {likes[post.id]?.length || 0} {getUserLiked(post.id) ? '❤️' : '🤍'}
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleShare(post)}
-                      className="gap-1 hover:bg-blue-50 hover:border-blue-200"
-                    >
-                      <Share2 className="h-4 w-4" />
-                      🔗 Share
-                    </Button>
-                    
-                    <span className="text-sm text-muted-foreground">
-                      <MessageCircle className="h-4 w-4 inline mr-1" />
-                      💬 {comments[post.id]?.length || 0} comments
-                    </span>
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  {/* Comments Section */}
-                  <div>
-                    <h3 className="font-semibold mb-4 flex items-center gap-2">
-                      <MessageCircle className="h-4 w-4" />
-                      💬 Comments
-                    </h3>
-                    
-                    {/* Add Comment */}
-                    {isLoggedIn && (
-                      <div className="flex gap-2 mb-4">
-                        <Input
-                          placeholder="💭 Add a comment..."
-                          value={newComment[post.id] || ''}
-                          onChange={(e) => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
-                          onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id)}
-                          className="flex-1"
-                        />
-                        <Button 
-                          onClick={() => handleComment(post.id)}
-                          disabled={!newComment[post.id]?.trim()}
-                          size="sm"
-                        >
-                          <Send className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
-                    
-                    {!isLoggedIn && (
-                      <p className="text-sm text-muted-foreground mb-4 p-3 bg-muted rounded-lg">
-                        🔐 Please login to add comments
-                      </p>
-                    )}
-                    
-                    {/* Comments List */}
-                    <div className="space-y-3">
-                      {comments[post.id]?.map((comment) => (
-                        <div key={comment.id} className="bg-muted p-3 rounded-lg">
-                          <p className="text-sm mb-2">{comment.comment}</p>
-                          <div className="text-xs text-muted-foreground flex items-center gap-2">
-                            <User className="h-3 w-3" />
-                            👤 User • 📅 {new Date(comment.created_at).toLocaleDateString()}
+            {posts.map((post, index) => (
+              <div key={post.id}>
+                <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
+                          {post.title}
+                        </CardTitle>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <User className="h-4 w-4" />
+                            👨‍💼 Admin
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            📅 {new Date(post.created_at).toLocaleDateString()}
                           </div>
                         </div>
-                      ))}
+                      </div>
                       
-                      {!comments[post.id]?.length && (
-                        <p className="text-muted-foreground text-sm text-center p-4 bg-muted/50 rounded-lg">
-                          💭 No comments yet. Be the first to share your thoughts!
-                        </p>
+                      {/* Social Tags */}
+                      {post.social_tags && post.social_tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {post.social_tags.map((tag) => {
+                            const platform = socialPlatforms.find(p => p.name === tag);
+                            return platform ? (
+                              <Badge key={tag} variant="secondary" className="gap-1">
+                                <platform.icon className="h-3 w-3" />
+                                {tag}
+                              </Badge>
+                            ) : null;
+                          })}
+                        </div>
                       )}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="prose max-w-none mb-6">
+                      <p className="whitespace-pre-wrap leading-relaxed">{post.body}</p>
+                    </div>
+                    
+                    {/* Attachments */}
+                    {post.attachments && post.attachments.length > 0 && (
+                      <div className="mb-6">
+                        {post.attachments.map((attachment: any, index: number) => (
+                          <div key={index} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                            <Upload className="h-4 w-4" />
+                            <a 
+                              href={attachment.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline"
+                            >
+                              📎 {attachment.name}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Actions */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleLike(post.id)}
+                        className="gap-1 hover:bg-red-50 hover:border-red-200"
+                      >
+                        <Heart className={`h-4 w-4 ${getUserLiked(post.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                        {likes[post.id]?.length || 0} {getUserLiked(post.id) ? '❤️' : '🤍'}
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleShare(post)}
+                        className="gap-1 hover:bg-blue-50 hover:border-blue-200"
+                      >
+                        <Share2 className="h-4 w-4" />
+                        🔗 Share
+                      </Button>
+                      
+                      <span className="text-sm text-muted-foreground">
+                        <MessageCircle className="h-4 w-4 inline mr-1" />
+                        💬 {comments[post.id]?.length || 0} comments
+                      </span>
+                    </div>
+                    
+                    <Separator className="my-4" />
+                    
+                    {/* Comments Section */}
+                    <div>
+                      <h3 className="font-semibold mb-4 flex items-center gap-2">
+                        <MessageCircle className="h-4 w-4" />
+                        💬 Comments
+                      </h3>
+                      
+                      {/* Add Comment */}
+                      {isLoggedIn && (
+                        <div className="flex gap-2 mb-4">
+                          <Input
+                            placeholder="💭 Add a comment..."
+                            value={newComment[post.id] || ''}
+                            onChange={(e) => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
+                            onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id)}
+                            className="flex-1"
+                          />
+                          <Button 
+                            onClick={() => handleComment(post.id)}
+                            disabled={!newComment[post.id]?.trim()}
+                            size="sm"
+                          >
+                            <Send className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                      
+                      {!isLoggedIn && (
+                        <p className="text-sm text-muted-foreground mb-4 p-3 bg-muted rounded-lg">
+                          🔐 Please login to add comments
+                        </p>
+                      )}
+                      
+                      {/* Comments List */}
+                      <div className="space-y-3">
+                        {comments[post.id]?.map((comment) => (
+                          <div key={comment.id} className="bg-muted p-3 rounded-lg">
+                            <p className="text-sm mb-2">{comment.comment}</p>
+                            <div className="text-xs text-muted-foreground flex items-center gap-2">
+                              <User className="h-3 w-3" />
+                              👤 User • 📅 {new Date(comment.created_at).toLocaleDateString()}
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {!comments[post.id]?.length && (
+                          <p className="text-muted-foreground text-sm text-center p-4 bg-muted/50 rounded-lg">
+                            💭 No comments yet. Be the first to share your thoughts!
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Add ad after every 2 posts */}
+                {(index + 1) % 2 === 0 && index < posts.length - 1 && (
+                  <AdSenseAd />
+                )}
+              </div>
             ))}
           </div>
         )}

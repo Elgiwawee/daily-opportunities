@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import NewsItem from '../components/NewsItem';
 import { useTranslation } from 'react-i18next';
 import { updateMetaTags } from '@/utils/metaUtils';
+import AdSenseAd from '@/components/AdSenseAd';
 
 interface Attachment {
   name: string;
@@ -197,19 +198,25 @@ const News = () => {
             </div>
           ) : newsItems.length > 0 ? (
             <div className="space-y-10">
-              {newsItems.map((news) => (
-                <NewsItem 
-                  key={news.id}
-                  news={news}
-                  activeVideoId={activeVideoId}
-                  isMuted={isMuted}
-                  onVideoToggle={handleVideoToggle}
-                  onToggleMute={toggleMute}
-                  expandedNewsId={expandedNewsId}
-                  onToggleExpand={(newsId) => {
-                    setExpandedNewsId(expandedNewsId === newsId ? null : newsId);
-                  }}
-                />
+              {newsItems.map((news, index) => (
+                <div key={news.id}>
+                  <NewsItem 
+                    news={news}
+                    activeVideoId={activeVideoId}
+                    isMuted={isMuted}
+                    onVideoToggle={handleVideoToggle}
+                    onToggleMute={toggleMute}
+                    expandedNewsId={expandedNewsId}
+                    onToggleExpand={(newsId) => {
+                      setExpandedNewsId(expandedNewsId === newsId ? null : newsId);
+                    }}
+                  />
+                  
+                  {/* Add ad after every 2 news items */}
+                  {(index + 1) % 2 === 0 && index < newsItems.length - 1 && (
+                    <AdSenseAd />
+                  )}
+                </div>
               ))}
               
               {allNewsItems.length > visibleCount && (
