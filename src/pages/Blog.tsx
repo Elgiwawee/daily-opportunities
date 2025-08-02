@@ -555,30 +555,22 @@ const Blog = () => {
                       </h3>
                       
                       {/* Add Comment */}
-                      {isLoggedIn && (
-                        <div className="flex gap-2 mb-4">
-                          <Input
-                            placeholder="💭 Add a comment..."
-                            value={newComment[post.id] || ''}
-                            onChange={(e) => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
-                            onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id)}
-                            className="flex-1"
-                          />
-                          <Button 
-                            onClick={() => handleComment(post.id)}
-                            disabled={!newComment[post.id]?.trim()}
-                            size="sm"
-                          >
-                            <Send className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                      
-                      {!isLoggedIn && (
-                        <p className="text-sm text-muted-foreground mb-4 p-3 bg-muted rounded-lg">
-                          🔐 Please login to add comments
-                        </p>
-                      )}
+                      <div className="flex gap-2 mb-4">
+                        <Input
+                          placeholder="💭 Add a comment..."
+                          value={newComment[post.id] || ''}
+                          onChange={(e) => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
+                          onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id)}
+                          className="flex-1"
+                        />
+                        <Button 
+                          onClick={() => handleComment(post.id)}
+                          disabled={!newComment[post.id]?.trim()}
+                          size="sm"
+                        >
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
                       
                       {/* Comments List */}
                       <div className="space-y-3">
