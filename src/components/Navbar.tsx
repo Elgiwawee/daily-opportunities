@@ -184,16 +184,13 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo and Brand */}
-        <div className="flex items-center space-x-3">
-          <Link to="/" className="flex items-center space-x-2">
+        <div className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img 
-              src="/coffee-icon.png" 
+              src="/lovable-uploads/d2e18fd4-e699-4d61-9f78-1c76ece71cb9.png" 
               alt="Logo" 
-              className="h-8 w-8 object-contain"
+              className="h-10 w-10 object-contain"
             />
-            <span className="hidden font-bold text-lg sm:inline-block">
-              اپورچونیٹی ہنٹر
-            </span>
           </Link>
         </div>
 
