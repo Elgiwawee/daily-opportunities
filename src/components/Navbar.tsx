@@ -188,8 +188,12 @@ const Navbar = () => {
           <Link to="/" className="flex items-center">
             <img 
               src="/lovable-uploads/d2e18fd4-e699-4d61-9f78-1c76ece71cb9.png" 
-              alt="Logo" 
-              className="h-10 w-10 object-contain"
+              alt="Daily Opportunities Logo" 
+              className="h-12 w-12 object-contain"
+              onError={(e) => {
+                console.error('Logo failed to load:', e);
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </Link>
         </div>
