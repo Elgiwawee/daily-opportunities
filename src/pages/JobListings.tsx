@@ -10,6 +10,7 @@ import RegionFilter from '../components/RegionFilter';
 import { toast } from 'sonner';
 import DonationButton from '../components/DonationButton';
 import { useTranslation } from 'react-i18next';
+import AdSenseAd from '../components/AdSenseAd';
 
 interface Job {
   id: string;
@@ -108,13 +109,15 @@ const JobListings = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-                {jobs.slice(0, visibleCount).map((job) => (
-                  <OpportunityCard
-                    key={job.id}
-                    {...job}
-                  />
+                {jobs.slice(0, visibleCount).map((job, index) => (
+                  <div key={job.id} className="col-span-1">
+                    <OpportunityCard {...job} />
+                    {(index + 1) % 6 === 0 && <AdSenseAd className="col-span-full" />}
+                  </div>
                 ))}
               </div>
+              
+              <AdSenseAd />
 
               {jobs.length > visibleCount && (
                 <div className="flex justify-center mt-10">

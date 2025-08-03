@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import RegionFilter from '../components/RegionFilter';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import AdSenseAd from '../components/AdSenseAd';
 
 interface Opportunity {
   id: string;
@@ -93,13 +94,15 @@ const Scholarships = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-                {scholarships.slice(0, visibleCount).map((scholarship) => (
-                  <OpportunityCard
-                    key={scholarship.id}
-                    {...scholarship}
-                  />
+                {scholarships.slice(0, visibleCount).map((scholarship, index) => (
+                  <div key={scholarship.id} className="col-span-1">
+                    <OpportunityCard {...scholarship} />
+                    {(index + 1) % 6 === 0 && <AdSenseAd className="col-span-full" />}
+                  </div>
                 ))}
               </div>
+              
+              <AdSenseAd />
 
               {scholarships.length > visibleCount && (
                 <div className="flex justify-center mt-10">

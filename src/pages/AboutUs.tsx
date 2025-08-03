@@ -2,6 +2,7 @@
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import AboutSection from '../components/AboutSection';
+import AdSenseAd from '../components/AdSenseAd';
 
 const AboutUs = () => {
   return (
@@ -20,7 +21,9 @@ const AboutUs = () => {
             </p>
           </motion.div>
           
+          <AdSenseAd />
           <AboutSection />
+          <AdSenseAd />
         </div>
       </div>
     </div>
