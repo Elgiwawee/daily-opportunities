@@ -233,6 +233,9 @@ const Navbar = () => {
                   <DropdownMenuItem asChild>
                     <Link to="/admin">Admin</Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings">Settings</Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
@@ -291,6 +294,12 @@ const Navbar = () => {
                       <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
                         <Settings className="mr-2 h-4 w-4" />
                         Admin
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" asChild className="w-full justify-start">
+                      <Link to="/settings" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
                       </Link>
                     </Button>
                     <Button variant="ghost" onClick={handleLogout} className="w-full justify-start">

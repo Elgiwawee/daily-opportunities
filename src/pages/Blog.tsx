@@ -283,21 +283,45 @@ const Blog = () => {
 
   const handleShare = async (post: BlogPost) => {
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: post.title,
-          text: post.body.substring(0, 100) + '...',
-          url: window.location.href,
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
+      // Import the social media sharing utilities
+      const { getSocialMediaSettings, generateSocialShareLinks, openSocialShareLink } = await import('../utils/socialMediaShare');
+      
+      const settings = await getSocialMediaSettings();
+      const shareLinks = generateSocialShareLinks(post, settings);
+      
+      // If we have social media links configured, show share options
+      if (Object.keys(shareLinks).length > 0) {
+        // For now, just open the first available share link
+        const [platform, url] = Object.entries(shareLinks)[0];
+        openSocialShareLink(platform, url);
+        
         toast({
           title: "Success",
-          description: "Link copied to clipboard!",
+          description: `Opening ${platform} to share your post!`,
         });
+      } else {
+        // Fallback to default sharing
+        if (navigator.share) {
+          await navigator.share({
+            title: post.title,
+            text: post.body.substring(0, 100) + '...',
+            url: window.location.href,
+          });
+        } else {
+          await navigator.clipboard.writeText(window.location.href);
+          toast({
+            title: "Success",
+            description: "Link copied to clipboard!",
+          });
+        }
       }
     } catch (error) {
       console.error('Error sharing:', error);
+      toast({
+        title: "Error",
+        description: "Failed to share post",
+        variant: "destructive",
+      });
     }
   };
 

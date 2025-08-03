@@ -207,6 +207,45 @@ export type Database = {
         }
         Relationships: []
       }
+      social_media_settings: {
+        Row: {
+          created_at: string
+          facebook_url: string | null
+          id: string
+          instagram_url: string | null
+          linkedin_url: string | null
+          tiktok_url: string | null
+          twitter_url: string | null
+          updated_at: string
+          user_id: string | null
+          whatsapp_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          linkedin_url?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+          whatsapp_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          linkedin_url?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+          whatsapp_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
