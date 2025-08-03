@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useTranslation } from 'react-i18next';
 
 interface DonationModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ type PaymentMethod = 'card' | 'crypto' | 'bank' | 'mobile';
 type Currency = 'USD' | 'NGN' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'INR' | 'CNY' | 'JPY' | 'CHF' | 'USDT' | 'BTC' | 'ETH';
 
 const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState<string>('');
   const [currency, setCurrency] = useState<Currency>('USD');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
@@ -226,7 +228,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                 <div className="flex justify-between items-center border-b p-4">
                   <h2 className="text-lg font-medium flex items-center gap-2">
                     <Coffee className="h-5 w-5 text-amber-600" />
-                    Buy Staff Coffee
+                    {t('buttons.donate')}
                   </h2>
                   <button 
                     onClick={onClose}
