@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import AdSenseAd from '../components/AdSenseAd';
 
 interface Opportunity {
   id: string;
@@ -114,6 +115,7 @@ const ScholarshipsByCountry = () => {
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSenseAd />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -163,6 +165,7 @@ const ScholarshipsByCountry = () => {
                   <p className="text-lg text-gray-500">No scholarships found for {countryTitle}. Please check back later.</p>
                 </div>
               )}
+              <AdSenseAd />
             </>
           )}
         </div>

@@ -1,6 +1,7 @@
 
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
+import AdSenseAd from '../components/AdSenseAd';
 
 const Disclaimer = () => {
   return (
@@ -8,6 +9,7 @@ const Disclaimer = () => {
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSenseAd />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -47,6 +49,7 @@ const Disclaimer = () => {
               Last updated: May 14, 2025
             </p>
           </div>
+          <AdSenseAd />
         </div>
       </div>
     </div>

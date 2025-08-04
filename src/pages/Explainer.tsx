@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import AdSenseAd from '../components/AdSenseAd';
 
 const Explainer = () => {
   const [selectedTab, setSelectedTab] = useState("application");
@@ -13,6 +14,7 @@ const Explainer = () => {
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSenseAd />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -234,6 +236,7 @@ const Explainer = () => {
               </TabsContent>
             </Tabs>
           </div>
+          <AdSenseAd />
         </div>
       </div>
     </div>

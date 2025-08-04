@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { Json } from '@/integrations/supabase/types';
+import AdSenseAd from '../components/AdSenseAd';
 
 interface Opportunity {
   id: string;
@@ -88,6 +89,7 @@ const OpportunityDetails = () => {
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSenseAd />
           {isLoading ? (
             <div className="flex justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
@@ -214,6 +216,7 @@ const OpportunityDetails = () => {
               </Button>
             </div>
           )}
+          <AdSenseAd />
         </div>
       </div>
     </div>

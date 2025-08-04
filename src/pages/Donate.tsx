@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import { Bitcoin, CreditCard, Banknote, Wallet, PoundSterling, DollarSign, Euro, Coins, BadgeDollarSign } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import AdSenseAd from '../components/AdSenseAd';
 
 const Donate = () => {
   const [showCurrencyInfo, setShowCurrencyInfo] = React.useState<boolean>(false);
@@ -51,6 +52,7 @@ const Donate = () => {
       <Navbar />
       <div className="pt-36 pb-20 bg-amber-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSenseAd />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -267,6 +269,7 @@ const Donate = () => {
               </p>
             </div>
           </motion.div>
+          <AdSenseAd />
         </div>
       </div>
       
