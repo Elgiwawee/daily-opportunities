@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Mail, Phone, MapPin, Facebook, MessageCircle, Users } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, MessageCircle, Users, Twitter } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -33,9 +33,15 @@ const ContactSection = () => {
   const socialLinks = [
     {
       name: 'Facebook',
-      url: 'https://www.facebook.com/profile.php?id=100086383085893',
+      url: 'https://www.facebook.com/profile.php?id=61575299694285',
       icon: Facebook,
       color: 'text-blue-600 hover:text-blue-700'
+    },
+    {
+      name: 'X (Twitter)',
+      url: 'https://twitter.com/DailyOpport2925',
+      icon: Twitter,
+      color: 'text-gray-900 hover:text-gray-700'
     },
     {
       name: 'WhatsApp Channel',
