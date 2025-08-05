@@ -14,6 +14,9 @@ import { Json } from '@/integrations/supabase/types';
 import AdSenseAd from '../components/AdSenseAd';
 import { SEOHead } from '../components/SEOHead';
 import { generateScholarshipSchema, generateJobSchema, generateBreadcrumbSchema } from '../utils/structuredData';
+import { Breadcrumb } from '../components/Breadcrumb';
+import { useLocation } from 'react-router-dom';
+import { generateBreadcrumbs } from '../utils/breadcrumbUtils';
 
 interface Opportunity {
   id: string;
@@ -39,6 +42,7 @@ const OpportunityDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const location = useLocation();
 
   const fetchOpportunity = async () => {
     if (!id) throw new Error('No opportunity ID provided');
@@ -123,6 +127,11 @@ const OpportunityDetails = () => {
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {opportunity && (
+            <Breadcrumb 
+              items={generateBreadcrumbs(location.pathname, opportunity.title)} 
+            />
+          )}
           <AdSenseAd />
           {isLoading ? (
             <div className="flex justify-center py-12">

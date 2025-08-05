@@ -10,6 +10,10 @@ import RegionFilter from '../components/RegionFilter';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import AdSenseAd from '../components/AdSenseAd';
+import { Breadcrumb } from '../components/Breadcrumb';
+import { BREADCRUMB_CONFIGS } from '../utils/breadcrumbUtils';
+import { SEOHead } from '../components/SEOHead';
+import { generateWebsiteSchema } from '../utils/structuredData';
 
 interface Opportunity {
   id: string;
@@ -64,9 +68,16 @@ const Scholarships = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead
+        title="Scholarships - Daily Opportunities | Fully Funded Education"
+        description="Discover fully-funded scholarships and grants from top universities in USA, UK, Canada, Australia, Europe. Free applications for international students from tier 1 countries."
+        keywords="scholarships, fully funded scholarships, international students, USA scholarships, UK scholarships, Canadian scholarships, education funding, tier 1 countries"
+        structuredData={generateWebsiteSchema()}
+      />
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumb items={BREADCRUMB_CONFIGS.scholarships} />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

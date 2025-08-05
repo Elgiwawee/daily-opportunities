@@ -11,6 +11,10 @@ import { toast } from 'sonner';
 import DonationButton from '../components/DonationButton';
 import { useTranslation } from 'react-i18next';
 import AdSenseAd from '../components/AdSenseAd';
+import { Breadcrumb } from '../components/Breadcrumb';
+import { BREADCRUMB_CONFIGS } from '../utils/breadcrumbUtils';
+import { SEOHead } from '../components/SEOHead';
+import { generateWebsiteSchema } from '../utils/structuredData';
 
 interface Job {
   id: string;
@@ -76,9 +80,16 @@ const JobListings = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead
+        title="Jobs - Daily Opportunities | International Career Opportunities"
+        description="Explore international job opportunities and career positions from leading companies in tier 1 countries. Apply for jobs in USA, UK, Canada, Australia, Europe."
+        keywords="international jobs, career opportunities, jobs abroad, employment, tier 1 countries, USA jobs, UK jobs, Canadian jobs, professional careers"
+        structuredData={generateWebsiteSchema()}
+      />
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumb items={BREADCRUMB_CONFIGS.jobs} />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
