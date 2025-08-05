@@ -12,6 +12,8 @@ import { Card } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { Json } from '@/integrations/supabase/types';
 import AdSenseAd from '../components/AdSenseAd';
+import { SEOHead } from '../components/SEOHead';
+import { generateScholarshipSchema, generateJobSchema, generateBreadcrumbSchema } from '../utils/structuredData';
 
 interface Opportunity {
   id: string;
@@ -84,8 +86,40 @@ const OpportunityDetails = () => {
            'url' in attachments[0];
   };
 
+  // Generate structured data and breadcrumb for the opportunity
+  const getStructuredData = () => {
+    if (!opportunity) return null;
+    
+    const breadcrumbItems = [
+      { name: 'Home', url: '/' },
+      { name: opportunity.type === 'scholarship' ? 'Scholarships' : 'Jobs', url: opportunity.type === 'scholarship' ? '/scholarships' : '/jobs' },
+      { name: opportunity.title, url: `/opportunity/${opportunity.id}` }
+    ];
+
+    const opportunitySchema = opportunity.type === 'scholarship' 
+      ? generateScholarshipSchema(opportunity)
+      : generateJobSchema(opportunity);
+
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        opportunitySchema,
+        generateBreadcrumbSchema(breadcrumbItems)
+      ]
+    };
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      {opportunity && (
+        <SEOHead
+          title={`${opportunity.title} - ${opportunity.organization} | Daily Opportunities`}
+          description={`${opportunity.description.replace(/<[^>]*>/g, '').substring(0, 155)}... Apply now for this ${opportunity.type} opportunity.`}
+          keywords={`${opportunity.title}, ${opportunity.organization}, ${opportunity.type}, scholarship, job, funding, education, application, tier 1 countries`}
+          type={opportunity.type === 'scholarship' ? 'article' : 'article'}
+          structuredData={getStructuredData()}
+        />
+      )}
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
