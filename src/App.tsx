@@ -23,6 +23,8 @@ import CookieConsent from "./components/CookieConsent";
 import Donate from './pages/Donate';
 import Blog from './pages/Blog';
 import Settings from './pages/Settings';
+import Sitemap from './pages/Sitemap';
+import RobotsTxt from './pages/RobotsTxt';
 
 // Import i18n configuration
 import './i18n';
@@ -66,6 +68,8 @@ const App = () => {
           <Route path="/donate" element={<Donate />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/sitemap.xml" element={<Sitemap />} />
+          <Route path="/robots.txt" element={<RobotsTxt />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
