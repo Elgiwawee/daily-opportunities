@@ -131,7 +131,7 @@ const Navbar = () => {
 
   // Mobile Navigation Component
   const MobileNav = () => (
-    <div className="flex flex-col space-y-2 p-4">
+    <div className="space-y-1">
       {navItems.map((item) => (
         <div key={item.key}>
           {item.submenu ? (
@@ -140,20 +140,24 @@ const Navbar = () => {
                 <Button 
                   variant="ghost" 
                   className={cn(
-                    "w-full justify-between h-12 text-base font-medium",
+                    "w-full justify-between h-11 text-sm font-medium",
                     isActiveRoute(item.href) && "bg-accent text-accent-foreground"
                   )}
-                  >
+                >
                   {item.label}
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-full">
+              <DropdownMenuContent 
+                className="w-full min-w-[280px] bg-background border-border z-50" 
+                align="start"
+                side="bottom"
+              >
                 {item.submenu.map((subItem) => (
-                  <DropdownMenuItem key={subItem.href} asChild>
+                  <DropdownMenuItem key={subItem.href} asChild className="focus:bg-accent">
                     <Link 
                       to={subItem.href} 
-                      className="w-full"
+                      className="w-full text-sm px-3 py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {subItem.label}
@@ -167,12 +171,16 @@ const Navbar = () => {
               variant="ghost"
               asChild
               className={cn(
-                "w-full justify-start h-12 text-base font-medium",
+                "w-full justify-start h-11 text-sm font-medium",
                 isActiveRoute(item.href) && "bg-accent text-accent-foreground"
               )}
-              onClick={() => setIsMobileMenuOpen(false)}
             >
-              <Link to={item.href}>{item.label}</Link>
+              <Link 
+                to={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
             </Button>
           )}
         </div>
@@ -260,65 +268,74 @@ const Navbar = () => {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80">
-              <SheetHeader>
-                <SheetTitle className="text-left">
-                  اپورچونیٹی ہنٹر
-                </SheetTitle>
-              </SheetHeader>
-              
+            <SheetContent 
+              side="right" 
+              className="w-[300px] sm:w-[350px] max-w-[90vw] p-0 flex flex-col h-full"
+            >
+              <div className="border-b p-4 flex-shrink-0">
+                <SheetHeader>
+                  <SheetTitle className="text-left text-lg">
+                    Daily Opportunities
+                  </SheetTitle>
+                </SheetHeader>
+              </div>
               {/* Mobile Search */}
-              <form onSubmit={handleSearchSubmit} className="mt-6">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-8"
-                  />
-                </div>
-              </form>
+              <div className="p-4 border-b flex-shrink-0">
+                <form onSubmit={handleSearchSubmit}>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      placeholder="Search opportunities..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-8 w-full"
+                    />
+                  </div>
+                </form>
+              </div>
 
-              {/* Mobile Navigation */}
-              <div className="mt-6">
-                <MobileNav />
+              {/* Mobile Navigation - Scrollable */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-4">
+                  <MobileNav />
+                </div>
               </div>
 
               {/* Mobile Auth Section */}
-              <div className="mt-6 pt-6 border-t">
+              <div className="border-t p-4 flex-shrink-0 bg-muted/30">
                 {isLoggedIn ? (
                   <div className="space-y-2">
-                    <Button variant="ghost" asChild className="w-full justify-start">
+                    <Button variant="ghost" asChild className="w-full justify-start h-10">
                       <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
                         <Settings className="mr-2 h-4 w-4" />
                         Admin
                       </Link>
                     </Button>
-                    <Button variant="ghost" asChild className="w-full justify-start">
+                    <Button variant="ghost" asChild className="w-full justify-start h-10">
                       <Link to="/settings" onClick={() => setIsMobileMenuOpen(false)}>
                         <Settings className="mr-2 h-4 w-4" />
                         Settings
                       </Link>
                     </Button>
-                    <Button variant="ghost" onClick={handleLogout} className="w-full justify-start">
+                    <Button variant="ghost" onClick={handleLogout} className="w-full justify-start h-10">
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
                     </Button>
+                    <div className="pt-2">
+                      <NotificationManager />
+                    </div>
                   </div>
                 ) : (
-                  <Button asChild className="w-full">
-                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                      Login
-                    </Link>
-                  </Button>
+                  <div className="space-y-3">
+                    <Button asChild className="w-full h-10">
+                      <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                        Login
+                      </Link>
+                    </Button>
+                    <NotificationManager />
+                  </div>
                 )}
-              </div>
-
-              {/* Mobile Notifications */}
-              <div className="mt-4">
-                <NotificationManager />
               </div>
             </SheetContent>
           </Sheet>
