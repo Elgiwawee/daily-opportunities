@@ -283,45 +283,45 @@ const Blog = () => {
 
   const handleShare = async (post: BlogPost) => {
     try {
-      // Import the social media sharing utilities
-      const { getSocialMediaSettings, generateSocialShareLinks, openSocialShareLink } = await import('../utils/socialMediaShare');
+      const postUrl = `${window.location.origin}/blog?post=${post.id}`;
+      const shareText = `${post.title}\n\n${post.body.substring(0, 100)}...`;
       
-      const settings = await getSocialMediaSettings();
-      const shareLinks = generateSocialShareLinks(post, settings);
-      
-      // If we have social media links configured, show share options
-      if (Object.keys(shareLinks).length > 0) {
-        // For now, just open the first available share link
-        const [platform, url] = Object.entries(shareLinks)[0];
-        openSocialShareLink(platform, url);
+      // Use native Web Share API if available
+      if (navigator.share) {
+        await navigator.share({
+          title: post.title,
+          text: shareText,
+          url: postUrl,
+        });
         
         toast({
           title: "Success",
-          description: `Opening ${platform} to share your post!`,
+          description: "Post shared successfully!",
         });
       } else {
-        // Fallback to default sharing
-        if (navigator.share) {
-          await navigator.share({
-            title: post.title,
-            text: post.body.substring(0, 100) + '...',
-            url: window.location.href,
-          });
-        } else {
-          await navigator.clipboard.writeText(window.location.href);
-          toast({
-            title: "Success",
-            description: "Link copied to clipboard!",
-          });
-        }
+        // Fallback: copy link to clipboard
+        await navigator.clipboard.writeText(postUrl);
+        toast({
+          title: "Success",
+          description: "Link copied to clipboard!",
+        });
       }
     } catch (error) {
-      console.error('Error sharing:', error);
-      toast({
-        title: "Error",
-        description: "Failed to share post",
-        variant: "destructive",
-      });
+      // Fallback for older browsers
+      try {
+        await navigator.clipboard.writeText(`${window.location.origin}/blog?post=${post.id}`);
+        toast({
+          title: "Success",
+          description: "Link copied to clipboard!",
+        });
+      } catch (clipboardError) {
+        console.error('Error sharing:', error);
+        toast({
+          title: "Error",
+          description: "Failed to share post",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -522,20 +522,31 @@ const Blog = () => {
                       <p className="whitespace-pre-wrap leading-relaxed">{post.body}</p>
                     </div>
                     
-                    {/* Attachments */}
+                    {/* Attachments with Images */}
                     {post.attachments && post.attachments.length > 0 && (
-                      <div className="mb-6">
+                      <div className="mb-6 space-y-4">
                         {post.attachments.map((attachment: any, index: number) => (
-                          <div key={index} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                            <Upload className="h-4 w-4" />
-                            <a 
-                              href={attachment.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-primary hover:underline"
-                            >
-                              📎 {attachment.name}
-                            </a>
+                          <div key={index} className="overflow-hidden rounded-lg border">
+                            {attachment.type?.includes('image') ? (
+                              <img 
+                                src={attachment.url} 
+                                alt={attachment.name || `Blog image ${index + 1}`}
+                                className="w-full h-auto max-h-96 object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="flex items-center gap-2 p-3 bg-muted">
+                                <Upload className="h-4 w-4" />
+                                <a 
+                                  href={attachment.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline"
+                                >
+                                  📎 {attachment.name}
+                                </a>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -618,9 +629,14 @@ const Blog = () => {
                   </CardContent>
                 </Card>
                 
-                {/* Add ad after every 2 posts */}
+                {/* Add in-article ad after every 2 posts */}
                 {(index + 1) % 2 === 0 && index < posts.length - 1 && (
-                  <AdSenseAd />
+                  <AdSenseAd 
+                    className="my-12 mx-auto max-w-2xl"
+                    adFormat="auto"
+                    adLayout="in-article"
+                    style={{ display: 'block', textAlign: 'center', minHeight: '250px' }}
+                  />
                 )}
               </div>
             ))}

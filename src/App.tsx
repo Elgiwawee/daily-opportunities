@@ -25,6 +25,7 @@ import Blog from './pages/Blog';
 import Settings from './pages/Settings';
 import Sitemap from './pages/Sitemap';
 import RobotsTxt from './pages/RobotsTxt';
+import PerformanceOptimizer from './components/PerformanceOptimizer';
 
 // Import i18n configuration
 import './i18n';
@@ -47,6 +48,7 @@ const App = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <PerformanceOptimizer />
         <Toaster />
         <Sonner />
         <CookieConsent />
