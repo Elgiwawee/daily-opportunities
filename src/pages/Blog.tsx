@@ -482,6 +482,18 @@ const Blog = () => {
             {posts.map((post, index) => (
               <div key={post.id}>
                 <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                  {/* Header Image Attachment - Full Width at Top */}
+                  {post.attachments && post.attachments.length > 0 && post.attachments[0].type?.includes('image') && (
+                    <div className="w-full">
+                      <img 
+                        src={post.attachments[0].url} 
+                        alt={post.attachments[0].name || `Blog header image`}
+                        className="w-full h-64 object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -522,15 +534,15 @@ const Blog = () => {
                       <p className="whitespace-pre-wrap leading-relaxed">{post.body}</p>
                     </div>
                     
-                    {/* Attachments with Images */}
-                    {post.attachments && post.attachments.length > 0 && (
+                    {/* Additional Attachments (excluding the first image already shown at top) */}
+                    {post.attachments && post.attachments.length > 1 && (
                       <div className="mb-6 space-y-4">
-                        {post.attachments.map((attachment: any, index: number) => (
-                          <div key={index} className="overflow-hidden rounded-lg border">
+                        {post.attachments.slice(1).map((attachment: any, index: number) => (
+                          <div key={index + 1} className="overflow-hidden rounded-lg border">
                             {attachment.type?.includes('image') ? (
                               <img 
                                 src={attachment.url} 
-                                alt={attachment.name || `Blog image ${index + 1}`}
+                                alt={attachment.name || `Blog image ${index + 2}`}
                                 className="w-full h-auto max-h-96 object-cover"
                                 loading="lazy"
                               />
@@ -547,6 +559,27 @@ const Blog = () => {
                                 </a>
                               </div>
                             )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Show non-image attachments if no images exist */}
+                    {post.attachments && post.attachments.length > 0 && !post.attachments[0].type?.includes('image') && (
+                      <div className="mb-6 space-y-4">
+                        {post.attachments.map((attachment: any, index: number) => (
+                          <div key={index} className="overflow-hidden rounded-lg border">
+                            <div className="flex items-center gap-2 p-3 bg-muted">
+                              <Upload className="h-4 w-4" />
+                              <a 
+                                href={attachment.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                              >
+                                📎 {attachment.name}
+                              </a>
+                            </div>
                           </div>
                         ))}
                       </div>
