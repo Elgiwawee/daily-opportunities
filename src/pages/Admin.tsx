@@ -32,9 +32,31 @@ const Admin = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/auth');
+        return;
       }
+
+      // Check if user has admin role
+      const { data: roles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+
+      if (rolesError) {
+        console.error('Error checking user roles:', rolesError);
+        toast.error('Error verifying permissions');
+        navigate('/');
+        return;
+      }
+
+      if (!roles?.some(r => r.role === 'admin')) {
+        toast.error('Unauthorized: Admin access required');
+        navigate('/');
+        return;
+      }
+
       setIsLoading(false);
     } catch (error) {
+      console.error('Auth error:', error);
       navigate('/auth');
     }
   };

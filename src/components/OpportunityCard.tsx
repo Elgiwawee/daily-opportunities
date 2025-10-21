@@ -273,10 +273,7 @@ const OpportunityCard = ({
                 
                 <div className="prose prose-sm max-w-none">
                   <h4 className="font-semibold mb-2">Description</h4>
-                  <div 
-                    className="text-gray-700 text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: description.replace(/\n/g, '<br />') }} 
-                  />
+                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{description}</p>
                 </div>
                 
                 {external_url && (

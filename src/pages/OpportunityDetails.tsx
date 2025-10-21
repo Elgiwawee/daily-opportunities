@@ -192,7 +192,7 @@ const OpportunityDetails = () => {
                   
                   <div className="prose max-w-none mb-8">
                     <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.description')}</h2>
-                    <div dangerouslySetInnerHTML={{ __html: opportunity.description.replace(/\n/g, '<br />') }} />
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{opportunity.description}</p>
                   </div>
                   
                   {opportunity.external_url && (

@@ -33,14 +33,79 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Security: Verify JWT authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }}
+      );
+    }
+
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+      global: {
+        headers: { Authorization: authHeader }
+      }
+    });
+
+    // Security: Verify the user from the JWT
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
+    
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }}
+      );
+    }
+
+    // Security: Check if user has admin role
+    const { data: roles, error: rolesError } = await supabaseClient
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id);
+      
+    if (rolesError || !roles?.some(r => r.role === 'admin')) {
+      console.error('Authorization error: User is not admin');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: Admin access required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }}
+      );
+    }
     
     const { opportunity } = await req.json() as { opportunity: Opportunity };
     
-    if (!opportunity || !opportunity.id) {
+    // Security: Validate opportunity data
+    if (!opportunity || typeof opportunity !== 'object') {
       return new Response(
-        JSON.stringify({ error: "Invalid opportunity data" }),
+        JSON.stringify({ error: 'Invalid opportunity data' }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Security: Validate required opportunity fields
+    if (!opportunity.id || !opportunity.title || !opportunity.organization || !opportunity.type) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required opportunity fields (id, title, organization, type)' }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Security: Verify opportunity exists in database
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const { data: dbOpportunity, error: dbError } = await supabase
+      .from('opportunities')
+      .select('*')
+      .eq('id', opportunity.id)
+      .single();
+
+    if (dbError || !dbOpportunity) {
+      console.error('Opportunity not found:', dbError);
+      return new Response(
+        JSON.stringify({ error: 'Opportunity not found in database' }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 

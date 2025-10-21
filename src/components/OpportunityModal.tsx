@@ -129,7 +129,7 @@ const OpportunityModal = ({ opportunityId, isOpen, onClose }: OpportunityModalPr
                 
                 <div className="prose max-w-none mb-8">
                   <h3 className="text-xl font-semibold mb-4">Description</h3>
-                  <div dangerouslySetInnerHTML={{ __html: opportunity.description.replace(/\n/g, '<br />') }} />
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{opportunity.description}</p>
                 </div>
                 
                 {opportunity.external_url && (

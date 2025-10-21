@@ -332,10 +332,7 @@ const NewsItem = ({
                 {/* News content */}
                 <div className="prose max-w-none">
                   <h4 className="font-semibold mb-2">Full Article</h4>
-                  <div 
-                    className="text-gray-700 text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: news.body }}
-                  />
+                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{news.body}</p>
                 </div>
               </div>
             </AccordionContent>

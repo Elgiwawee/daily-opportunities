@@ -72,11 +72,7 @@ export const FAQSection = ({
                     className="overflow-hidden"
                   >
                     <div className="px-6 pb-4 text-muted-foreground">
-                      <div 
-                        dangerouslySetInnerHTML={{ 
-                          __html: faq.answer.replace(/\n/g, '<br />') 
-                        }} 
-                      />
+                      <p className="whitespace-pre-wrap">{faq.answer}</p>
                     </div>
                   </motion.div>
                 )}
