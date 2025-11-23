@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 
 const WhatsAppGroups = () => {
   const groups = [
-    { name: "Daily Opportunities Group 1", url: "https://chat.whatsapp.com/group1" },
-    { name: "Daily Opportunities Group 2", url: "https://chat.whatsapp.com/group2" },
-    { name: "Daily Opportunities Group 3", url: "https://chat.whatsapp.com/group3" },
-    { name: "Daily Opportunities Group 4", url: "https://chat.whatsapp.com/group4" },
+    { name: "Daily Opportunities Group 1", url: "https://chat.whatsapp.com/HExFL8M75643wWgFz8J2Wk" },
+    { name: "Daily Opportunities Group 2", url: "https://chat.whatsapp.com/HqYT7FF4HAZ7taWX3t7LjU" },
+    { name: "Daily Opportunities Group 3", url: "https://chat.whatsapp.com/I4IiWpHjlIi4HPf8h0eVss" },
+    { name: "WhatsApp Channel", url: "https://whatsapp.com/channel/0029VbAWCijHbFVELXgqdg0i" },
   ];
 
   return (
