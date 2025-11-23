@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import DonationButton from '../components/DonationButton';
 import { useTranslation } from 'react-i18next';
 import AdSenseAd from '../components/AdSenseAd';
+import WhatsAppGroups from '../components/WhatsAppGroups';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { BREADCRUMB_CONFIGS } from '../utils/breadcrumbUtils';
 import { SEOHead } from '../components/SEOHead';
@@ -108,6 +109,8 @@ const JobListings = () => {
             selectedRegion={selectedRegion}
             setSelectedRegion={setSelectedRegion}
           />
+
+          <WhatsAppGroups />
 
           {isLoading ? (
             <div className="flex justify-center py-12">

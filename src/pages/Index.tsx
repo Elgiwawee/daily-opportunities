@@ -5,6 +5,7 @@ import Opportunities from '../components/Opportunities';
 import AboutSection from '../components/AboutSection';
 import ContactSection from '../components/ContactSection';
 import AdSenseAd from '../components/AdSenseAd';
+import WhatsAppGroups from '../components/WhatsAppGroups';
 import { SEOHead } from '../components/SEOHead';
 import { generateWebsiteSchema, generateOrganizationSchema } from '../utils/structuredData';
 
@@ -29,6 +30,9 @@ const Index = () => {
       <div className="pt-36"> {/* Added padding to account for fixed navbar */}
         <HeroSection />
         <AdSenseAd />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <WhatsAppGroups />
+        </div>
         <Opportunities />
         <AdSenseAd />
         <AboutSection />

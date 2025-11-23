@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import AboutSection from '../components/AboutSection';
 import AdSenseAd from '../components/AdSenseAd';
+import WhatsAppGroups from '../components/WhatsAppGroups';
 
 const AboutUs = () => {
   return (
@@ -22,6 +23,7 @@ const AboutUs = () => {
           </motion.div>
           
           <AdSenseAd />
+          <WhatsAppGroups />
           <AboutSection />
           <AdSenseAd />
         </div>

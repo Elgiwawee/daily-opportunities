@@ -12,6 +12,7 @@ import NewsItem from '../components/NewsItem';
 import { useTranslation } from 'react-i18next';
 import { updateMetaTags } from '@/utils/metaUtils';
 import AdSenseAd from '@/components/AdSenseAd';
+import WhatsAppGroups from '../components/WhatsAppGroups';
 
 interface Attachment {
   name: string;
@@ -178,6 +179,8 @@ const News = () => {
               <DonationButton size="lg" />
             </div>
           </motion.div>
+
+          <WhatsAppGroups />
 
           {isLoading ? (
             <div className="space-y-10">
