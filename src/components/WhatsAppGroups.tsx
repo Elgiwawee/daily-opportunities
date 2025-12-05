@@ -9,6 +9,22 @@ const WhatsAppGroups = () => {
     { name: "WhatsApp Channel", url: "https://whatsapp.com/channel/0029VbAWCijHbFVELXgqdg0i" },
   ];
 
+  const services = [
+    "Senior Certificate",
+    "Transcript",
+    "Testimonial",
+    "Birth Certificate",
+    "Medical Certificate",
+    "Police Character",
+    "English or Arabic CV & Resume",
+    "English Proficiency Certificate (TOEFL, IELTS, IELC)",
+    "Arabic Proficiency Certificate",
+    "Editing",
+    "Research",
+    "Project",
+    "Translation",
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -38,6 +54,30 @@ const WhatsAppGroups = () => {
             </li>
           ))}
         </ul>
+
+        {/* Services Section */}
+        <div className="mt-10 w-full max-w-md">
+          <h4 className="text-xl font-bold text-gray-900 mb-4">
+            Services We Offer to Candidates
+          </h4>
+          <ul className="text-left space-y-2 text-gray-700">
+            {services.map((service, index) => (
+              <li key={index} className="flex items-start">
+                <span className="text-green-500 mr-2">•</span>
+                {service}
+              </li>
+            ))}
+          </ul>
+          <a
+            href="https://wa.me/2347040930552"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-6 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-all transform hover:scale-105"
+          >
+            <MessageCircle size={20} />
+            Message Us
+          </a>
+        </div>
       </div>
     </motion.div>
   );
