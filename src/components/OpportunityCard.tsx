@@ -1,17 +1,16 @@
 
 import { motion } from 'framer-motion';
-import { Image, Video, ExternalLink, Share2, Calendar, Clock, MapPin, Download, X } from 'lucide-react';
+import { Image, Video, ExternalLink, Share2, Calendar, Clock, MapPin, Download } from 'lucide-react';
 import { generateShareableLink, copyShareLink } from '../utils/shareLinkGenerator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import DonationButton from './DonationButton';
 import { useTranslation } from 'react-i18next';
 import { arSA } from 'date-fns/locale';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Attachment {
   name: string;
@@ -47,7 +46,6 @@ const OpportunityCard = ({
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const isRtl = i18n.language === 'ar';
   
   // Try to parse the deadline to a readable format
@@ -150,6 +148,11 @@ const OpportunityCard = ({
            'url' in attachments[0];
   };
 
+  // Check if this opportunity should be expanded based on URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const expandedOpportunityId = urlParams.get('opportunity');
+  const shouldExpand = expandedOpportunityId === id;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -236,13 +239,93 @@ const OpportunityCard = ({
         
         <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description}</p>
         
-        <Button 
-          variant="link" 
-          className="text-sm font-medium text-blue-700 hover:underline p-0 h-auto"
-          onClick={() => setIsModalOpen(true)}
-        >
-          How to Apply
-        </Button>
+        <Accordion type="single" collapsible className="w-full" defaultValue={shouldExpand ? "details" : undefined}>
+          <AccordionItem value="details" className="border-none">
+            <AccordionTrigger className="text-sm font-medium text-blue-700 hover:underline bg-transparent border-none p-0 h-auto hover:no-underline">
+              How to Apply
+            </AccordionTrigger>
+            <AccordionContent className="pt-4 pb-0">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 text-sm text-gray-500">
+                  {deadline && (
+                    <div className="flex items-center">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      <span>Deadline: {formattedDate}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center">
+                    <MapPin className="mr-2 h-4 w-4" />
+                    <span>{type === 'scholarship' ? 'Scholarship' : 'Job'}</span>
+                  </div>
+                </div>
+                
+                {/* Enhanced image display section */}
+                {imageUrl && (
+                  <div className="mb-4">
+                    <img
+                      src={imageUrl}
+                      alt={title}
+                      className="w-full max-w-md mx-auto rounded-lg shadow-md object-cover"
+                      style={{ maxHeight: '300px' }}
+                    />
+                  </div>
+                )}
+                
+                <div className="prose prose-sm max-w-none">
+                  <h4 className="font-semibold mb-2">Description</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{description}</p>
+                </div>
+                
+                {external_url && (
+                  <div className="pt-2">
+                    <Button 
+                      asChild 
+                      className="bg-olive-600 hover:bg-olive-700 w-full sm:w-auto"
+                    >
+                      <a href={external_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                        Click here to apply
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </a>
+                    </Button>
+                  </div>
+                )}
+                
+                {hasAttachments(normalizedAttachments) && normalizedAttachments.length > 0 && (
+                  <div className="pt-2">
+                    <h4 className="font-semibold mb-2">Attachments</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      {normalizedAttachments.map((attachment, index) => (
+                        <Card key={index} className="p-3 flex items-center justify-between">
+                          <div className="flex items-center">
+                            <Download className="h-4 w-4 text-olive-600 mr-2" />
+                            <div>
+                              <div className="font-medium text-sm">{attachment.name}</div>
+                              <div className="text-xs text-gray-500">{attachment.type}</div>
+                            </div>
+                          </div>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            asChild
+                          >
+                            <a 
+                              href={attachment.url} 
+                              download={attachment.name}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Download
+                            </a>
+                          </Button>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
         
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center gap-2">
@@ -269,113 +352,6 @@ const OpportunityCard = ({
           </div>
         </div>
       </div>
-
-      {/* Full Details Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 overflow-hidden">
-          <ScrollArea className="max-h-[90vh]">
-            <div className="grid md:grid-cols-2 gap-0">
-              {/* Left side - Image */}
-              <div className="relative aspect-video md:aspect-auto md:min-h-[400px]">
-                {imageUrl && (
-                  <img
-                    src={imageUrl}
-                    alt={title}
-                    className="w-full h-full object-cover"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-black/20" />
-                <div className={`absolute top-4 left-4 px-3 py-1 text-xs font-semibold text-white rounded ${
-                  type === 'scholarship' ? 'bg-blue-700' : 'bg-green-700'
-                }`}>
-                  {type === 'scholarship' ? t('scholarships.title') : t('jobs.title')}
-                </div>
-              </div>
-
-              {/* Right side - Details */}
-              <div className="p-6 space-y-4">
-                <DialogHeader>
-                  <DialogTitle className="text-xl md:text-2xl font-bold text-foreground leading-tight">
-                    {title}
-                  </DialogTitle>
-                  <p className="text-muted-foreground font-medium">{organization}</p>
-                </DialogHeader>
-
-                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground border-y py-3">
-                  {deadline && (
-                    <div className="flex items-center">
-                      <Calendar className="mr-2 h-4 w-4 text-blue-600" />
-                      <span>Deadline: <strong>{formattedDate}</strong></span>
-                    </div>
-                  )}
-                  <div className="flex items-center">
-                    <MapPin className="mr-2 h-4 w-4 text-green-600" />
-                    <span>{type === 'scholarship' ? 'Scholarship' : 'Job Opportunity'}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-foreground">Description</h4>
-                  <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap max-h-[200px] overflow-y-auto">
-                    {description}
-                  </p>
-                </div>
-
-                {hasAttachments(normalizedAttachments) && normalizedAttachments.length > 0 && (
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-foreground">Attachments</h4>
-                    <div className="grid gap-2">
-                      {normalizedAttachments.map((attachment, index) => (
-                        <Card key={index} className="p-3 flex items-center justify-between bg-muted/50">
-                          <div className="flex items-center">
-                            <Download className="h-4 w-4 text-blue-600 mr-2" />
-                            <div>
-                              <div className="font-medium text-sm">{attachment.name}</div>
-                              <div className="text-xs text-muted-foreground">{attachment.type}</div>
-                            </div>
-                          </div>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            asChild
-                          >
-                            <a 
-                              href={attachment.url} 
-                              download={attachment.name}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Download
-                            </a>
-                          </Button>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex flex-wrap gap-3 pt-4 border-t">
-                  {external_url && (
-                    <Button 
-                      className="bg-blue-700 hover:bg-blue-800 flex-1"
-                      asChild
-                    >
-                      <a href={external_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
-                        Apply Now
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  )}
-                  <DonationButton 
-                    variant="outline" 
-                    className="flex-1 text-amber-700 border-amber-200 hover:bg-amber-50"
-                  />
-                </div>
-              </div>
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
     </motion.div>
   );
 };
