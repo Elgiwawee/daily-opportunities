@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,15 +8,15 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 222.2 47.4% 11.2%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222.2 47.4% 11.2%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222.2 47.4% 11.2%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -23,7 +25,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 45 93% 47%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -31,24 +33,32 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 221 83% 53%;
 
     --radius: 0.5rem;
 
+    /* Custom brand colors */
+    --brand-blue: 221 83% 53%;
+    --brand-navy: 222 47% 11%;
+    --brand-gold: 45 93% 47%;
+    --brand-success: 142 76% 36%;
+    --brand-warning: 38 92% 50%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 43%));
+    --gradient-header: linear-gradient(180deg, hsl(222 47% 11%), hsl(222 47% 16%));
+    
+    /* Shadows */
+    --shadow-card: 0 2px 8px -2px rgba(0, 0, 0, 0.1), 0 4px 12px -4px rgba(0, 0, 0, 0.08);
+    --shadow-card-hover: 0 8px 24px -6px rgba(0, 0, 0, 0.15), 0 12px 32px -8px rgba(0, 0, 0, 0.12);
+
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -62,7 +72,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -71,7 +81,7 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 45 93% 47%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;

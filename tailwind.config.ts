@@ -63,6 +63,13 @@ export default {
           '900': '#524a3c',
           '950': '#2b2719',
         },
+        brand: {
+          blue: 'hsl(var(--brand-blue))',
+          navy: 'hsl(var(--brand-navy))',
+          gold: 'hsl(var(--brand-gold))',
+          success: 'hsl(var(--brand-success))',
+          warning: 'hsl(var(--brand-warning))',
+        },
       },
       keyframes: {
         "fade-up": {

@@ -1,4 +1,3 @@
-
 {
   "app": {
     "name": "Daily Opportunities"
@@ -58,6 +57,25 @@
       "copy": "Copy Link"
     },
     "copied": "Link copied to clipboard!"
+  },
+  "opportunityDetails": {
+    "error": "Error Loading",
+    "errorMessage": "We couldn't load the opportunity details. Please try again.",
+    "backHome": "Back to Home",
+    "copied": "Copied!",
+    "share": "Share",
+    "deadline": "Deadline",
+    "posted": "Posted",
+    "scholarship": "Scholarship",
+    "job": "Job",
+    "description": "Description",
+    "applyNow": "Apply Now",
+    "attachments": "Attachments",
+    "download": "Download",
+    "backToScholarships": "Back to Scholarships",
+    "backToJobs": "Back to Jobs",
+    "notFound": "Opportunity Not Found",
+    "notFoundMessage": "The opportunity you're looking for doesn't exist or has been removed."
   },
   "language": {
     "en": "English",

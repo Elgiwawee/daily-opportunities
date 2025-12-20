@@ -20,6 +20,7 @@ import { generateBreadcrumbs } from '../utils/breadcrumbUtils';
 import { RelatedOpportunities } from '../components/RelatedOpportunities';
 import { FAQSection } from '../components/FAQSection';
 import { SCHOLARSHIP_FAQS, JOB_FAQS } from '../data/faqData';
+import { extractIdFromSlug, generateSlug } from '../utils/slugUtils';
 
 interface Opportunity {
   id: string;
@@ -42,19 +43,39 @@ interface Attachment {
 }
 
 const OpportunityDetails = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const location = useLocation();
 
   const fetchOpportunity = async () => {
-    if (!id) throw new Error('No opportunity ID provided');
+    if (!slug) throw new Error('No opportunity slug provided');
     
-    const { data, error } = await supabase
+    // Extract the ID portion from the slug (last 8 chars after final hyphen)
+    const idPart = extractIdFromSlug(slug);
+    
+    // Try to find by ID first (for old UUID-style links)
+    let { data, error } = await supabase
       .from('opportunities')
       .select('*')
-      .eq('id', id)
-      .single();
+      .or(`id.eq.${slug},id.ilike.${idPart}%`)
+      .limit(1)
+      .maybeSingle();
+    
+    // If not found by ID, try to search by title slug
+    if (!data && idPart) {
+      const { data: searchData, error: searchError } = await supabase
+        .from('opportunities')
+        .select('*')
+        .ilike('id', `${idPart}%`)
+        .limit(1)
+        .maybeSingle();
+      
+      if (searchData) {
+        data = searchData;
+        error = searchError;
+      }
+    }
     
     if (error) {
       console.error('Error fetching opportunity:', error);
@@ -62,13 +83,17 @@ const OpportunityDetails = () => {
       throw error;
     }
     
+    if (!data) {
+      throw new Error('Opportunity not found');
+    }
+    
     return data as Opportunity;
   };
 
   const { data: opportunity, isLoading, error } = useQuery({
-    queryKey: ['opportunity', id],
+    queryKey: ['opportunity', slug],
     queryFn: fetchOpportunity,
-    enabled: !!id,
+    enabled: !!slug,
   });
 
   useEffect(() => {
