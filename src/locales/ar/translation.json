@@ -1,4 +1,3 @@
-
 {
   "app": {
     "name": "الفرص اليومية"
@@ -58,6 +57,25 @@
       "copy": "نسخ الرابط"
     },
     "copied": "تم نسخ الرابط إلى الحافظة!"
+  },
+  "opportunityDetails": {
+    "error": "خطأ في التحميل",
+    "errorMessage": "لم نتمكن من تحميل تفاصيل الفرصة. يرجى المحاولة مرة أخرى.",
+    "backHome": "العودة للرئيسية",
+    "copied": "تم النسخ!",
+    "share": "مشاركة",
+    "deadline": "الموعد النهائي",
+    "posted": "نشرت",
+    "scholarship": "منحة دراسية",
+    "job": "وظيفة",
+    "description": "الوصف",
+    "applyNow": "قدم الآن",
+    "attachments": "المرفقات",
+    "download": "تحميل",
+    "backToScholarships": "العودة للمنح الدراسية",
+    "backToJobs": "العودة للوظائف",
+    "notFound": "الفرصة غير موجودة",
+    "notFoundMessage": "الفرصة التي تبحث عنها غير موجودة أو تم إزالتها."
   },
   "language": {
     "en": "English",

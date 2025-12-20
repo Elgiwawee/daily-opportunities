@@ -1,3 +1,5 @@
+import { generateSlug } from './slugUtils';
+
 // Generate shareable links that social media platforms can properly preview
 export const generateShareableLink = (opportunity: {
   id: string;
@@ -8,25 +10,24 @@ export const generateShareableLink = (opportunity: {
   type: 'scholarship' | 'job';
 }) => {
   const baseUrl = window.location.origin;
+  const slug = generateSlug(opportunity.title);
+  const shortId = opportunity.id.substring(0, 8);
   
-  // Use the special share page that has proper meta tags for social media crawlers
-  const shareUrl = `${baseUrl}/share-opportunity.html?id=${opportunity.id}`;
-  
-  // Regular app URL for direct access
-  const fallbackUrl = `${baseUrl}/?opportunity=${opportunity.id}`;
+  // SEO-friendly URL with title slug and short ID
+  const opportunityUrl = `${baseUrl}/opportunity/${slug}-${shortId}`;
   
   return {
-    shareUrl,
-    fallbackUrl,
+    shareUrl: opportunityUrl,
+    fallbackUrl: opportunityUrl,
     
-    // Generate specific social media share URLs using the special share URL
-    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${opportunity.title} - ${opportunity.organization}\n\n${opportunity.description.substring(0, 100)}...\n\nView full details: ${shareUrl}`)}`,
+    // Generate specific social media share URLs using the SEO-friendly URL
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${opportunity.title} - ${opportunity.organization}\n\n${opportunity.description.substring(0, 100)}...\n\nView full details: ${opportunityUrl}`)}`,
     
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(opportunityUrl)}`,
     
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${opportunity.title} - ${opportunity.organization}`)}&url=${encodeURIComponent(shareUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${opportunity.title} - ${opportunity.organization}`)}&url=${encodeURIComponent(opportunityUrl)}`,
     
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(opportunityUrl)}`
   };
 };
 
@@ -35,7 +36,6 @@ export const copyShareLink = async (opportunity: any) => {
   const links = generateShareableLink(opportunity);
   
   try {
-    // Use the special share URL for better social media previews
     await navigator.clipboard.writeText(links.shareUrl);
     return { success: true, message: 'Share link copied to clipboard!' };
   } catch (error) {
