@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { updateMetaTags } from '@/utils/metaUtils';
 import AdSenseAd from '@/components/AdSenseAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
+import StickySidebar from '../components/StickySidebar';
 
 interface Attachment {
   name: string;
@@ -180,65 +181,73 @@ const News = () => {
             </div>
           </motion.div>
 
-          <WhatsAppGroups />
+          <div className="flex gap-8">
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              <WhatsAppGroups />
 
-          {isLoading ? (
-            <div className="space-y-10">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden p-6">
-                  <Skeleton className="h-8 w-2/3 mb-3" />
-                  <Skeleton className="h-4 w-1/4 mb-6" />
-                  <div className="space-y-4 mb-6">
-                    <Skeleton className="h-64 w-full rounded-lg" />
-                  </div>
-                  <div className="space-y-3">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                  </div>
+              {isLoading ? (
+                <div className="space-y-10">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden p-6">
+                      <Skeleton className="h-8 w-2/3 mb-3" />
+                      <Skeleton className="h-4 w-1/4 mb-6" />
+                      <div className="space-y-4 mb-6">
+                        <Skeleton className="h-64 w-full rounded-lg" />
+                      </div>
+                      <div className="space-y-3">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : newsItems.length > 0 ? (
-            <div className="space-y-10">
-              {newsItems.map((news, index) => (
-                <div key={news.id}>
-                  <NewsItem 
-                    news={news}
-                    activeVideoId={activeVideoId}
-                    isMuted={isMuted}
-                    onVideoToggle={handleVideoToggle}
-                    onToggleMute={toggleMute}
-                    expandedNewsId={expandedNewsId}
-                    onToggleExpand={(newsId) => {
-                      setExpandedNewsId(expandedNewsId === newsId ? null : newsId);
-                    }}
-                  />
+              ) : newsItems.length > 0 ? (
+                <div className="space-y-10">
+                  {newsItems.map((news, index) => (
+                    <div key={news.id}>
+                      <NewsItem 
+                        news={news}
+                        activeVideoId={activeVideoId}
+                        isMuted={isMuted}
+                        onVideoToggle={handleVideoToggle}
+                        onToggleMute={toggleMute}
+                        expandedNewsId={expandedNewsId}
+                        onToggleExpand={(newsId) => {
+                          setExpandedNewsId(expandedNewsId === newsId ? null : newsId);
+                        }}
+                      />
+                      
+                      {/* Add ad after every 2 news items */}
+                      {(index + 1) % 2 === 0 && index < newsItems.length - 1 && (
+                        <AdSenseAd variant="in-article" />
+                      )}
+                    </div>
+                  ))}
                   
-                  {/* Add ad after every 2 news items */}
-                  {(index + 1) % 2 === 0 && index < newsItems.length - 1 && (
-                    <AdSenseAd />
+                  {allNewsItems.length > visibleCount && (
+                    <div className="flex justify-center mt-8">
+                      <button
+                        onClick={loadMore}
+                        className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
+                      >
+                        {t('news.loadMore')}
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                    </div>
                   )}
                 </div>
-              ))}
-              
-              {allNewsItems.length > visibleCount && (
-                <div className="flex justify-center mt-8">
-                  <button
-                    onClick={loadMore}
-                    className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
-                  >
-                    {t('news.loadMore')}
-                    <ChevronDown className="h-4 w-4" />
-                  </button>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-lg text-gray-500">{t('news.empty')}</p>
                 </div>
               )}
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-lg text-gray-500">{t('news.empty')}</p>
-            </div>
-          )}
+            
+            {/* Sticky Sidebar - Desktop Only */}
+            <StickySidebar className="w-80 flex-shrink-0" />
+          </div>
         </div>
       </div>
     </div>

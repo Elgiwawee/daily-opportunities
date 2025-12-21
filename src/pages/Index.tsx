@@ -5,6 +5,7 @@ import AboutSection from '../components/AboutSection';
 import ContactSection from '../components/ContactSection';
 import AdSenseAd from '../components/AdSenseAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
+import StickySidebar from '../components/StickySidebar';
 import { SEOHead } from '../components/SEOHead';
 import { generateWebsiteSchema, generateOrganizationSchema } from '../utils/structuredData';
 import { Link } from 'react-router-dom';
@@ -87,34 +88,39 @@ const Index = () => {
         {/* Ad Banner After Hero */}
         <div className="bg-white py-4">
           <div className="max-w-7xl mx-auto px-4">
-            <AdSenseAd />
+            <AdSenseAd variant="banner" />
           </div>
         </div>
         
-        {/* Categories Section */}
-        <section className="py-12 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Browse Opportunities</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">Find your perfect opportunity from thousands of scholarships and jobs</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {categories.map((category, index) => (
-                <CategoryCard key={index} {...category} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* WhatsApp Groups & Services */}
+        {/* Main Content with Sidebar */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <WhatsAppGroups />
-        </div>
-        
-        {/* Ad Between Sections */}
-        <div className="bg-white py-4">
-          <div className="max-w-7xl mx-auto px-4">
-            <AdSenseAd />
+          <div className="flex gap-8">
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              {/* Categories Section */}
+              <section className="mb-12">
+                <div className="text-center mb-10">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Browse Opportunities</h2>
+                  <p className="text-gray-600 max-w-2xl mx-auto">Find your perfect opportunity from thousands of scholarships and jobs</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {categories.map((category, index) => (
+                    <CategoryCard key={index} {...category} />
+                  ))}
+                </div>
+              </section>
+
+              {/* WhatsApp Groups & Services */}
+              <WhatsAppGroups />
+              
+              {/* Ad Between Sections */}
+              <div className="my-8">
+                <AdSenseAd variant="in-article" />
+              </div>
+            </div>
+            
+            {/* Sticky Sidebar - Desktop Only */}
+            <StickySidebar className="w-80 flex-shrink-0" />
           </div>
         </div>
         
@@ -124,7 +130,7 @@ const Index = () => {
         {/* Ad After Opportunities */}
         <div className="bg-white py-4">
           <div className="max-w-7xl mx-auto px-4">
-            <AdSenseAd />
+            <AdSenseAd variant="multiplex" />
           </div>
         </div>
         
