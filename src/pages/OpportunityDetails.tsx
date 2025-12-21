@@ -12,6 +12,7 @@ import { Card } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { Json } from '@/integrations/supabase/types';
 import AdSenseAd from '../components/AdSenseAd';
+import StickySidebar from '../components/StickySidebar';
 import { SEOHead } from '../components/SEOHead';
 import { generateScholarshipSchema, generateJobSchema, generateBreadcrumbSchema } from '../utils/structuredData';
 import { Breadcrumb } from '../components/Breadcrumb';
@@ -54,40 +55,49 @@ const OpportunityDetails = () => {
     // Extract the ID portion from the slug (last 8 chars after final hyphen)
     const idPart = extractIdFromSlug(slug);
     
-    // Try to find by ID first (for old UUID-style links)
-    let { data, error } = await supabase
+    // Try multiple methods to find the opportunity
+    let data = null;
+    let error = null;
+    
+    // Method 1: Try exact UUID match (for direct ID links)
+    const { data: exactMatch, error: exactError } = await supabase
       .from('opportunities')
       .select('*')
-      .or(`id.eq.${slug},id.ilike.${idPart}%`)
-      .limit(1)
+      .eq('id', slug)
       .maybeSingle();
     
-    // If not found by ID, try to search by title slug
-    if (!data && idPart) {
-      const { data: searchData, error: searchError } = await supabase
+    if (exactMatch) {
+      return exactMatch as Opportunity;
+    }
+    
+    // Method 2: Try ID prefix match (for SEO-friendly slug links)
+    if (idPart && idPart.length >= 8) {
+      const { data: prefixMatch } = await supabase
         .from('opportunities')
         .select('*')
-        .ilike('id', `${idPart}%`)
+        .filter('id', 'ilike', `${idPart}%`)
         .limit(1)
         .maybeSingle();
       
-      if (searchData) {
-        data = searchData;
-        error = searchError;
+      if (prefixMatch) {
+        return prefixMatch as Opportunity;
       }
     }
     
-    if (error) {
-      console.error('Error fetching opportunity:', error);
-      toast.error('Failed to load opportunity details');
-      throw error;
+    // Method 3: Search all and find by ID prefix (fallback)
+    const { data: allOpps } = await supabase
+      .from('opportunities')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (allOpps && idPart) {
+      const found = allOpps.find(opp => opp.id.startsWith(idPart));
+      if (found) {
+        return found as Opportunity;
+      }
     }
     
-    if (!data) {
-      throw new Error('Opportunity not found');
-    }
-    
-    return data as Opportunity;
+    throw new Error('Opportunity not found');
   };
 
   const { data: opportunity, isLoading, error } = useQuery({
@@ -154,159 +164,181 @@ const OpportunityDetails = () => {
       )}
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {opportunity && (
             <Breadcrumb 
               items={generateBreadcrumbs(location.pathname, opportunity.title)} 
             />
           )}
-          <AdSenseAd />
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('opportunityDetails.error')}</h2>
-              <p className="text-gray-600 mb-8">{t('opportunityDetails.errorMessage')}</p>
-              <Button asChild className="bg-olive-600 hover:bg-olive-700">
-                <Link to="/">{t('opportunityDetails.backHome')}</Link>
-              </Button>
-            </div>
-          ) : opportunity ? (
-            <>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white shadow-lg rounded-lg overflow-hidden"
-              >
-                <div className="p-6 sm:p-10">
-                  <div className="flex justify-between items-start">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{opportunity.title}</h1>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={copyToClipboard}
-                      className="text-gray-500 hover:text-olive-600"
-                    >
-                      {copied ? t('opportunityDetails.copied') : t('opportunityDetails.share')}
-                      <LinkIcon className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                  
-                  <div className="text-lg text-olive-600 font-semibold mb-6">
-                    {opportunity.organization}
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-4 mb-8 text-sm text-gray-500">
-                    {opportunity.deadline && (
-                      <div className="flex items-center">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        <span>{t('opportunityDetails.deadline')}: {new Date(opportunity.deadline).toLocaleDateString()}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center">
-                      <Clock className="mr-2 h-4 w-4" />
-                      <span>{t('opportunityDetails.posted')} {formatDistanceToNow(new Date(opportunity.created_at), { addSuffix: true })}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <MapPin className="mr-2 h-4 w-4" />
-                      <span>{opportunity.type === 'scholarship' ? t('opportunityDetails.scholarship') : t('opportunityDetails.job')}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="prose max-w-none mb-8">
-                    <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.description')}</h2>
-                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{opportunity.description}</p>
-                  </div>
-                  
-                  {opportunity.external_url && (
-                    <div className="mb-8">
-                      <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.applyNow')}</h2>
-                      <Button asChild className="bg-olive-600 hover:bg-olive-700">
-                        <a href={opportunity.external_url} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                          Click here to apply
-                          <ExternalLink className="ml-2 h-4 w-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  )}
-                  
-                  {hasAttachments(opportunity.attachments) && opportunity.attachments.length > 0 && (
-                    <div className="mb-8">
-                      <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.attachments')}</h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {opportunity.attachments.map((attachment, index) => (
-                          <Card key={index} className="p-4 flex items-center justify-between">
-                            <div className="flex items-center">
-                              <Download className="h-5 w-5 text-olive-600 mr-3" />
-                              <div>
-                                <div className="font-medium">{attachment.name}</div>
-                                <div className="text-sm text-gray-500">{attachment.type}</div>
-                              </div>
-                            </div>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              asChild
-                              className="ml-2"
-                            >
-                              <a 
-                                href={attachment.url} 
-                                download={attachment.name}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {t('opportunityDetails.download')}
-                              </a>
-                            </Button>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="flex justify-between items-center mt-10">
-                    <Button asChild variant="outline" className="border-olive-600 text-olive-700 hover:bg-olive-50">
-                      <Link to={opportunity.type === 'scholarship' ? '/scholarships' : '/jobs'}>
-                        {opportunity.type === 'scholarship' ? t('opportunityDetails.backToScholarships') : t('opportunityDetails.backToJobs')}
-                      </Link>
-                    </Button>
-                    
-                    <Button asChild className="bg-olive-600 hover:bg-olive-700">
-                      <Link to="/">{t('opportunityDetails.backHome')}</Link>
-                    </Button>
-                  </div>
+          
+          {/* Top Ad Banner */}
+          <div className="mb-8">
+            <AdSenseAd variant="banner" />
+          </div>
+          
+          <div className="flex gap-8">
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              {isLoading ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
                 </div>
-              </motion.div>
-              
-              {/* Related Opportunities Section */}
-              <div className="mt-12">
-                <RelatedOpportunities 
-                  currentOpportunityId={opportunity.id}
-                  type={opportunity.type}
-                  organization={opportunity.organization}
-                />
-              </div>
-              
-              {/* FAQ Section */}
-              <div className="mt-16">
-                <FAQSection 
-                  title="Frequently Asked Questions"
-                  faqs={opportunity?.type === 'scholarship' ? SCHOLARSHIP_FAQS.slice(0, 5) : JOB_FAQS.slice(0, 5)}
-                />
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('opportunityDetails.notFound')}</h2>
-              <p className="text-gray-600 mb-8">{t('opportunityDetails.notFoundMessage')}</p>
-              <Button asChild className="bg-olive-600 hover:bg-olive-700">
-                <Link to="/">{t('opportunityDetails.backHome')}</Link>
-              </Button>
+              ) : error ? (
+                <div className="text-center py-12">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('opportunityDetails.error')}</h2>
+                  <p className="text-gray-600 mb-8">{t('opportunityDetails.errorMessage')}</p>
+                  <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                    <Link to="/">{t('opportunityDetails.backHome')}</Link>
+                  </Button>
+                </div>
+              ) : opportunity ? (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white shadow-lg rounded-lg overflow-hidden"
+                  >
+                    <div className="p-6 sm:p-10">
+                      <div className="flex justify-between items-start">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{opportunity.title}</h1>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={copyToClipboard}
+                          className="text-gray-500 hover:text-olive-600"
+                        >
+                          {copied ? t('opportunityDetails.copied') : t('opportunityDetails.share')}
+                          <LinkIcon className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      <div className="text-lg text-olive-600 font-semibold mb-6">
+                        {opportunity.organization}
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-4 mb-8 text-sm text-gray-500">
+                        {opportunity.deadline && (
+                          <div className="flex items-center">
+                            <Calendar className="mr-2 h-4 w-4" />
+                            <span>{t('opportunityDetails.deadline')}: {new Date(opportunity.deadline).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <Clock className="mr-2 h-4 w-4" />
+                          <span>{t('opportunityDetails.posted')} {formatDistanceToNow(new Date(opportunity.created_at), { addSuffix: true })}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="mr-2 h-4 w-4" />
+                          <span>{opportunity.type === 'scholarship' ? t('opportunityDetails.scholarship') : t('opportunityDetails.job')}</span>
+                        </div>
+                      </div>
+                      
+                      {/* In-article Ad */}
+                      <div className="my-6">
+                        <AdSenseAd variant="in-article" />
+                      </div>
+                      
+                      <div className="prose max-w-none mb-8">
+                        <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.description')}</h2>
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{opportunity.description}</p>
+                      </div>
+                      
+                      {opportunity.external_url && (
+                        <div className="mb-8">
+                          <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.applyNow')}</h2>
+                          <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                            <a href={opportunity.external_url} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                              Click here to apply
+                              <ExternalLink className="ml-2 h-4 w-4" />
+                            </a>
+                          </Button>
+                        </div>
+                      )}
+                      
+                      {hasAttachments(opportunity.attachments) && opportunity.attachments.length > 0 && (
+                        <div className="mb-8">
+                          <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.attachments')}</h2>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {opportunity.attachments.map((attachment, index) => (
+                              <Card key={index} className="p-4 flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <Download className="h-5 w-5 text-olive-600 mr-3" />
+                                  <div>
+                                    <div className="font-medium">{attachment.name}</div>
+                                    <div className="text-sm text-gray-500">{attachment.type}</div>
+                                  </div>
+                                </div>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  asChild
+                                  className="ml-2"
+                                >
+                                  <a 
+                                    href={attachment.url} 
+                                    download={attachment.name}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {t('opportunityDetails.download')}
+                                  </a>
+                                </Button>
+                              </Card>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-between items-center mt-10">
+                        <Button asChild variant="outline" className="border-olive-600 text-olive-700 hover:bg-olive-50">
+                          <Link to={opportunity.type === 'scholarship' ? '/scholarships' : '/jobs'}>
+                            {opportunity.type === 'scholarship' ? t('opportunityDetails.backToScholarships') : t('opportunityDetails.backToJobs')}
+                          </Link>
+                        </Button>
+                        
+                        <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                          <Link to="/">{t('opportunityDetails.backHome')}</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Ad After Main Content */}
+                  <div className="my-8">
+                    <AdSenseAd variant="multiplex" />
+                  </div>
+                  
+                  {/* Related Opportunities Section */}
+                  <div className="mt-12">
+                    <RelatedOpportunities 
+                      currentOpportunityId={opportunity.id}
+                      type={opportunity.type}
+                      organization={opportunity.organization}
+                    />
+                  </div>
+                  
+                  {/* FAQ Section */}
+                  <div className="mt-16">
+                    <FAQSection 
+                      title="Frequently Asked Questions"
+                      faqs={opportunity?.type === 'scholarship' ? SCHOLARSHIP_FAQS.slice(0, 5) : JOB_FAQS.slice(0, 5)}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('opportunityDetails.notFound')}</h2>
+                  <p className="text-gray-600 mb-8">{t('opportunityDetails.notFoundMessage')}</p>
+                  <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                    <Link to="/">{t('opportunityDetails.backHome')}</Link>
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
-          <AdSenseAd />
+            
+            {/* Sticky Sidebar - Desktop Only */}
+            <StickySidebar className="w-80 flex-shrink-0" />
+          </div>
         </div>
       </div>
     </div>

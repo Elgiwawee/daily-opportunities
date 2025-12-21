@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import AdSenseAd from '../components/AdSenseAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
+import StickySidebar from '../components/StickySidebar';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { BREADCRUMB_CONFIGS } from '../utils/breadcrumbUtils';
 import { SEOHead } from '../components/SEOHead';
@@ -90,53 +91,65 @@ const Scholarships = () => {
             </p>
           </motion.div>
 
-          <RegionFilter
-            selectedRegion={selectedRegion}
-            setSelectedRegion={setSelectedRegion}
-          />
+          <div className="flex gap-8">
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              <RegionFilter
+                selectedRegion={selectedRegion}
+                setSelectedRegion={setSelectedRegion}
+              />
 
-          <WhatsAppGroups />
+              <WhatsAppGroups />
 
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-12 text-red-500">
-              Error loading scholarships. Please try again later.
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-                {scholarships.slice(0, visibleCount).map((scholarship, index) => (
-                  <div key={scholarship.id} className="col-span-1">
-                    <OpportunityCard {...scholarship} />
-                    {(index + 1) % 6 === 0 && <AdSenseAd className="col-span-full" />}
+              {isLoading ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
+                </div>
+              ) : error ? (
+                <div className="text-center py-12 text-red-500">
+                  Error loading scholarships. Please try again later.
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                    {scholarships.slice(0, visibleCount).map((scholarship, index) => (
+                      <div key={scholarship.id} className="col-span-1">
+                        <OpportunityCard {...scholarship} />
+                        {(index + 1) % 4 === 0 && (
+                          <div className="mt-6">
+                            <AdSenseAd variant="in-article" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              
-              <AdSenseAd />
+                  
+                  <AdSenseAd variant="multiplex" className="mt-8" />
 
-              {scholarships.length > visibleCount && (
-                <div className="flex justify-center mt-10">
-                  <Button 
-                    onClick={loadMore}
-                    variant="outline"
-                    className="border border-olive-600 text-olive-700 hover:bg-olive-50"
-                  >
-                    {t('scholarships.loadMore')}
-                  </Button>
-                </div>
-              )}
+                  {scholarships.length > visibleCount && (
+                    <div className="flex justify-center mt-10">
+                      <Button 
+                        onClick={loadMore}
+                        variant="outline"
+                        className="border border-olive-600 text-olive-700 hover:bg-olive-50"
+                      >
+                        {t('scholarships.loadMore')}
+                      </Button>
+                    </div>
+                  )}
 
-              {scholarships.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-lg text-gray-500">{t('scholarships.empty')}</p>
-                </div>
+                  {scholarships.length === 0 && (
+                    <div className="text-center py-12">
+                      <p className="text-lg text-gray-500">{t('scholarships.empty')}</p>
+                    </div>
+                  )}
+                </>
               )}
-            </>
-          )}
+            </div>
+            
+            {/* Sticky Sidebar - Desktop Only */}
+            <StickySidebar className="w-80 flex-shrink-0" />
+          </div>
         </div>
       </div>
     </div>
