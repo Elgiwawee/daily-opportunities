@@ -10,6 +10,7 @@ import RegionFilter from '../components/RegionFilter';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import AdSenseAd from '../components/AdSenseAd';
+import MobileStickyAd from '../components/MobileStickyAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
 import StickySidebar from '../components/StickySidebar';
 import { Breadcrumb } from '../components/Breadcrumb';
@@ -69,7 +70,7 @@ const Scholarships = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <SEOHead
         title="Scholarships - Daily Opportunities | Fully Funded Education"
         description="Discover fully-funded scholarships and grants from top universities in USA, UK, Canada, Australia, Europe. Free applications for international students from tier 1 countries."
@@ -90,6 +91,11 @@ const Scholarships = () => {
               {t('scholarships.subtitle')}
             </p>
           </motion.div>
+          
+          {/* Top In-Feed Ad */}
+          <div className="mb-8">
+            <AdSenseAd variant="in-feed" />
+          </div>
 
           <div className="flex gap-8">
             {/* Main Content */}
@@ -100,6 +106,11 @@ const Scholarships = () => {
               />
 
               <WhatsAppGroups />
+              
+              {/* In-Feed Ad After WhatsApp */}
+              <div className="my-6">
+                <AdSenseAd variant="in-feed" />
+              </div>
 
               {isLoading ? (
                 <div className="flex justify-center py-12">
@@ -115,16 +126,20 @@ const Scholarships = () => {
                     {scholarships.slice(0, visibleCount).map((scholarship, index) => (
                       <div key={scholarship.id} className="col-span-1">
                         <OpportunityCard {...scholarship} />
+                        {/* In-Feed Ad after every 4 items */}
                         {(index + 1) % 4 === 0 && (
                           <div className="mt-6">
-                            <AdSenseAd variant="in-article" />
+                            <AdSenseAd variant="in-feed" />
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
                   
-                  <AdSenseAd variant="multiplex" className="mt-8" />
+                  {/* In-Feed Ad After Grid */}
+                  <div className="my-8">
+                    <AdSenseAd variant="in-feed" />
+                  </div>
 
                   {scholarships.length > visibleCount && (
                     <div className="flex justify-center mt-10">
@@ -152,6 +167,9 @@ const Scholarships = () => {
           </div>
         </div>
       </div>
+      
+      {/* Mobile Sticky Footer Ad */}
+      <MobileStickyAd />
     </div>
   );
 };

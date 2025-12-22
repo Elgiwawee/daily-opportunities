@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import DonationButton from '../components/DonationButton';
 import { useTranslation } from 'react-i18next';
 import AdSenseAd from '../components/AdSenseAd';
+import MobileStickyAd from '../components/MobileStickyAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
 import StickySidebar from '../components/StickySidebar';
 import { Breadcrumb } from '../components/Breadcrumb';
@@ -81,7 +82,7 @@ const JobListings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <SEOHead
         title="Jobs - Daily Opportunities | International Career Opportunities"
         description="Explore international job opportunities and career positions from leading companies in tier 1 countries. Apply for jobs in USA, UK, Canada, Australia, Europe."
@@ -105,6 +106,11 @@ const JobListings = () => {
               <DonationButton size="lg" />
             </div>
           </motion.div>
+          
+          {/* Top In-Feed Ad */}
+          <div className="mb-8">
+            <AdSenseAd variant="in-feed" />
+          </div>
 
           <div className="flex gap-8">
             {/* Main Content */}
@@ -115,6 +121,11 @@ const JobListings = () => {
               />
 
               <WhatsAppGroups />
+              
+              {/* In-Feed Ad After WhatsApp */}
+              <div className="my-6">
+                <AdSenseAd variant="in-feed" />
+              </div>
 
               {isLoading ? (
                 <div className="flex justify-center py-12">
@@ -130,16 +141,20 @@ const JobListings = () => {
                     {jobs.slice(0, visibleCount).map((job, index) => (
                       <div key={job.id} className="col-span-1">
                         <OpportunityCard {...job} />
+                        {/* In-Feed Ad after every 4 items */}
                         {(index + 1) % 4 === 0 && (
                           <div className="mt-6">
-                            <AdSenseAd variant="in-article" />
+                            <AdSenseAd variant="in-feed" />
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
                   
-                  <AdSenseAd variant="multiplex" className="mt-8" />
+                  {/* In-Feed Ad After Grid */}
+                  <div className="my-8">
+                    <AdSenseAd variant="in-feed" />
+                  </div>
 
                   {jobs.length > visibleCount && (
                     <div className="flex justify-center mt-10">
@@ -167,6 +182,9 @@ const JobListings = () => {
           </div>
         </div>
       </div>
+      
+      {/* Mobile Sticky Footer Ad */}
+      <MobileStickyAd />
     </div>
   );
 };

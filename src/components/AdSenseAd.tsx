@@ -5,20 +5,72 @@ interface AdSenseAdProps {
   adSlot?: string;
   adFormat?: 'auto' | 'fluid' | 'rectangle' | 'vertical' | 'horizontal';
   adLayout?: string;
+  adLayoutKey?: string;
   style?: React.CSSProperties;
-  variant?: 'inline' | 'sidebar' | 'banner' | 'in-article' | 'multiplex' | 'rectangle';
+  variant?: 'inline' | 'sidebar' | 'banner' | 'in-article' | 'multiplex' | 'rectangle' | 'in-feed';
 }
 
 const AdSenseAd: React.FC<AdSenseAdProps> = ({
   className = "",
-  adSlot = "1787815615",
-  adFormat = "auto",
+  adSlot,
+  adFormat,
   adLayout,
+  adLayoutKey,
   style,
   variant = 'in-article'
 }) => {
   const adRef = useRef<HTMLDivElement>(null);
   const [adLoaded, setAdLoaded] = useState(false);
+
+  // Get appropriate ad slot and settings based on variant
+  const getAdConfig = () => {
+    switch (variant) {
+      case 'in-feed':
+        return {
+          slot: adSlot || '5889527945',
+          format: 'fluid' as const,
+          layout: 'in-article',
+          layoutKey: adLayoutKey || '-eg-36-5v+52+wi'
+        };
+      case 'banner':
+        return {
+          slot: adSlot || '1787815615',
+          format: adFormat || 'auto' as const,
+          layout: undefined,
+          layoutKey: undefined
+        };
+      case 'sidebar':
+        return {
+          slot: adSlot || '1787815615',
+          format: adFormat || 'auto' as const,
+          layout: undefined,
+          layoutKey: undefined
+        };
+      case 'rectangle':
+        return {
+          slot: adSlot || '1787815615',
+          format: adFormat || 'rectangle' as const,
+          layout: undefined,
+          layoutKey: undefined
+        };
+      case 'multiplex':
+        return {
+          slot: adSlot || '1787815615',
+          format: adFormat || 'auto' as const,
+          layout: undefined,
+          layoutKey: undefined
+        };
+      case 'in-article':
+      case 'inline':
+      default:
+        return {
+          slot: adSlot || '1787815615',
+          format: 'fluid' as const,
+          layout: adLayout || 'in-article',
+          layoutKey: undefined
+        };
+    }
+  };
 
   // Get appropriate styles based on variant
   const getVariantStyles = (): React.CSSProperties => {
@@ -54,6 +106,11 @@ const AdSenseAd: React.FC<AdSenseAdProps> = ({
           minHeight: '200px',
           width: '100%'
         };
+      case 'in-feed':
+        return { 
+          ...baseStyle, 
+          width: '100%'
+        };
       case 'in-article':
       case 'inline':
       default:
@@ -67,7 +124,6 @@ const AdSenseAd: React.FC<AdSenseAdProps> = ({
   };
 
   useEffect(() => {
-    // Prevent duplicate ad loading
     if (adLoaded) return;
 
     const loadAd = () => {
@@ -80,23 +136,19 @@ const AdSenseAd: React.FC<AdSenseAdProps> = ({
       }
     };
 
-    // Small delay to ensure DOM is ready
     const timer = setTimeout(loadAd, 100);
-
     return () => clearTimeout(timer);
   }, [adLoaded]);
 
+  const config = getAdConfig();
   const containerClasses = `adsense-container ${className}`;
   const appliedStyle = style || getVariantStyles();
-  const appliedLayout = adLayout || (variant === 'in-article' ? 'in-article' : undefined);
-  const appliedFormat = variant === 'in-article' ? 'fluid' : adFormat;
 
   return (
     <div 
       ref={adRef}
       className={containerClasses}
       style={{ 
-        minHeight: '100px', 
         margin: '16px 0',
         backgroundColor: 'transparent'
       }}
@@ -105,10 +157,11 @@ const AdSenseAd: React.FC<AdSenseAdProps> = ({
         className="adsbygoogle"
         style={appliedStyle}
         data-ad-client="ca-pub-1418673216471192"
-        data-ad-slot={adSlot}
-        data-ad-format={appliedFormat}
+        data-ad-slot={config.slot}
+        data-ad-format={config.format}
         data-full-width-responsive="true"
-        {...(appliedLayout && { 'data-ad-layout': appliedLayout })}
+        {...(config.layout && { 'data-ad-layout': config.layout })}
+        {...(config.layoutKey && { 'data-ad-layout-key': config.layoutKey })}
       />
     </div>
   );
