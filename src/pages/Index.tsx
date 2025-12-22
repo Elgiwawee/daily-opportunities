@@ -4,6 +4,7 @@ import Opportunities from '../components/Opportunities';
 import AboutSection from '../components/AboutSection';
 import ContactSection from '../components/ContactSection';
 import AdSenseAd from '../components/AdSenseAd';
+import MobileStickyAd from '../components/MobileStickyAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
 import StickySidebar from '../components/StickySidebar';
 import { SEOHead } from '../components/SEOHead';
@@ -74,7 +75,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <SEOHead
         title="Daily Opportunities - Scholarships & Jobs for International Students"
         description="Discover fully-funded scholarships, grants, and job opportunities from top universities and organizations in US, UK, Canada, Australia, and Europe. Apply for free!"
@@ -85,10 +86,10 @@ const Index = () => {
       <div className="pt-20">
         <HeroSection />
         
-        {/* Ad Banner After Hero */}
+        {/* In-Feed Ad After Hero */}
         <div className="bg-white py-4">
           <div className="max-w-7xl mx-auto px-4">
-            <AdSenseAd variant="banner" />
+            <AdSenseAd variant="in-feed" />
           </div>
         </div>
         
@@ -109,13 +110,18 @@ const Index = () => {
                   ))}
                 </div>
               </section>
+              
+              {/* In-Feed Ad Between Categories and WhatsApp */}
+              <div className="my-8">
+                <AdSenseAd variant="in-feed" />
+              </div>
 
               {/* WhatsApp Groups & Services */}
               <WhatsAppGroups />
               
-              {/* Ad Between Sections */}
+              {/* In-Feed Ad After WhatsApp */}
               <div className="my-8">
-                <AdSenseAd variant="in-article" />
+                <AdSenseAd variant="in-feed" />
               </div>
             </div>
             
@@ -127,16 +133,19 @@ const Index = () => {
         {/* Latest Opportunities */}
         <Opportunities />
         
-        {/* Ad After Opportunities */}
+        {/* In-Feed Ad After Opportunities */}
         <div className="bg-white py-4">
           <div className="max-w-7xl mx-auto px-4">
-            <AdSenseAd variant="multiplex" />
+            <AdSenseAd variant="in-feed" />
           </div>
         </div>
         
         <AboutSection />
         <ContactSection />
       </div>
+      
+      {/* Mobile Sticky Footer Ad */}
+      <MobileStickyAd />
     </div>
   );
 };

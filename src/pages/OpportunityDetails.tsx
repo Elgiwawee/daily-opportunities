@@ -12,6 +12,7 @@ import { Card } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { Json } from '@/integrations/supabase/types';
 import AdSenseAd from '../components/AdSenseAd';
+import MobileStickyAd from '../components/MobileStickyAd';
 import StickySidebar from '../components/StickySidebar';
 import { SEOHead } from '../components/SEOHead';
 import { generateScholarshipSchema, generateJobSchema, generateBreadcrumbSchema } from '../utils/structuredData';
@@ -152,7 +153,7 @@ const OpportunityDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       {opportunity && (
         <SEOHead
           title={`${opportunity.title} - ${opportunity.organization} | Daily Opportunities`}
@@ -171,9 +172,9 @@ const OpportunityDetails = () => {
             />
           )}
           
-          {/* Top Ad Banner */}
+          {/* Top In-Feed Ad */}
           <div className="mb-8">
-            <AdSenseAd variant="banner" />
+            <AdSenseAd variant="in-feed" />
           </div>
           
           <div className="flex gap-8">
@@ -233,14 +234,19 @@ const OpportunityDetails = () => {
                         </div>
                       </div>
                       
-                      {/* In-article Ad */}
+                      {/* In-Feed Ad Before Description */}
                       <div className="my-6">
-                        <AdSenseAd variant="in-article" />
+                        <AdSenseAd variant="in-feed" />
                       </div>
                       
                       <div className="prose max-w-none mb-8">
                         <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.description')}</h2>
                         <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{opportunity.description}</p>
+                      </div>
+                      
+                      {/* In-Feed Ad After Description */}
+                      <div className="my-6">
+                        <AdSenseAd variant="in-feed" />
                       </div>
                       
                       {opportunity.external_url && (
@@ -303,9 +309,9 @@ const OpportunityDetails = () => {
                     </div>
                   </motion.div>
                   
-                  {/* Ad After Main Content */}
+                  {/* In-Feed Ad After Main Content */}
                   <div className="my-8">
-                    <AdSenseAd variant="multiplex" />
+                    <AdSenseAd variant="in-feed" />
                   </div>
                   
                   {/* Related Opportunities Section */}
@@ -315,6 +321,11 @@ const OpportunityDetails = () => {
                       type={opportunity.type}
                       organization={opportunity.organization}
                     />
+                  </div>
+                  
+                  {/* In-Feed Ad Before FAQ */}
+                  <div className="my-8">
+                    <AdSenseAd variant="in-feed" />
                   </div>
                   
                   {/* FAQ Section */}
@@ -341,6 +352,9 @@ const OpportunityDetails = () => {
           </div>
         </div>
       </div>
+      
+      {/* Mobile Sticky Footer Ad */}
+      <MobileStickyAd />
     </div>
   );
 };

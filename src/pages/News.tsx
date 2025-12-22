@@ -12,6 +12,7 @@ import NewsItem from '../components/NewsItem';
 import { useTranslation } from 'react-i18next';
 import { updateMetaTags } from '@/utils/metaUtils';
 import AdSenseAd from '@/components/AdSenseAd';
+import MobileStickyAd from '@/components/MobileStickyAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
 import StickySidebar from '../components/StickySidebar';
 
@@ -163,7 +164,7 @@ const News = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -180,11 +181,21 @@ const News = () => {
               <DonationButton size="lg" />
             </div>
           </motion.div>
+          
+          {/* Top In-Feed Ad */}
+          <div className="mb-8">
+            <AdSenseAd variant="in-feed" />
+          </div>
 
           <div className="flex gap-8">
             {/* Main Content */}
             <div className="flex-1 min-w-0">
               <WhatsAppGroups />
+              
+              {/* In-Feed Ad After WhatsApp */}
+              <div className="my-6">
+                <AdSenseAd variant="in-feed" />
+              </div>
 
               {isLoading ? (
                 <div className="space-y-10">
@@ -219,12 +230,17 @@ const News = () => {
                         }}
                       />
                       
-                      {/* Add ad after every 2 news items */}
+                      {/* In-Feed Ad after every 2 news items */}
                       {(index + 1) % 2 === 0 && index < newsItems.length - 1 && (
-                        <AdSenseAd variant="in-article" />
+                        <AdSenseAd variant="in-feed" />
                       )}
                     </div>
                   ))}
+                  
+                  {/* In-Feed Ad After News List */}
+                  <div className="my-8">
+                    <AdSenseAd variant="in-feed" />
+                  </div>
                   
                   {allNewsItems.length > visibleCount && (
                     <div className="flex justify-center mt-8">
@@ -250,6 +266,9 @@ const News = () => {
           </div>
         </div>
       </div>
+      
+      {/* Mobile Sticky Footer Ad */}
+      <MobileStickyAd />
     </div>
   );
 };
