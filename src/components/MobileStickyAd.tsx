@@ -44,12 +44,14 @@ const MobileStickyAd: React.FC<MobileStickyAdProps> = ({ className = "" }) => {
         <X className="w-4 h-4" />
       </button>
       
+      {/* Using In-Feed ad format for mobile sticky - better engagement */}
       <ins
         className="adsbygoogle"
         style={{ display: 'block', width: '100%', height: '60px' }}
         data-ad-client="ca-pub-1418673216471192"
-        data-ad-slot="1787815615"
-        data-ad-format="horizontal"
+        data-ad-slot="5889527945"
+        data-ad-format="fluid"
+        data-ad-layout-key="-eg-36-5v+52+wi"
         data-full-width-responsive="true"
       />
     </div>
