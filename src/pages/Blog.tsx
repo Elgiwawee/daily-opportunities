@@ -44,11 +44,7 @@ interface BlogComment {
   blog_post_id: string;
 }
 
-interface BlogLike {
-  id: string;
-  blog_post_id: string;
-  user_id: string;
-}
+// BlogLike interface removed - we now use count-based approach for security
 
 const socialPlatforms = [
   { name: 'Facebook', icon: Facebook, color: 'bg-blue-600' },
@@ -62,7 +58,8 @@ const socialPlatforms = [
 const Blog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [comments, setComments] = useState<{ [key: string]: BlogComment[] }>({});
-  const [likes, setLikes] = useState<{ [key: string]: BlogLike[] }>({});
+  const [userLikes, setUserLikes] = useState<{ [key: string]: boolean }>({});
+  const [likeCounts, setLikeCounts] = useState<{ [key: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -131,13 +128,23 @@ const Blog = () => {
 
   const fetchLikesForPost = async (postId: string) => {
     try {
-      const { data, error } = await (supabase as any)
+      // Fetch like count using count aggregate (works with RLS)
+      const { count, error: countError } = await (supabase as any)
         .from('blog_likes')
-        .select('*')
+        .select('*', { count: 'exact', head: true })
         .eq('blog_post_id', postId);
 
-      if (error) throw error;
-      setLikes(prev => ({ ...prev, [postId]: data || [] }));
+      if (countError) throw countError;
+      setLikeCounts(prev => ({ ...prev, [postId]: count || 0 }));
+
+      // Check if current user has liked (only returns their own like due to RLS)
+      const { data: userLikeData } = await (supabase as any)
+        .from('blog_likes')
+        .select('id')
+        .eq('blog_post_id', postId)
+        .maybeSingle();
+
+      setUserLikes(prev => ({ ...prev, [postId]: !!userLikeData }));
     } catch (error) {
       console.error('Error fetching likes:', error);
     }
@@ -209,14 +216,15 @@ const Blog = () => {
         return;
       }
 
-      const existingLike = likes[postId]?.find(like => like.user_id === user.id);
+      const hasLiked = userLikes[postId];
       
-      if (existingLike) {
-        // Unlike
+      if (hasLiked) {
+        // Unlike - delete by user_id and blog_post_id
         const { error } = await (supabase as any)
           .from('blog_likes')
           .delete()
-          .eq('id', existingLike.id);
+          .eq('blog_post_id', postId)
+          .eq('user_id', user.id);
 
         if (error) throw error;
       } else {
@@ -235,7 +243,7 @@ const Blog = () => {
       
       toast({
         title: "Success",
-        description: existingLike ? "Post unliked!" : "Post liked!",
+        description: hasLiked ? "Post unliked!" : "Post liked!",
       });
     } catch (error) {
       console.error('Error toggling like:', error);
@@ -335,7 +343,7 @@ const Blog = () => {
   };
 
   const getUserLiked = (postId: string) => {
-    return likes[postId]?.some(like => like.user_id === currentUser?.id) || false;
+    return userLikes[postId] || false;
   };
 
   if (loading) {
@@ -594,7 +602,7 @@ const Blog = () => {
                         className="gap-1 hover:bg-red-50 hover:border-red-200"
                       >
                         <Heart className={`h-4 w-4 ${getUserLiked(post.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                        {likes[post.id]?.length || 0} {getUserLiked(post.id) ? '❤️' : '🤍'}
+                        {likeCounts[post.id] || 0} {getUserLiked(post.id) ? '❤️' : '🤍'}
                       </Button>
                       
                       <Button
