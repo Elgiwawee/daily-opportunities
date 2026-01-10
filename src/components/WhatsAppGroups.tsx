@@ -1,13 +1,10 @@
 import { MessageCircle, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { WHATSAPP_GROUPS } from './WhatsAppPopup';
 
 const WhatsAppGroups = () => {
-  const groups = [
-    { name: "Daily Opportunities Group 1", url: "https://chat.whatsapp.com/HExFL8M75643wWgFz8J2Wk" },
-    { name: "Daily Opportunities Group 2", url: "https://chat.whatsapp.com/HqYT7FF4HAZ7taWX3t7LjU" },
-    { name: "Daily Opportunities Group 3", url: "https://chat.whatsapp.com/I4IiWpHjlIi4HPf8h0eVss" },
-    { name: "WhatsApp Channel", url: "https://whatsapp.com/channel/0029VbAWCijHbFVELXgqdg0i" },
-  ];
+  // Use the centralized WhatsApp groups data
+  const groups = WHATSAPP_GROUPS;
 
   const services = [
     "Senior Certificate",
