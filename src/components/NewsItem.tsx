@@ -7,6 +7,7 @@ import DonationButton from './DonationButton';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { toast } from 'sonner';
+import { FormattedDescription } from './FormattedDescription';
 
 interface Attachment {
   name: string;
@@ -329,10 +330,10 @@ const NewsItem = ({
                   </div>
                 )}
                 
-                {/* News content */}
+                {/* News content with formatted description and inline ads */}
                 <div className="prose max-w-none">
-                  <h4 className="font-semibold mb-2">Full Article</h4>
-                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{news.body}</p>
+                  <h4 className="text-xl font-bold mb-4 text-gray-900">Full Article</h4>
+                  <FormattedDescription description={news.body} />
                 </div>
               </div>
             </AccordionContent>

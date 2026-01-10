@@ -25,6 +25,7 @@ import Navbar from '@/components/Navbar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import AdSenseAd from '@/components/AdSenseAd';
+import { FormattedDescription } from '@/components/FormattedDescription';
 
 interface BlogPost {
   id: string;
@@ -537,9 +538,10 @@ const Blog = () => {
                     </div>
                   </CardHeader>
                   
-                  <CardContent>
+                    <CardContent>
+                    {/* Formatted blog content with headers, justified text, and inline ads */}
                     <div className="prose max-w-none mb-6">
-                      <p className="whitespace-pre-wrap leading-relaxed">{post.body}</p>
+                      <FormattedDescription description={post.body} />
                     </div>
                     
                     {/* Additional Attachments (excluding the first image already shown at top) */}
