@@ -26,6 +26,7 @@ import Settings from './pages/Settings';
 import Sitemap from './pages/Sitemap';
 import RobotsTxt from './pages/RobotsTxt';
 import PerformanceOptimizer from './components/PerformanceOptimizer';
+import WhatsAppPopup from './components/WhatsAppPopup';
 
 // Import i18n configuration
 import './i18n';
@@ -52,6 +53,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <CookieConsent />
+        <WhatsAppPopup />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />

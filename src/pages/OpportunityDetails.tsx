@@ -23,6 +23,7 @@ import { RelatedOpportunities } from '../components/RelatedOpportunities';
 import { FAQSection } from '../components/FAQSection';
 import { SCHOLARSHIP_FAQS, JOB_FAQS } from '../data/faqData';
 import { extractIdFromSlug, generateSlug } from '../utils/slugUtils';
+import { FormattedDescription } from '../components/FormattedDescription';
 
 interface Opportunity {
   id: string;
@@ -239,14 +240,10 @@ const OpportunityDetails = () => {
                         <AdSenseAd variant="in-feed" />
                       </div>
                       
+                      {/* Formatted Description with proper headers, justified text, and inline ads */}
                       <div className="prose max-w-none mb-8">
-                        <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.description')}</h2>
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{opportunity.description}</p>
-                      </div>
-                      
-                      {/* In-Feed Ad After Description */}
-                      <div className="my-6">
-                        <AdSenseAd variant="in-feed" />
+                        <h2 className="text-2xl font-bold mb-6 text-gray-900">{t('opportunityDetails.description')}</h2>
+                        <FormattedDescription description={opportunity.description} />
                       </div>
                       
                       {opportunity.external_url && (
