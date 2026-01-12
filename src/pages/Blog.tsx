@@ -26,6 +26,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Separator } from '@/components/ui/separator';
 import AdSenseAd from '@/components/AdSenseAd';
 import { FormattedDescription } from '@/components/FormattedDescription';
+import Footer from '@/components/Footer';
+import MobileStickyAd from '@/components/MobileStickyAd';
 
 interface BlogPost {
   id: string;
@@ -686,6 +688,12 @@ const Blog = () => {
           </div>
         )}
       </div>
+      
+      {/* Comprehensive Footer */}
+      <Footer />
+      
+      {/* Mobile Sticky Footer Ad */}
+      <MobileStickyAd />
     </div>
   );
 };

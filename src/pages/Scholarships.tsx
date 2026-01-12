@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
@@ -17,6 +16,7 @@ import { Breadcrumb } from '../components/Breadcrumb';
 import { BREADCRUMB_CONFIGS } from '../utils/breadcrumbUtils';
 import { SEOHead } from '../components/SEOHead';
 import { generateWebsiteSchema } from '../utils/structuredData';
+import Footer from '../components/Footer';
 
 interface Opportunity {
   id: string;
@@ -167,6 +167,9 @@ const Scholarships = () => {
           </div>
         </div>
       </div>
+      
+      {/* Comprehensive Footer */}
+      <Footer />
       
       {/* Mobile Sticky Footer Ad */}
       <MobileStickyAd />

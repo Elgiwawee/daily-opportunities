@@ -2,7 +2,6 @@ import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import Opportunities from '../components/Opportunities';
 import AboutSection from '../components/AboutSection';
-import ContactSection from '../components/ContactSection';
 import AdSenseAd from '../components/AdSenseAd';
 import MobileStickyAd from '../components/MobileStickyAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
@@ -11,6 +10,7 @@ import { SEOHead } from '../components/SEOHead';
 import { generateWebsiteSchema, generateOrganizationSchema } from '../utils/structuredData';
 import { Link } from 'react-router-dom';
 import { GraduationCap, Briefcase, Globe, FileText, ChevronRight } from 'lucide-react';
+import Footer from '../components/Footer';
 
 const CategoryCard = ({ icon: Icon, title, description, link, color }: { 
   icon: any; 
@@ -141,7 +141,9 @@ const Index = () => {
         </div>
         
         <AboutSection />
-        <ContactSection />
+        
+        {/* Comprehensive Footer */}
+        <Footer />
       </div>
       
       {/* Mobile Sticky Footer Ad */}

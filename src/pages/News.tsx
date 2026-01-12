@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
@@ -15,6 +14,7 @@ import AdSenseAd from '@/components/AdSenseAd';
 import MobileStickyAd from '@/components/MobileStickyAd';
 import WhatsAppGroups from '../components/WhatsAppGroups';
 import StickySidebar from '../components/StickySidebar';
+import Footer from '../components/Footer';
 
 interface Attachment {
   name: string;
@@ -266,6 +266,9 @@ const News = () => {
           </div>
         </div>
       </div>
+      
+      {/* Comprehensive Footer */}
+      <Footer />
       
       {/* Mobile Sticky Footer Ad */}
       <MobileStickyAd />
