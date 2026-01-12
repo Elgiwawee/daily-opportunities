@@ -24,6 +24,7 @@ import { FAQSection } from '../components/FAQSection';
 import { SCHOLARSHIP_FAQS, JOB_FAQS } from '../data/faqData';
 import { extractIdFromSlug, generateSlug } from '../utils/slugUtils';
 import { FormattedDescription } from '../components/FormattedDescription';
+import Footer from '../components/Footer';
 
 interface Opportunity {
   id: string;
@@ -349,6 +350,9 @@ const OpportunityDetails = () => {
           </div>
         </div>
       </div>
+      
+      {/* Comprehensive Footer */}
+      <Footer />
       
       {/* Mobile Sticky Footer Ad */}
       <MobileStickyAd />

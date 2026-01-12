@@ -1,15 +1,16 @@
-
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import AdSenseAd from '../components/AdSenseAd';
+import Footer from '../components/Footer';
+import MobileStickyAd from '../components/MobileStickyAd';
 
 const Disclaimer = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
       <div className="pt-36 pb-12 bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AdSenseAd />
+          <AdSenseAd variant="in-feed" />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -49,9 +50,15 @@ const Disclaimer = () => {
               Last updated: May 14, 2025
             </p>
           </div>
-          <AdSenseAd />
+          <AdSenseAd variant="in-feed" />
         </div>
       </div>
+      
+      {/* Comprehensive Footer */}
+      <Footer />
+      
+      {/* Mobile Sticky Footer Ad */}
+      <MobileStickyAd />
     </div>
   );
 };
