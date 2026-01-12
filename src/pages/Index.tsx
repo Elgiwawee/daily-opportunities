@@ -86,41 +86,41 @@ const Index = () => {
       <div className="pt-20">
         <HeroSection />
         
-        {/* In-Feed Ad After Hero */}
-        <div className="bg-white py-4">
+        {/* Ad After Hero */}
+        <div className="bg-white py-2">
           <div className="max-w-7xl mx-auto px-4">
             <AdSenseAd variant="in-feed" />
           </div>
         </div>
         
         {/* Main Content with Sidebar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex gap-6">
             {/* Main Content */}
             <div className="flex-1 min-w-0">
               {/* Categories Section */}
-              <section className="mb-12">
-                <div className="text-center mb-10">
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Browse Opportunities</h2>
+              <section className="mb-4">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Browse Opportunities</h2>
                   <p className="text-gray-600 max-w-2xl mx-auto">Find your perfect opportunity from thousands of scholarships and jobs</p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {categories.map((category, index) => (
                     <CategoryCard key={index} {...category} />
                   ))}
                 </div>
               </section>
               
-              {/* In-Feed Ad Between Categories and WhatsApp */}
-              <div className="my-8">
+              {/* Ad Between Categories and WhatsApp */}
+              <div className="my-4">
                 <AdSenseAd variant="in-feed" />
               </div>
 
               {/* WhatsApp Groups & Services */}
               <WhatsAppGroups />
               
-              {/* In-Feed Ad After WhatsApp */}
-              <div className="my-8">
+              {/* Ad After WhatsApp */}
+              <div className="my-4">
                 <AdSenseAd variant="in-feed" />
               </div>
             </div>
@@ -130,17 +130,31 @@ const Index = () => {
           </div>
         </div>
         
+        {/* Ad Before Opportunities */}
+        <div className="bg-white py-2">
+          <div className="max-w-7xl mx-auto px-4">
+            <AdSenseAd variant="in-article" />
+          </div>
+        </div>
+        
         {/* Latest Opportunities */}
         <Opportunities />
         
-        {/* In-Feed Ad After Opportunities */}
-        <div className="bg-white py-4">
+        {/* Ad After Opportunities */}
+        <div className="bg-white py-2">
           <div className="max-w-7xl mx-auto px-4">
             <AdSenseAd variant="in-feed" />
           </div>
         </div>
         
         <AboutSection />
+        
+        {/* Ad Before Footer */}
+        <div className="bg-gray-50 py-2">
+          <div className="max-w-7xl mx-auto px-4">
+            <AdSenseAd variant="in-article" />
+          </div>
+        </div>
         
         {/* Comprehensive Footer */}
         <Footer />
