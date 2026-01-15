@@ -22,13 +22,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Upload } from "lucide-react";
+import { CalendarIcon, Upload, Plus, X } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from "uuid";
 import { Json } from "@/integrations/supabase/types";
+
+interface ExternalLink {
+  position: string;
+  url: string;
+}
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -74,6 +79,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [existingAttachments, setExistingAttachments] = useState<Attachment[]>([]);
+  const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const isEditing = !!opportunity;
 
   const form = useForm<FormValues>({
@@ -103,8 +109,29 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
       if (opportunity.attachments && Array.isArray(opportunity.attachments)) {
         setExistingAttachments(opportunity.attachments as Attachment[]);
       }
+      
+      // Load existing external links for jobs
+      if (opportunity.external_links && Array.isArray(opportunity.external_links)) {
+        setExternalLinks(opportunity.external_links as ExternalLink[]);
+      }
     }
   }, [opportunity, form]);
+
+  const opportunityType = form.watch('type');
+
+  const addExternalLink = () => {
+    setExternalLinks([...externalLinks, { position: '', url: '' }]);
+  };
+
+  const removeExternalLink = (index: number) => {
+    setExternalLinks(externalLinks.filter((_, i) => i !== index));
+  };
+
+  const updateExternalLink = (index: number, field: 'position' | 'url', value: string) => {
+    const updated = [...externalLinks];
+    updated[index][field] = value;
+    setExternalLinks(updated);
+  };
 
   const onSubmit = async (values: FormValues) => {
     setUploading(true);
@@ -162,7 +189,14 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
       // Handle deadline - null if not provided
       const deadline = values.deadline ? values.deadline.toISOString().split('T')[0] : null;
 
+      // Filter valid external links (both position and url must be filled)
+      const validExternalLinks = externalLinks.filter(
+        link => link.position.trim() !== '' && link.url.trim() !== ''
+      );
+      const jsonExternalLinks = validExternalLinks as unknown as Json;
+
       console.log("Saving opportunity with external_url:", externalUrl);
+      console.log("Saving opportunity with external_links:", validExternalLinks);
       console.log("Saving opportunity with deadline:", deadline);
 
       let error;
@@ -178,6 +212,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             type: opportunityData.type,
             attachments: jsonAttachments,
             external_url: externalUrl,
+            external_links: jsonExternalLinks,
             updated_at: new Date().toISOString()
           })
           .eq('id', opportunity.id);
@@ -193,6 +228,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             type: opportunityData.type,
             attachments: jsonAttachments,
             external_url: externalUrl,
+            external_links: jsonExternalLinks,
             created_by: sessionData.session.user.id
           });
         error = result.error;
@@ -214,6 +250,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
         });
         setFiles([]);
         setExistingAttachments([]);
+        setExternalLinks([]);
       }
       
       if (onSuccess) {
@@ -315,12 +352,78 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                   />
                 </FormControl>
                 <FormDescription>
-                  Direct link to the application portal or external website (optional - leave empty if none)
+                  {opportunityType === 'job' 
+                    ? 'Main application link (or use multiple position links below)'
+                    : 'Direct link to the application portal or external website (optional - leave empty if none)'
+                  }
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
+          
+          {/* Multiple Position Links for Jobs */}
+          {opportunityType === 'job' && (
+            <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <FormLabel>Position Links (for multiple positions)</FormLabel>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Add separate apply links for different positions within this job opportunity
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addExternalLink}
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Position
+                </Button>
+              </div>
+              
+              {externalLinks.length > 0 && (
+                <div className="space-y-3">
+                  {externalLinks.map((link, index) => (
+                    <div key={index} className="flex gap-2 items-start">
+                      <div className="flex-1">
+                        <Input
+                          placeholder="Position title (e.g., Software Engineer)"
+                          value={link.position}
+                          onChange={(e) => updateExternalLink(index, 'position', e.target.value)}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <Input
+                          placeholder="https://example.com/apply"
+                          type="url"
+                          value={link.url}
+                          onChange={(e) => updateExternalLink(index, 'url', e.target.value)}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeExternalLink(index)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {externalLinks.length === 0 && (
+                <p className="text-sm text-gray-400 italic">
+                  No position links added yet. Click "Add Position" to add multiple apply links.
+                </p>
+              )}
+            </div>
+          )}
           <FormField
             control={form.control}
             name="deadline"
