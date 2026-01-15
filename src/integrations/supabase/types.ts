@@ -145,6 +145,7 @@ export type Database = {
           created_by: string | null
           deadline: string
           description: string
+          external_links: Json | null
           external_url: string | null
           id: string
           organization: string
@@ -158,6 +159,7 @@ export type Database = {
           created_by?: string | null
           deadline: string
           description: string
+          external_links?: Json | null
           external_url?: string | null
           id?: string
           organization: string
@@ -171,6 +173,7 @@ export type Database = {
           created_by?: string | null
           deadline?: string
           description?: string
+          external_links?: Json | null
           external_url?: string | null
           id?: string
           organization?: string

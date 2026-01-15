@@ -26,6 +26,11 @@ import { extractIdFromSlug, generateSlug } from '../utils/slugUtils';
 import { FormattedDescription } from '../components/FormattedDescription';
 import Footer from '../components/Footer';
 
+interface ExternalLink {
+  position: string;
+  url: string;
+}
+
 interface Opportunity {
   id: string;
   title: string;
@@ -36,6 +41,7 @@ interface Opportunity {
   attachments: any[] | null;
   created_at: string;
   external_url?: string | null;
+  external_links?: any[] | null;
 }
 
 // Define a more specific type for attachments
@@ -45,6 +51,15 @@ interface Attachment {
   type: string;
   path: string;
 }
+
+// Type guard for external links
+const hasExternalLinks = (links: any): links is ExternalLink[] => {
+  return Array.isArray(links) && 
+         links.length > 0 && 
+         typeof links[0] === 'object' &&
+         'position' in links[0] &&
+         'url' in links[0];
+};
 
 const OpportunityDetails = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -247,6 +262,28 @@ const OpportunityDetails = () => {
                         <FormattedDescription description={opportunity.description} />
                       </div>
                       
+                      {/* Multiple Position Links for Jobs */}
+                      {hasExternalLinks(opportunity.external_links) && opportunity.external_links.length > 0 && (
+                        <div className="mb-8">
+                          <h2 className="text-xl font-semibold mb-4">Apply for Positions</h2>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {opportunity.external_links.map((link, index) => (
+                              <Button 
+                                key={index}
+                                asChild 
+                                className="bg-olive-600 hover:bg-olive-700 justify-between"
+                              >
+                                <a href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                                  <span className="truncate">{link.position}</span>
+                                  <ExternalLink className="ml-2 h-4 w-4 flex-shrink-0" />
+                                </a>
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Single External URL (fallback or for scholarships) */}
                       {opportunity.external_url && (
                         <div className="mb-8">
                           <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.applyNow')}</h2>
