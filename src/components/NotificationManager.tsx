@@ -31,7 +31,7 @@ const NotificationManager = () => {
         console.log('Service Worker registered with scope:', registration.scope);
         
         // Check for existing subscription
-        const subscription = await registration.pushManager.getSubscription();
+        const subscription = await (registration as any).pushManager.getSubscription();
         setSubscription(subscription);
         
         // Set up cookie for returning users
@@ -176,7 +176,7 @@ const NotificationManager = () => {
         )
       };
       
-      const pushSubscription = await registration.pushManager.subscribe(subscriptionOptions);
+      const pushSubscription = await (registration as any).pushManager.subscribe(subscriptionOptions);
       setSubscription(pushSubscription);
       
       // Store the subscription on your server
