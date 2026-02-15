@@ -239,7 +239,7 @@ const Opportunities = () => {
           )
         };
         
-        const subscription = await registration.pushManager.subscribe(subscriptionOptions);
+        const subscription = await (registration as any).pushManager.subscribe(subscriptionOptions);
         
         // Save the subscription to your server
         await saveSubscription(subscription);
