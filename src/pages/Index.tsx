@@ -11,6 +11,7 @@ import { generateWebsiteSchema, generateOrganizationSchema } from '../utils/stru
 import { Link } from 'react-router-dom';
 import { GraduationCap, Briefcase, Globe, FileText, ChevronRight } from 'lucide-react';
 import Footer from '../components/Footer';
+import NetcrossAdBanner from '../components/NetcrossAdBanner';
 
 const CategoryCard = ({ icon: Icon, title, description, link, color }: { 
   icon: any; 
