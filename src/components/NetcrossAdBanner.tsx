@@ -53,13 +53,30 @@ const NetcrossAdBanner = () => {
   return (
     <div className="relative w-full overflow-hidden rounded-xl shadow-lg bg-gradient-to-r from-orange-500 via-orange-600 to-amber-600">
       {/* Close button */}
-      <button
-        onClick={() => setDismissed(true)}
-        className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 text-white rounded-full p-1 transition-colors"
-        aria-label="Close ad"
-      >
-        <X className="w-4 h-4" />
-      </button>
+      <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5">
+        <button
+          onClick={() => {
+            const text = "Check out Netcross Ijebu Garri! Premium, stone-free garri. Order now:";
+            const url = "https://wa.me/2348024990648?text=Hi%20Netcross%20Farm!%20I'm%20interested%20in%20your%20Ijebu%20Garri.";
+            if (navigator.share) {
+              navigator.share({ title: 'Netcross Agro Farms', text, url });
+            } else {
+              window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+            }
+          }}
+          className="bg-black/40 hover:bg-black/60 text-white rounded-full p-1 transition-colors"
+          aria-label="Share ad"
+        >
+          <Share2 className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => setDismissed(true)}
+          className="bg-black/40 hover:bg-black/60 text-white rounded-full p-1 transition-colors"
+          aria-label="Close ad"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
 
       {/* Sponsored label */}
       <div className="absolute top-2 left-2 z-20 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-medium">
