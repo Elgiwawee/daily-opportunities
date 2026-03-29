@@ -345,6 +345,11 @@ const OpportunityDetails = () => {
                     </div>
                   </motion.div>
                   
+                  {/* Netcross Sponsored Banner */}
+                  <div className="my-8">
+                    <NetcrossAdBanner />
+                  </div>
+                  
                   {/* In-Feed Ad After Main Content */}
                   <div className="my-8">
                     <AdSenseAd variant="in-feed" />

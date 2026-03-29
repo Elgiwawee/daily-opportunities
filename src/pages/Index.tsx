@@ -86,6 +86,11 @@ const Index = () => {
       <div className="pt-20">
         <HeroSection />
         
+        {/* Netcross Sponsored Banner */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <NetcrossAdBanner />
+        </div>
+        
         {/* Ad After Hero */}
         <div className="bg-white py-2">
           <div className="max-w-7xl mx-auto px-4">
