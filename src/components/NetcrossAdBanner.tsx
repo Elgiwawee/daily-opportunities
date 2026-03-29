@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, ShoppingCart, Users, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Phone, ShoppingCart, Users, ChevronLeft, ChevronRight, X, Share2 } from 'lucide-react';
 
 const slides = [
   {
