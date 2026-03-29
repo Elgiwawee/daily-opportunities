@@ -252,6 +252,11 @@ const OpportunityDetails = () => {
                         </div>
                       </div>
                       
+                      {/* Netcross Sponsored Banner Before Description */}
+                      <div className="my-6">
+                        <NetcrossAdBanner />
+                      </div>
+                      
                       {/* In-Feed Ad Before Description */}
                       <div className="my-6">
                         <AdSenseAd variant="in-feed" />
