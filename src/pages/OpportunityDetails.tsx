@@ -25,6 +25,7 @@ import { SCHOLARSHIP_FAQS, JOB_FAQS } from '../data/faqData';
 import { extractIdFromSlug, generateSlug } from '../utils/slugUtils';
 import { FormattedDescription } from '../components/FormattedDescription';
 import Footer from '../components/Footer';
+import NetcrossAdBanner from '../components/NetcrossAdBanner';
 
 interface ExternalLink {
   position: string;
@@ -343,6 +344,11 @@ const OpportunityDetails = () => {
                       </div>
                     </div>
                   </motion.div>
+                  
+                  {/* Netcross Sponsored Banner */}
+                  <div className="my-8">
+                    <NetcrossAdBanner />
+                  </div>
                   
                   {/* In-Feed Ad After Main Content */}
                   <div className="my-8">

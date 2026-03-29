@@ -11,6 +11,7 @@ import { generateWebsiteSchema, generateOrganizationSchema } from '../utils/stru
 import { Link } from 'react-router-dom';
 import { GraduationCap, Briefcase, Globe, FileText, ChevronRight } from 'lucide-react';
 import Footer from '../components/Footer';
+import NetcrossAdBanner from '../components/NetcrossAdBanner';
 
 const CategoryCard = ({ icon: Icon, title, description, link, color }: { 
   icon: any; 
@@ -85,6 +86,11 @@ const Index = () => {
       <Navbar />
       <div className="pt-20">
         <HeroSection />
+        
+        {/* Netcross Sponsored Banner */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <NetcrossAdBanner />
+        </div>
         
         {/* Ad After Hero */}
         <div className="bg-white py-2">
