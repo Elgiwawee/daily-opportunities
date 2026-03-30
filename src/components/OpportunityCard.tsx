@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import DonationButton from './DonationButton';
 import { useTranslation } from 'react-i18next';
 import { arSA } from 'date-fns/locale';
+import FormattedDescription from './FormattedDescription';
 
 interface Attachment {
   name: string;
@@ -237,7 +238,7 @@ const OpportunityCard = ({
           <span className="text-xs text-gray-500">{formattedDate}</span>
         </div>
         
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description}</p>
+        <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description.replace(/<[^>]*>/g, '')}</p>
         
         <Accordion type="single" collapsible className="w-full" defaultValue={shouldExpand ? "details" : undefined}>
           <AccordionItem value="details" className="border-none">
@@ -273,7 +274,7 @@ const OpportunityCard = ({
                 
                 <div className="prose prose-sm max-w-none">
                   <h4 className="font-semibold mb-2">Description</h4>
-                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{description}</p>
+                  <FormattedDescription description={description} />
                 </div>
                 
                 {external_url && (
