@@ -174,7 +174,7 @@ const OpportunityDetails = () => {
     <div className="min-h-screen bg-white pb-16 md:pb-0">
       {opportunity && (
         <SEOHead
-          title={`${opportunity.title} - ${opportunity.organization} | Daily Opportunities`}
+          title={`${opportunity.title.replace(/<[^>]*>/g, '')} - ${opportunity.organization} | Daily Opportunities`}
           description={`${opportunity.description.replace(/<[^>]*>/g, '').substring(0, 155)}... Apply now for this ${opportunity.type} opportunity.`}
           keywords={`${opportunity.title}, ${opportunity.organization}, ${opportunity.type}, scholarship, job, funding, education, application, tier 1 countries`}
           type={opportunity.type === 'scholarship' ? 'article' : 'article'}
@@ -219,7 +219,7 @@ const OpportunityDetails = () => {
                   >
                     <div className="p-6 sm:p-10">
                       <div className="flex justify-between items-start">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{opportunity.title}</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2" dangerouslySetInnerHTML={{ __html: opportunity.title }} />
                         <Button 
                           variant="ghost" 
                           size="sm" 
