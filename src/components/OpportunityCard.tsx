@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import DonationButton from './DonationButton';
 import { useTranslation } from 'react-i18next';
 import { arSA } from 'date-fns/locale';
+import FormattedDescription from './FormattedDescription';
 
 interface Attachment {
   name: string;
