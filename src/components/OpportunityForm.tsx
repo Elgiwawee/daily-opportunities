@@ -332,7 +332,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                   />
                 </FormControl>
                 <FormDescription>
-                  Detailed information about the opportunity
+                  Supports HTML & Bootstrap classes (e.g. alert, btn, card, badge, table). Use &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt; for formatting.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
