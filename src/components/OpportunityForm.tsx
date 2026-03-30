@@ -326,13 +326,13 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Enter opportunity details"
-                    className="resize-y min-h-32"
+                    placeholder="Enter opportunity details (HTML supported - use <h2>, <p>, <ul>, Bootstrap classes like alert, btn, card, etc.)"
+                    className="resize-y min-h-48 font-mono text-sm"
                     {...field}
                   />
                 </FormControl>
                 <FormDescription>
-                  Detailed information about the opportunity
+                  Supports HTML & Bootstrap classes (e.g. alert, btn, card, badge, table). Use &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt; for formatting.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
