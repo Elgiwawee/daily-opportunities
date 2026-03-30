@@ -237,7 +237,7 @@ const OpportunityCard = ({
           <span className="text-xs text-gray-500">{formattedDate}</span>
         </div>
         
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description}</p>
+        <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description.replace(/<[^>]*>/g, '')}</p>
         
         <Accordion type="single" collapsible className="w-full" defaultValue={shouldExpand ? "details" : undefined}>
           <AccordionItem value="details" className="border-none">
