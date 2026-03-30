@@ -174,7 +174,7 @@ const OpportunityDetails = () => {
     <div className="min-h-screen bg-white pb-16 md:pb-0">
       {opportunity && (
         <SEOHead
-          title={`${opportunity.title} - ${opportunity.organization} | Daily Opportunities`}
+          title={`${opportunity.title.replace(/<[^>]*>/g, '')} - ${opportunity.organization} | Daily Opportunities`}
           description={`${opportunity.description.replace(/<[^>]*>/g, '').substring(0, 155)}... Apply now for this ${opportunity.type} opportunity.`}
           keywords={`${opportunity.title}, ${opportunity.organization}, ${opportunity.type}, scholarship, job, funding, education, application, tier 1 countries`}
           type={opportunity.type === 'scholarship' ? 'article' : 'article'}
