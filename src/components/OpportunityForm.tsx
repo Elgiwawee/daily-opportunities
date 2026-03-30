@@ -326,8 +326,8 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Enter opportunity details"
-                    className="resize-y min-h-32"
+                    placeholder="Enter opportunity details (HTML supported - use <h2>, <p>, <ul>, Bootstrap classes like alert, btn, card, etc.)"
+                    className="resize-y min-h-48 font-mono text-sm"
                     {...field}
                   />
                 </FormControl>
