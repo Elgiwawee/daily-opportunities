@@ -273,7 +273,7 @@ const OpportunityCard = ({
                 
                 <div className="prose prose-sm max-w-none">
                   <h4 className="font-semibold mb-2">Description</h4>
-                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{description}</p>
+                  <FormattedDescription description={description} />
                 </div>
                 
                 {external_url && (
