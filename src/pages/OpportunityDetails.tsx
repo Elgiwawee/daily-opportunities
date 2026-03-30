@@ -219,7 +219,7 @@ const OpportunityDetails = () => {
                   >
                     <div className="p-6 sm:p-10">
                       <div className="flex justify-between items-start">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{opportunity.title}</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2" dangerouslySetInnerHTML={{ __html: opportunity.title }} />
                         <Button 
                           variant="ghost" 
                           size="sm" 
