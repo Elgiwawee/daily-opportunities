@@ -130,7 +130,7 @@ const OpportunityModal = ({ opportunityId, isOpen, onClose }: OpportunityModalPr
                 
                 <div className="prose max-w-none mb-8">
                   <h3 className="text-xl font-semibold mb-4">Description</h3>
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{opportunity.description}</p>
+                  <FormattedDescription description={opportunity.description} />
                 </div>
                 
                 {opportunity.external_url && (
