@@ -216,7 +216,7 @@ const AdminNews = () => {
                         {format(new Date(news.created_at), "MMMM d, yyyy")}
                       </p>
                       <div className="prose max-w-none mb-4">
-                        <p className="line-clamp-3">{news.body}</p>
+                        <p className="line-clamp-3">{news.body.replace(/<[^>]*>/g, '')}</p>
                       </div>
                     </div>
                     <div className="flex space-x-2">
