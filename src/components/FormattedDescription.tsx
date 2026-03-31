@@ -153,7 +153,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
   
   const sections: React.ReactNode[] = [];
   let sectionCount = 0;
-  const adInterval = 3;
+  const adInterval = 2; // Insert ad every 2 sections for better monetization
 
   const processElements = (elements: NodeListOf<ChildNode> | HTMLCollection) => {
     Array.from(elements).forEach((node) => {
@@ -210,6 +210,8 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h2>
           );
+          sectionCount++;
+          maybeAddAd();
           break;
           
         case 'h2':
@@ -218,6 +220,8 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h3>
           );
+          sectionCount++;
+          maybeAddAd();
           break;
           
         case 'h3':
@@ -226,6 +230,8 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h4>
           );
+          sectionCount++;
+          maybeAddAd();
           break;
           
         case 'h4':
@@ -236,6 +242,8 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h5>
           );
+          sectionCount++;
+          maybeAddAd();
           break;
           
         case 'p':
