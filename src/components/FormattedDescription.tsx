@@ -153,7 +153,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
   
   const sections: React.ReactNode[] = [];
   let sectionCount = 0;
-  const adInterval = 3;
+  const adInterval = 2; // Insert ad every 2 sections for better monetization
 
   const processElements = (elements: NodeListOf<ChildNode> | HTMLCollection) => {
     Array.from(elements).forEach((node) => {
