@@ -210,6 +210,8 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h2>
           );
+          sectionCount++;
+          maybeAddAd();
           break;
           
         case 'h2':
@@ -218,6 +220,8 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h3>
           );
+          sectionCount++;
+          maybeAddAd();
           break;
           
         case 'h3':
@@ -226,6 +230,8 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h4>
           );
+          sectionCount++;
+          maybeAddAd();
           break;
           
         case 'h4':
@@ -236,6 +242,8 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h5>
           );
+          sectionCount++;
+          maybeAddAd();
           break;
           
         case 'p':
