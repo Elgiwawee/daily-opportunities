@@ -177,12 +177,30 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
       const tagName = element.tagName.toLowerCase();
       const innerHTML = element.innerHTML;
       const textContent = element.textContent || '';
-      const hasBootstrapClass = Array.from(element.classList).some(cls => 
+      const classList = Array.from(element.classList);
+      const hasBootstrapClass = classList.some(cls => 
         ['alert', 'btn', 'card', 'badge', 'table', 'list-group', 'lead', 'container', 'row', 'col', 'd-flex'].some(bc => cls.startsWith(bc))
       );
+      const hasBootstrapContentClass = classList.some(cls =>
+        ['alert', 'btn', 'card', 'badge', 'table', 'list-group', 'lead'].some(bc => cls === bc || cls.startsWith(`${bc}-`))
+      );
+      const isBootstrapLayoutClass = (cls: string) =>
+        ['container', 'container-fluid', 'row', 'col', 'd-flex', 'justify-content-center', 'align-items-center', 'text-center'].includes(cls) ||
+        /^col(-[a-z]+)?-\d+$/.test(cls) ||
+        /^(g|gx|gy|m|mt|mb|ms|me|mx|my|p|pt|pb|ps|pe|px|py)-\d+$/.test(cls);
+      const isBootstrapLayoutWrapper =
+        hasBootstrapClass &&
+        !hasBootstrapContentClass &&
+        classList.length > 0 &&
+        classList.every(isBootstrapLayoutClass);
+
+      if (isBootstrapLayoutWrapper) {
+        processElements(element.childNodes);
+        return;
+      }
 
       // Handle Bootstrap-styled elements
-      if (hasBootstrapClass) {
+      if (hasBootstrapContentClass) {
         const convertedHtml = convertBootstrapHtml(element);
         sections.push(
           <div key={`bs-${sections.length}`} className="mb-4" dangerouslySetInnerHTML={{ __html: convertedHtml }} />
