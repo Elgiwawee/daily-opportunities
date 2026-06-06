@@ -14,6 +14,7 @@ const Admin = () => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showPdfs, setShowPdfs] = useState(false);
   const [editingOpportunity, setEditingOpportunity] = useState<any>(null);
 
   useEffect(() => {
