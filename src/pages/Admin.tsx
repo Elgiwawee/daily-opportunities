@@ -4,9 +4,10 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { OpportunityForm } from '@/components/OpportunityForm';
 import OpportunityTable from '@/components/OpportunityTable';
+import { PdfManager } from '@/components/PdfManager';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Home, Plus, X, Newspaper } from "lucide-react";
+import { Home, Plus, X, Newspaper, FileText } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
