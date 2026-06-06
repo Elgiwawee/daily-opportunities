@@ -183,6 +183,42 @@ export type Database = {
         }
         Relationships: []
       }
+      pdf_documents: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          file_path: string
+          file_size: number | null
+          file_url: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          file_path: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          file_path?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
@@ -275,6 +311,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_expired_pdf_documents: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
