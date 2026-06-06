@@ -131,6 +131,14 @@ const Admin = () => {
                   Manage News
                 </Button>
               </Link>
+              <Button
+                variant={showPdfs ? "default" : "outline"}
+                className="ml-4 flex items-center gap-2"
+                onClick={() => setShowPdfs((v) => !v)}
+              >
+                <FileText size={16} />
+                Share PDF
+              </Button>
             </div>
             <div className="flex items-center space-x-4">
               <Button
