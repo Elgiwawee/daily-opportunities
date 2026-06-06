@@ -4,15 +4,17 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { OpportunityForm } from '@/components/OpportunityForm';
 import OpportunityTable from '@/components/OpportunityTable';
+import { PdfManager } from '@/components/PdfManager';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Home, Plus, X, Newspaper } from "lucide-react";
+import { Home, Plus, X, Newspaper, FileText } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showPdfs, setShowPdfs] = useState(false);
   const [editingOpportunity, setEditingOpportunity] = useState<any>(null);
 
   useEffect(() => {
@@ -129,6 +131,14 @@ const Admin = () => {
                   Manage News
                 </Button>
               </Link>
+              <Button
+                variant={showPdfs ? "default" : "outline"}
+                className="ml-4 flex items-center gap-2"
+                onClick={() => setShowPdfs((v) => !v)}
+              >
+                <FileText size={16} />
+                Share PDF
+              </Button>
             </div>
             <div className="flex items-center space-x-4">
               <Button
@@ -164,6 +174,13 @@ const Admin = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {showPdfs && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">Share a PDF</h2>
+            <PdfManager />
+          </div>
+        )}
+
         {showForm && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4">

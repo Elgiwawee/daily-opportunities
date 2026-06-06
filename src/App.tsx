@@ -10,6 +10,7 @@ import Admin from "./pages/Admin";
 import AdminNews from "./pages/AdminNews";
 import NotFound from "./pages/NotFound";
 import OpportunityDetails from "./pages/OpportunityDetails";
+import PdfView from "./pages/PdfView";
 import Scholarships from "./pages/Scholarships";
 import ScholarshipsByCountry from "./pages/ScholarshipsByCountry";
 import ScholarshipsByLevel from "./pages/ScholarshipsByLevel";
@@ -60,6 +61,7 @@ const App = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/news" element={<AdminNews />} />
           <Route path="/opportunity/:slug" element={<OpportunityDetails />} />
+          <Route path="/pdf/:slug" element={<PdfView />} />
           <Route path="/scholarships" element={<Scholarships />} />
           <Route path="/scholarships/country/:country" element={<ScholarshipsByCountry />} />
           <Route path="/scholarships/level/:level" element={<ScholarshipsByLevel />} />
