@@ -45,23 +45,35 @@ const PdfView = () => {
       setLoading(true);
       const idPart = extractIdFromSlug(slug);
 
-      // Exact id match first
+      // Exact id match first (only valid UUIDs)
       let found: PdfDocument | null = null;
-      const { data: exact } = await supabase
-        .from("pdf_documents")
-        .select("*")
-        .eq("id", slug)
-        .maybeSingle();
-      if (exact) found = exact as PdfDocument;
-
-      if (!found && idPart && idPart.length >= 8) {
-        const { data: prefix } = await supabase
+      const isUuid =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          slug
+        );
+      if (isUuid) {
+        const { data: exact } = await supabase
           .from("pdf_documents")
           .select("*")
-          .filter("id", "ilike", `${idPart}%`)
-          .limit(1)
+          .eq("id", slug)
           .maybeSingle();
-        if (prefix) found = prefix as PdfDocument;
+        if (exact) found = exact as PdfDocument;
+      }
+
+      // Otherwise match by the 8-char id prefix embedded in the slug.
+      // `ilike` is not supported on uuid columns via PostgREST, so fetch the
+      // (small) set of non-expired docs and match the prefix client-side.
+      if (!found && idPart) {
+        const prefix = idPart.toLowerCase();
+        const { data: rows } = await supabase
+          .from("pdf_documents")
+          .select("*");
+        if (rows) {
+          found =
+            (rows as PdfDocument[]).find((r) =>
+              r.id.toLowerCase().startsWith(prefix)
+            ) ?? null;
+        }
       }
 
       setDoc(found);
