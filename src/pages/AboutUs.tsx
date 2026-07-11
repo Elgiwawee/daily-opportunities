@@ -17,8 +17,8 @@ const AboutUs = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">About Us</h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <h1 className="text-3xl font-bold text-foreground mb-4">About Us</h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               Learn more about Daily Opportunities and our mission to connect students with global opportunities.
             </p>
           </motion.div>

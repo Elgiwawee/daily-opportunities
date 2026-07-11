@@ -14,10 +14,10 @@ const AboutSection = () => {
           <span className="text-sm font-medium text-indigo-600 mb-2 block">
             Who We Are
           </span>
-          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+          <h2 className="text-3xl font-bold text-foreground sm:text-4xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
             About Daily Opportunities
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto">
             Learn more about our mission to connect talented individuals with life-changing opportunities.
           </p>
         </motion.div>
@@ -46,33 +46,33 @@ const AboutSection = () => {
             transition={{ delay: 0.3 }}
             className="space-y-6"
           >
-            <h3 className="text-2xl font-bold text-gray-900">Our Mission</h3>
-            <p className="text-gray-600">
+            <h3 className="text-2xl font-bold text-foreground">Our Mission</h3>
+            <p className="text-muted-foreground">
               At Daily Opportunities, we believe that everyone deserves access to quality opportunities that can transform their lives. Our platform bridges the gap between talented individuals and organizations offering scholarships and job openings.
             </p>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               We curate and verify each opportunity to ensure our users have access to legitimate and valuable prospects. Our team works tirelessly to bring you the most relevant opportunities tailored to various fields and interests.
             </p>
 
-            <h3 className="text-2xl font-bold text-gray-900 pt-4">Our Values</h3>
+            <h3 className="text-2xl font-bold text-foreground pt-4">Our Values</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center">
                   <span className="text-indigo-600 text-sm font-bold">✓</span>
                 </div>
-                <p className="ml-3 text-gray-600"><span className="font-medium text-gray-900">Accessibility</span> - Making opportunities available to everyone regardless of background</p>
+                <p className="ml-3 text-muted-foreground"><span className="font-medium text-foreground">Accessibility</span> - Making opportunities available to everyone regardless of background</p>
               </li>
               <li className="flex items-start">
                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center">
                   <span className="text-indigo-600 text-sm font-bold">✓</span>
                 </div>
-                <p className="ml-3 text-gray-600"><span className="font-medium text-gray-900">Quality</span> - Verifying all opportunities to ensure they meet our standards</p>
+                <p className="ml-3 text-muted-foreground"><span className="font-medium text-foreground">Quality</span> - Verifying all opportunities to ensure they meet our standards</p>
               </li>
               <li className="flex items-start">
                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center">
                   <span className="text-indigo-600 text-sm font-bold">✓</span>
                 </div>
-                <p className="ml-3 text-gray-600"><span className="font-medium text-gray-900">Diversity</span> - Promoting opportunities across various fields and disciplines</p>
+                <p className="ml-3 text-muted-foreground"><span className="font-medium text-foreground">Diversity</span> - Promoting opportunities across various fields and disciplines</p>
               </li>
             </ul>
           </motion.div>
@@ -85,11 +85,11 @@ const AboutSection = () => {
             viewport={{ once: true }}
             className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 md:p-12 shadow-sm"
           >
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Story</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className="text-2xl font-bold text-foreground mb-4">Our Story</h3>
+            <p className="text-muted-foreground mb-6">
               Daily Opportunities started with a simple idea: to create a centralized platform where people could find legitimate scholarships and job opportunities. Our founders experienced firsthand the challenges of navigating fragmented information across multiple sources.
             </p>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Since our launch, we've helped thousands of individuals find scholarships that funded their education and jobs that kickstarted their careers. We continue to grow our network of partner organizations to bring you the best opportunities available.
             </p>
           </motion.div>

@@ -50,12 +50,12 @@ interface BlogComment {
 // BlogLike interface removed - we now use count-based approach for security
 
 const socialPlatforms = [
-  { name: 'Facebook', icon: Facebook, color: 'bg-blue-600' },
+  { name: 'Facebook', icon: Facebook, color: 'bg-primary' },
   { name: 'Instagram', icon: Instagram, color: 'bg-pink-600' },
   { name: 'Twitter/X', icon: Twitter, color: 'bg-black' },
   { name: 'TikTok', icon: PenTool, color: 'bg-black' },
   { name: 'WhatsApp', icon: MessageCircle, color: 'bg-green-600' },
-  { name: 'LinkedIn', icon: User, color: 'bg-blue-700' },
+  { name: 'LinkedIn', icon: User, color: 'bg-primary' },
 ];
 
 const Blog = () => {
@@ -613,7 +613,7 @@ const Blog = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => handleShare(post)}
-                        className="gap-1 hover:bg-blue-50 hover:border-blue-200"
+                        className="gap-1 hover:bg-primary/10 hover:border-primary/30"
                       >
                         <Share2 className="h-4 w-4" />
                         🔗 Share

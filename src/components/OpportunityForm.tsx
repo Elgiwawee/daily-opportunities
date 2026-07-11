@@ -364,11 +364,11 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
           
           {/* Multiple Position Links for Jobs */}
           {opportunityType === 'job' && (
-            <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+            <div className="space-y-4 border rounded-lg p-4 bg-background">
               <div className="flex items-center justify-between">
                 <div>
                   <FormLabel>Position Links (for multiple positions)</FormLabel>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Add separate apply links for different positions within this job opportunity
                   </p>
                 </div>
@@ -508,7 +508,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                   {existingAttachments.map((attachment, index) => (
                     <li
                       key={index}
-                      className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
+                      className="flex items-center justify-between p-2 bg-background rounded-md"
                     >
                       <div className="flex items-center">
                         {attachment.type === 'image' && (
@@ -538,15 +538,15 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor="dropzone-file"
-                className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-background hover:bg-gray-100"
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <Upload className="w-8 h-8 mb-3 text-gray-500" />
-                  <p className="mb-2 text-sm text-gray-500">
+                  <Upload className="w-8 h-8 mb-3 text-muted-foreground" />
+                  <p className="mb-2 text-sm text-muted-foreground">
                     <span className="font-semibold">Click to upload</span> or drag
                     and drop
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Images or supporting documents
                   </p>
                 </div>
@@ -566,7 +566,7 @@ export function OpportunityForm({ opportunity, onSuccess }: OpportunityFormProps
                   {files.map((file, index) => (
                     <li
                       key={index}
-                      className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
+                      className="flex items-center justify-between p-2 bg-background rounded-md"
                     >
                       <span className="text-sm truncate max-w-[250px]">
                         {file.name}

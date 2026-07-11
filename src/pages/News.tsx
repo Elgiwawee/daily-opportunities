@@ -166,15 +166,15 @@ const News = () => {
   return (
     <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
-      <div className="pt-36 pb-12 bg-gray-50">
+      <div className="pt-36 pb-12 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('news.title')}</h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <h1 className="text-3xl font-bold text-foreground mb-4">{t('news.title')}</h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               {t('news.subtitle')}
             </p>
             <div className="mt-6">
@@ -246,7 +246,7 @@ const News = () => {
                     <div className="flex justify-center mt-8">
                       <button
                         onClick={loadMore}
-                        className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-background transition-colors"
                       >
                         {t('news.loadMore')}
                         <ChevronDown className="h-4 w-4" />
@@ -256,7 +256,7 @@ const News = () => {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <p className="text-lg text-gray-500">{t('news.empty')}</p>
+                  <p className="text-lg text-muted-foreground">{t('news.empty')}</p>
                 </div>
               )}
             </div>

@@ -16,6 +16,17 @@ export default {
       screens: {
         'xs': '400px',
       },
+      fontFamily: {
+        serif: ['"DM Serif Display"', 'Georgia', 'serif'],
+        display: ['"DM Serif Display"', 'Georgia', 'serif'],
+        sans: ['"Fira Sans"', 'system-ui', 'sans-serif'],
+        body: ['"Fira Sans"', 'system-ui', 'sans-serif'],
+      },
+      boxShadow: {
+        card: 'var(--shadow-card)',
+        'card-hover': 'var(--shadow-card-hover)',
+        gold: 'var(--shadow-gold)',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -66,7 +77,9 @@ export default {
         brand: {
           blue: 'hsl(var(--brand-blue))',
           navy: 'hsl(var(--brand-navy))',
+          sapphire: 'hsl(var(--brand-sapphire))',
           gold: 'hsl(var(--brand-gold))',
+          'gold-soft': 'hsl(var(--brand-gold-soft))',
           success: 'hsl(var(--brand-success))',
           warning: 'hsl(var(--brand-warning))',
         },

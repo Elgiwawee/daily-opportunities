@@ -156,25 +156,25 @@ const NewsItem = ({
                 <div className="py-1">
                   <button
                     onClick={() => handleShare('facebook')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                   >
                     Facebook
                   </button>
                   <button
                     onClick={() => handleShare('twitter')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                   >
                     Twitter
                   </button>
                   <button
                     onClick={() => handleShare('whatsapp')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                   >
                     WhatsApp
                   </button>
                   <button
                     onClick={() => handleShare('copy')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                   >
                     Copy Link
                   </button>
@@ -187,7 +187,7 @@ const NewsItem = ({
 
       <div className="p-6">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
             {news.created_at && format(new Date(news.created_at), 'MMMM d, yyyy')}
           </div>
@@ -214,12 +214,12 @@ const NewsItem = ({
           }}
         >
           <AccordionItem value="details" className="border-none">
-            <AccordionTrigger className="text-sm font-medium text-blue-700 hover:underline bg-transparent border-none p-0 h-auto hover:no-underline">
+            <AccordionTrigger className="text-sm font-medium text-primary hover:underline bg-transparent border-none p-0 h-auto hover:no-underline">
               Read Full Article
             </AccordionTrigger>
             <AccordionContent className="pt-4 pb-0">
               <div className="space-y-4">
-                <div className="flex items-center gap-4 text-sm text-gray-500">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <Calendar className="mr-2 h-4 w-4" />
                     <span>Published: {news.created_at && format(new Date(news.created_at), 'MMMM d, yyyy')}</span>
@@ -313,13 +313,13 @@ const NewsItem = ({
                             )}
                           </div>
                         ) : (
-                          <div className="p-4 flex items-center justify-between bg-gray-50">
+                          <div className="p-4 flex items-center justify-between bg-background">
                             <span>{attachment.name}</span>
                             <a 
                               href={attachment.url} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
+                              className="text-primary hover:underline"
                             >
                               Download
                             </a>
@@ -332,7 +332,7 @@ const NewsItem = ({
                 
                 {/* News content with formatted description and inline ads */}
                 <div className="prose max-w-none">
-                  <h4 className="text-xl font-bold mb-4 text-gray-900">Full Article</h4>
+                  <h4 className="text-xl font-bold mb-4 text-foreground">Full Article</h4>
                   <FormattedDescription description={news.body} />
                 </div>
               </div>
@@ -347,7 +347,7 @@ const NewsItem = ({
                 onClick={() => setShareMenuOpen(!shareMenuOpen)}
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2 text-blue-700 border-blue-200 hover:bg-blue-50"
+                className="flex items-center gap-2 text-primary border-primary/30 hover:bg-primary/10"
               >
                 <Share2 className="h-4 w-4" />
                 Share
@@ -358,25 +358,25 @@ const NewsItem = ({
                   <div className="py-1">
                     <button
                       onClick={() => handleShare('facebook')}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                     >
                       Facebook
                     </button>
                     <button
                       onClick={() => handleShare('twitter')}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                     >
                       Twitter
                     </button>
                     <button
                       onClick={() => handleShare('whatsapp')}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                     >
                       WhatsApp
                     </button>
                     <button
                       onClick={() => handleShare('copy')}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                     >
                       Copy Link
                     </button>

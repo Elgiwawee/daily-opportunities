@@ -41,11 +41,11 @@ const CookieConsent = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex-1">
             <h3 className="text-lg font-semibold mb-2">We use cookies</h3>
-            <p className="text-gray-600 text-sm mb-2">
+            <p className="text-muted-foreground text-sm mb-2">
               We use cookies to enhance your experience, analyze site traffic, and for our marketing purposes. 
               By continuing to use our site, you accept our use of cookies.
             </p>
-            <p className="text-gray-600 text-sm">
+            <p className="text-muted-foreground text-sm">
               We also use cookies to enable notifications about new opportunities.
             </p>
           </div>
@@ -54,20 +54,20 @@ const CookieConsent = () => {
               variant="outline"
               size="sm"
               onClick={declineCookies}
-              className="border-gray-300 text-gray-600 hover:bg-gray-100"
+              className="border-gray-300 text-muted-foreground hover:bg-gray-100"
             >
               Decline
             </Button>
             <Button
               size="sm"
               onClick={acceptCookies}
-              className="bg-olive-600 text-white hover:bg-olive-700"
+              className="bg-primary text-white hover:bg-primary/90"
             >
               Accept
             </Button>
             <button
               onClick={declineCookies}
-              className="p-1 text-gray-500 hover:text-gray-700"
+              className="p-1 text-muted-foreground hover:text-gray-700"
               aria-label="Close"
             >
               <X className="h-5 w-5" />

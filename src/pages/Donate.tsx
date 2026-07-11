@@ -39,7 +39,7 @@ const Donate = () => {
   };
 
   const supportedCurrencies = [
-    { code: 'USD', name: 'US Dollar', symbol: '$', icon: <DollarSign className="w-4 h-4 text-blue-500" /> },
+    { code: 'USD', name: 'US Dollar', symbol: '$', icon: <DollarSign className="w-4 h-4 text-primary" /> },
     { code: 'NGN', name: 'Nigerian Naira', symbol: '₦', icon: <PoundSterling className="w-4 h-4 text-green-500" /> },
     { code: 'EUR', name: 'Euro', symbol: '€', icon: <Euro className="w-4 h-4 text-yellow-500" /> },
     { code: 'GBP', name: 'British Pound', symbol: '£', icon: <PoundSterling className="w-4 h-4 text-purple-500" /> },
@@ -80,14 +80,14 @@ const Donate = () => {
             >
               <div className="flex items-center mb-6">
                 <CreditCard className="w-8 h-8 text-amber-600 mr-3" />
-                <h2 className="text-2xl font-semibold text-gray-800">Card & Bank Payments</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Card & Bank Payments</h2>
               </div>
 
               <div className="space-y-8">
                 {/* Card Payment Section */}
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                  <h3 className="font-medium text-gray-800 mb-3">Credit/Debit Card</h3>
-                  <p className="text-gray-600 mb-4">
+                <div className="bg-background rounded-lg p-6 border border-gray-200">
+                  <h3 className="font-medium text-foreground mb-3">Credit/Debit Card</h3>
+                  <p className="text-muted-foreground mb-4">
                     Make a secure donation using your credit or debit card in your local currency.
                   </p>
                   
@@ -101,7 +101,7 @@ const Donate = () => {
                         </div>
                       ))}
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">More currencies available at checkout</p>
+                    <p className="mt-1 text-xs text-muted-foreground">More currencies available at checkout</p>
                   </div>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
@@ -117,7 +117,7 @@ const Donate = () => {
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Or enter custom amount:</label>
                     <div className="flex rounded-md">
-                      <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
+                      <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-background text-muted-foreground">
                         $
                       </span>
                       <input
@@ -133,25 +133,25 @@ const Donate = () => {
                 </div>
 
                 {/* Bank Transfer Section */}
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <div className="bg-background rounded-lg p-6 border border-gray-200">
                   <div className="flex items-center mb-3">
                     <Banknote className="w-5 h-5 text-amber-600 mr-2" />
-                    <h3 className="font-medium text-gray-800">Bank Transfer</h3>
+                    <h3 className="font-medium text-foreground">Bank Transfer</h3>
                   </div>
                   
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600">Bank Name:</span>
-                      <span className="font-medium text-gray-800">{bankDetails.bankName}</span>
+                      <span className="text-muted-foreground">Bank Name:</span>
+                      <span className="font-medium text-foreground">{bankDetails.bankName}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600">Account Name:</span>
-                      <span className="font-medium text-gray-800">{bankDetails.name}</span>
+                      <span className="text-muted-foreground">Account Name:</span>
+                      <span className="font-medium text-foreground">{bankDetails.name}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600">Account Number:</span>
+                      <span className="text-muted-foreground">Account Number:</span>
                       <div className="flex items-center">
-                        <span className="font-medium text-gray-800 mr-2">{bankDetails.accountNumber}</span>
+                        <span className="font-medium text-foreground mr-2">{bankDetails.accountNumber}</span>
                         <button 
                           onClick={() => copyToClipboard(bankDetails.accountNumber)}
                           className="text-amber-600 hover:text-amber-700 text-xs"
@@ -164,20 +164,20 @@ const Donate = () => {
                 </div>
                 
                 {/* Mobile Money Section */}
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <div className="bg-background rounded-lg p-6 border border-gray-200">
                   <div className="flex items-center mb-3">
                     <Wallet className="w-5 h-5 text-amber-600 mr-2" />
-                    <h3 className="font-medium text-gray-800">Mobile Money</h3>
+                    <h3 className="font-medium text-foreground">Mobile Money</h3>
                   </div>
                   
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     Send money directly to our mobile money account:
                   </p>
                   
                   <div className="flex justify-between items-center text-sm mb-2">
-                    <span className="text-gray-600">MTN Phone Number:</span>
+                    <span className="text-muted-foreground">MTN Phone Number:</span>
                     <div className="flex items-center">
-                      <span className="font-medium text-gray-800 mr-2">+2347040930552</span>
+                      <span className="font-medium text-foreground mr-2">+2347040930552</span>
                       <button 
                         onClick={() => copyToClipboard("+2347040930552")}
                         className="text-amber-600 hover:text-amber-700 text-xs"
@@ -186,7 +186,7 @@ const Donate = () => {
                       </button>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Available for MTN Money transfers
                   </p>
                 </div>
@@ -201,19 +201,19 @@ const Donate = () => {
             >
               <div className="flex items-center mb-6">
                 <Bitcoin className="w-8 h-8 text-amber-600 mr-3" />
-                <h2 className="text-2xl font-semibold text-gray-800">Cryptocurrency</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Cryptocurrency</h2>
               </div>
 
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Support our work by donating cryptocurrency. We accept various tokens:
               </p>
 
               <div className="space-y-6">
                 {cryptoAddresses.map((crypto, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-background rounded-lg p-6 border border-gray-200">
                     <div className="flex items-center mb-4">
                       {crypto.icon}
-                      <h3 className="font-medium text-gray-800 ml-2">{crypto.name}</h3>
+                      <h3 className="font-medium text-foreground ml-2">{crypto.name}</h3>
                     </div>
                     
                     <div className="relative">
@@ -234,7 +234,7 @@ const Donate = () => {
                 ))}
               </div>
 
-              <div className="mt-8 text-sm text-gray-500">
+              <div className="mt-8 text-sm text-muted-foreground">
                 <p className="font-medium text-amber-700 mb-2">Important:</p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Please double-check the address before sending any cryptocurrency</li>
@@ -289,7 +289,7 @@ const Donate = () => {
                 <div className="mr-3">{currency.icon}</div>
                 <div>
                   <p className="font-medium">{currency.code}</p>
-                  <p className="text-xs text-gray-500">{currency.name}</p>
+                  <p className="text-xs text-muted-foreground">{currency.name}</p>
                 </div>
               </div>
             ))}

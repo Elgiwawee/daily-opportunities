@@ -182,7 +182,7 @@ const OpportunityDetails = () => {
         />
       )}
       <Navbar />
-      <div className="pt-36 pb-12 bg-gray-50">
+      <div className="pt-36 pb-12 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {opportunity && (
             <Breadcrumb 
@@ -200,13 +200,13 @@ const OpportunityDetails = () => {
             <div className="flex-1 min-w-0">
               {isLoading ? (
                 <div className="flex justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                 </div>
               ) : error ? (
                 <div className="text-center py-12">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('opportunityDetails.error')}</h2>
-                  <p className="text-gray-600 mb-8">{t('opportunityDetails.errorMessage')}</p>
-                  <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                  <h2 className="text-2xl font-bold text-foreground mb-4">{t('opportunityDetails.error')}</h2>
+                  <p className="text-muted-foreground mb-8">{t('opportunityDetails.errorMessage')}</p>
+                  <Button asChild className="bg-primary hover:bg-primary/90">
                     <Link to="/">{t('opportunityDetails.backHome')}</Link>
                   </Button>
                 </div>
@@ -219,23 +219,23 @@ const OpportunityDetails = () => {
                   >
                     <div className="p-6 sm:p-10">
                       <div className="flex justify-between items-start">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2" dangerouslySetInnerHTML={{ __html: opportunity.title }} />
+                        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dangerouslySetInnerHTML={{ __html: opportunity.title }} />
                         <Button 
                           variant="ghost" 
                           size="sm" 
                           onClick={copyToClipboard}
-                          className="text-gray-500 hover:text-olive-600"
+                          className="text-muted-foreground hover:text-primary"
                         >
                           {copied ? t('opportunityDetails.copied') : t('opportunityDetails.share')}
                           <LinkIcon className="ml-2 h-4 w-4" />
                         </Button>
                       </div>
                       
-                      <div className="text-lg text-olive-600 font-semibold mb-6">
+                      <div className="text-lg text-primary font-semibold mb-6">
                         {opportunity.organization}
                       </div>
                       
-                      <div className="flex flex-wrap gap-4 mb-8 text-sm text-gray-500">
+                      <div className="flex flex-wrap gap-4 mb-8 text-sm text-muted-foreground">
                         {opportunity.deadline && (
                           <div className="flex items-center">
                             <Calendar className="mr-2 h-4 w-4" />
@@ -264,7 +264,7 @@ const OpportunityDetails = () => {
                       
                       {/* Formatted Description with proper headers, justified text, and inline ads */}
                       <div className="prose max-w-none mb-8">
-                        <h2 className="text-2xl font-bold mb-6 text-gray-900">{t('opportunityDetails.description')}</h2>
+                        <h2 className="text-2xl font-bold mb-6 text-foreground">{t('opportunityDetails.description')}</h2>
                         <FormattedDescription description={opportunity.description} />
                       </div>
                       
@@ -277,7 +277,7 @@ const OpportunityDetails = () => {
                               <Button 
                                 key={index}
                                 asChild 
-                                className="bg-olive-600 hover:bg-olive-700 justify-between"
+                                className="bg-primary hover:bg-primary/90 justify-between"
                               >
                                 <a href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center">
                                   <span className="truncate">{link.position}</span>
@@ -293,7 +293,7 @@ const OpportunityDetails = () => {
                       {opportunity.external_url && (
                         <div className="mb-8">
                           <h2 className="text-xl font-semibold mb-4">{t('opportunityDetails.applyNow')}</h2>
-                          <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                          <Button asChild className="bg-primary hover:bg-primary/90">
                             <a href={opportunity.external_url} target="_blank" rel="noopener noreferrer" className="flex items-center">
                               Click here to apply
                               <ExternalLink className="ml-2 h-4 w-4" />
@@ -309,10 +309,10 @@ const OpportunityDetails = () => {
                             {opportunity.attachments.map((attachment, index) => (
                               <Card key={index} className="p-4 flex items-center justify-between">
                                 <div className="flex items-center">
-                                  <Download className="h-5 w-5 text-olive-600 mr-3" />
+                                  <Download className="h-5 w-5 text-primary mr-3" />
                                   <div>
                                     <div className="font-medium">{attachment.name}</div>
-                                    <div className="text-sm text-gray-500">{attachment.type}</div>
+                                    <div className="text-sm text-muted-foreground">{attachment.type}</div>
                                   </div>
                                 </div>
                                 <Button 
@@ -337,13 +337,13 @@ const OpportunityDetails = () => {
                       )}
                       
                       <div className="flex justify-between items-center mt-10">
-                        <Button asChild variant="outline" className="border-olive-600 text-olive-700 hover:bg-olive-50">
+                        <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary/10">
                           <Link to={opportunity.type === 'scholarship' ? '/scholarships' : '/jobs'}>
                             {opportunity.type === 'scholarship' ? t('opportunityDetails.backToScholarships') : t('opportunityDetails.backToJobs')}
                           </Link>
                         </Button>
                         
-                        <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                        <Button asChild className="bg-primary hover:bg-primary/90">
                           <Link to="/">{t('opportunityDetails.backHome')}</Link>
                         </Button>
                       </div>
@@ -384,9 +384,9 @@ const OpportunityDetails = () => {
                 </>
               ) : (
                 <div className="text-center py-12">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('opportunityDetails.notFound')}</h2>
-                  <p className="text-gray-600 mb-8">{t('opportunityDetails.notFoundMessage')}</p>
-                  <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                  <h2 className="text-2xl font-bold text-foreground mb-4">{t('opportunityDetails.notFound')}</h2>
+                  <p className="text-muted-foreground mb-8">{t('opportunityDetails.notFoundMessage')}</p>
+                  <Button asChild className="bg-primary hover:bg-primary/90">
                     <Link to="/">{t('opportunityDetails.backHome')}</Link>
                   </Button>
                 </div>

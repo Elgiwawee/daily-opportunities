@@ -97,21 +97,21 @@ const OpportunityModal = ({ opportunityId, isOpen, onClose }: OpportunityModalPr
           <div className="p-6">
             {isLoading ? (
               <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
               </div>
             ) : error ? (
               <div className="text-center py-12">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Error loading details</h3>
-                <p className="text-gray-600">Please try again later.</p>
+                <h3 className="text-xl font-bold text-foreground mb-4">Error loading details</h3>
+                <p className="text-muted-foreground">Please try again later.</p>
               </div>
             ) : opportunity ? (
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{opportunity.title}</h1>
-                <div className="text-lg text-olive-600 font-semibold mb-6">
+                <h1 className="text-2xl font-bold text-foreground mb-2">{opportunity.title}</h1>
+                <div className="text-lg text-primary font-semibold mb-6">
                   {opportunity.organization}
                 </div>
                 
-                <div className="flex flex-wrap gap-4 mb-8 text-sm text-gray-500">
+                <div className="flex flex-wrap gap-4 mb-8 text-sm text-muted-foreground">
                   {opportunity.deadline && (
                     <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
@@ -136,7 +136,7 @@ const OpportunityModal = ({ opportunityId, isOpen, onClose }: OpportunityModalPr
                 {opportunity.external_url && (
                   <div className="mb-8">
                     <h3 className="text-xl font-semibold mb-4">Apply Now</h3>
-                    <Button asChild className="bg-olive-600 hover:bg-olive-700">
+                    <Button asChild className="bg-primary hover:bg-primary/90">
                       <a href={opportunity.external_url} target="_blank" rel="noopener noreferrer" className="flex items-center">
                         Click here to apply
                         <ExternalLink className="ml-2 h-4 w-4" />
@@ -152,10 +152,10 @@ const OpportunityModal = ({ opportunityId, isOpen, onClose }: OpportunityModalPr
                       {opportunity.attachments.map((attachment, index) => (
                         <Card key={index} className="p-4 flex items-center justify-between">
                           <div className="flex items-center">
-                            <Download className="h-5 w-5 text-olive-600 mr-3" />
+                            <Download className="h-5 w-5 text-primary mr-3" />
                             <div>
                               <div className="font-medium">{attachment.name}</div>
-                              <div className="text-sm text-gray-500">{attachment.type}</div>
+                              <div className="text-sm text-muted-foreground">{attachment.type}</div>
                             </div>
                           </div>
                           <Button 

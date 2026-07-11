@@ -406,7 +406,7 @@ const Opportunities = () => {
   };
 
   return (
-    <div className="py-8 bg-gray-50">
+    <div className="py-8 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Featured Section */}
         <div className="mb-12">
@@ -446,7 +446,7 @@ const Opportunities = () => {
             <Button 
               onClick={() => setVisibleCount(prevCount => prevCount + 6)}
               variant="outline"
-              className="border border-gray-300 hover:bg-gray-100 text-gray-800"
+              className="border border-gray-300 hover:bg-gray-100 text-foreground"
             >
               Load more <ChevronRight className="w-4 h-4 ml-1" />
             </Button>

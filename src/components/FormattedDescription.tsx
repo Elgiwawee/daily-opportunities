@@ -56,30 +56,30 @@ const bootstrapToTailwind = (element: Element): string => {
       // Alerts
       case 'alert': mapped.push('rounded-lg p-4 mb-4 border'); break;
       case 'alert-warning': mapped.push('bg-amber-50 border-amber-300 text-amber-900'); break;
-      case 'alert-info': mapped.push('bg-blue-50 border-blue-300 text-blue-900'); break;
+      case 'alert-info': mapped.push('bg-primary/10 border-primary/40 text-blue-900'); break;
       case 'alert-success': mapped.push('bg-green-50 border-green-300 text-green-900'); break;
       case 'alert-danger': mapped.push('bg-red-50 border-red-300 text-red-900'); break;
-      case 'alert-primary': mapped.push('bg-blue-50 border-blue-400 text-blue-900'); break;
-      case 'alert-secondary': mapped.push('bg-gray-50 border-gray-300 text-gray-800'); break;
+      case 'alert-primary': mapped.push('bg-primary/10 border-blue-400 text-blue-900'); break;
+      case 'alert-secondary': mapped.push('bg-background border-gray-300 text-foreground'); break;
       // Buttons
       case 'btn': mapped.push('inline-flex items-center justify-center rounded-md font-medium px-6 py-3 transition-colors no-underline'); break;
-      case 'btn-primary': mapped.push('bg-olive-600 text-white hover:bg-olive-700'); break;
+      case 'btn-primary': mapped.push('bg-primary text-white hover:bg-primary/90'); break;
       case 'btn-success': mapped.push('bg-green-600 text-white hover:bg-green-700'); break;
       case 'btn-danger': mapped.push('bg-red-600 text-white hover:bg-red-700'); break;
       case 'btn-warning': mapped.push('bg-amber-500 text-white hover:bg-amber-600'); break;
       case 'btn-info': mapped.push('bg-cyan-500 text-white hover:bg-cyan-600'); break;
-      case 'btn-outline-primary': mapped.push('border-2 border-olive-600 text-olive-700 hover:bg-olive-50'); break;
+      case 'btn-outline-primary': mapped.push('border-2 border-primary text-primary hover:bg-primary/10'); break;
       case 'btn-lg': mapped.push('text-lg px-8 py-4'); break;
       case 'btn-sm': mapped.push('text-sm px-3 py-1.5'); break;
       // Text
       case 'text-center': mapped.push('text-center'); break;
-      case 'text-muted': mapped.push('text-gray-500'); break;
-      case 'text-primary': mapped.push('text-olive-600'); break;
+      case 'text-muted': mapped.push('text-muted-foreground'); break;
+      case 'text-primary': mapped.push('text-primary'); break;
       case 'text-success': mapped.push('text-green-600'); break;
       case 'text-danger': mapped.push('text-red-600'); break;
       case 'text-warning': mapped.push('text-amber-600'); break;
       case 'fw-bold': case 'font-weight-bold': mapped.push('font-bold'); break;
-      case 'lead': mapped.push('text-lg leading-relaxed text-gray-600'); break;
+      case 'lead': mapped.push('text-lg leading-relaxed text-muted-foreground'); break;
       // Spacing
       case 'mt-3': mapped.push('mt-4'); break;
       case 'mt-4': mapped.push('mt-6'); break;
@@ -96,11 +96,11 @@ const bootstrapToTailwind = (element: Element): string => {
       case 'card-text': mapped.push('text-gray-700'); break;
       // Tables
       case 'table': mapped.push('w-full border-collapse'); break;
-      case 'table-striped': mapped.push('[&_tr:nth-child(even)]:bg-gray-50'); break;
+      case 'table-striped': mapped.push('[&_tr:nth-child(even)]:bg-background'); break;
       case 'table-bordered': mapped.push('[&_td]:border [&_th]:border [&_td]:p-2 [&_th]:p-2'); break;
       // Badges
       case 'badge': mapped.push('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold'); break;
-      case 'bg-primary': mapped.push('bg-olive-600 text-white'); break;
+      case 'bg-primary': mapped.push('bg-primary text-white'); break;
       case 'bg-success': mapped.push('bg-green-600 text-white'); break;
       case 'bg-danger': mapped.push('bg-red-600 text-white'); break;
       case 'bg-warning': mapped.push('bg-amber-500 text-white'); break;
@@ -224,7 +224,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
       switch (tagName) {
         case 'h1':
           sections.push(
-            <h2 key={`h1-${sections.length}`} className="text-2xl font-bold mt-8 mb-4 text-gray-900">
+            <h2 key={`h1-${sections.length}`} className="text-2xl font-bold mt-8 mb-4 text-foreground">
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h2>
           );
@@ -234,7 +234,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
           
         case 'h2':
           sections.push(
-            <h3 key={`h2-${sections.length}`} className="text-xl font-bold mt-7 mb-4 text-gray-900">
+            <h3 key={`h2-${sections.length}`} className="text-xl font-bold mt-7 mb-4 text-foreground">
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h3>
           );
@@ -244,7 +244,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
           
         case 'h3':
           sections.push(
-            <h4 key={`h3-${sections.length}`} className="text-lg font-bold mt-6 mb-3 text-gray-800">
+            <h4 key={`h3-${sections.length}`} className="text-lg font-bold mt-6 mb-3 text-foreground">
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h4>
           );
@@ -256,7 +256,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
         case 'h5':
         case 'h6':
           sections.push(
-            <h5 key={`h4-${sections.length}`} className="text-base font-bold mt-5 mb-2 text-gray-800">
+            <h5 key={`h4-${sections.length}`} className="text-base font-bold mt-5 mb-2 text-foreground">
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </h5>
           );
@@ -267,7 +267,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
         case 'p':
           if (isHeaderLine(textContent)) {
             sections.push(
-              <h4 key={`ph-${sections.length}`} className="text-lg font-bold mt-6 mb-3 text-gray-900">
+              <h4 key={`ph-${sections.length}`} className="text-lg font-bold mt-6 mb-3 text-foreground">
                 <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
               </h4>
             );
@@ -341,7 +341,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
                 href={element.getAttribute('href') || '#'} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-md font-medium px-6 py-3 bg-olive-600 text-white hover:bg-olive-700 transition-colors no-underline"
+                className="inline-flex items-center justify-center rounded-md font-medium px-6 py-3 bg-primary text-white hover:bg-primary/90 transition-colors no-underline"
                 dangerouslySetInnerHTML={{ __html: innerHTML }}
               />
             </p>
@@ -363,7 +363,7 @@ const formatHtmlContent = (htmlContent: string): React.ReactNode => {
           
         case 'blockquote':
           sections.push(
-            <blockquote key={`bq-${sections.length}`} className="border-l-4 border-olive-400 pl-4 py-2 my-4 italic text-gray-600 bg-gray-50 rounded-r-lg">
+            <blockquote key={`bq-${sections.length}`} className="border-l-4 border-olive-400 pl-4 py-2 my-4 italic text-muted-foreground bg-background rounded-r-lg">
               <span dangerouslySetInnerHTML={{ __html: innerHTML }} />
             </blockquote>
           );
@@ -460,7 +460,7 @@ const formatPlainText = (text: string): React.ReactNode => {
       
       // Add header with bold styling
       sections.push(
-        <h4 key={`header-${sections.length}`} className="text-lg font-bold mt-6 mb-3 text-gray-900">
+        <h4 key={`header-${sections.length}`} className="text-lg font-bold mt-6 mb-3 text-foreground">
           {trimmedLine}
         </h4>
       );
