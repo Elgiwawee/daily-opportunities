@@ -16,7 +16,7 @@ export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
   return (
     <nav 
       aria-label="Breadcrumb" 
-      className={`flex items-center space-x-1 text-sm text-gray-600 mb-6 ${className}`}
+      className={`flex items-center space-x-1 text-sm text-muted-foreground mb-6 ${className}`}
     >
       <ol className="flex items-center space-x-1">
         {items.map((item, index) => (
@@ -27,7 +27,7 @@ export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
             
             {item.isCurrentPage ? (
               <span 
-                className="text-gray-900 font-medium"
+                className="text-foreground font-medium"
                 aria-current="page"
               >
                 {index === 0 && <Home className="h-4 w-4 inline mr-1" />}
@@ -36,7 +36,7 @@ export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
             ) : (
               <Link
                 to={item.url}
-                className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center"
+                className="text-primary hover:text-primary transition-colors duration-200 flex items-center"
                 itemProp="item"
               >
                 {index === 0 && <Home className="h-4 w-4 mr-1" />}

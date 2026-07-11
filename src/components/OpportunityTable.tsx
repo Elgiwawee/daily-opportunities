@@ -85,7 +85,7 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
   return (
     <div className="bg-white shadow-sm rounded-lg overflow-hidden mt-8">
       {opportunities.length === 0 ? (
-        <div className="p-8 text-center text-gray-500">
+        <div className="p-8 text-center text-muted-foreground">
           No opportunities found. Click "Add New Opportunity" to create one.
         </div>
       ) : (
@@ -103,7 +103,7 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
             </TableHeader>
             <TableBody>
               {opportunities.map((opportunity, index) => (
-                <TableRow key={opportunity.id} className="hover:bg-gray-50">
+                <TableRow key={opportunity.id} className="hover:bg-background">
                   <TableCell className="text-center font-medium">{index + 1}</TableCell>
                   <TableCell className="font-medium">{opportunity.title}</TableCell>
                   <TableCell>{opportunity.organization}</TableCell>
@@ -123,7 +123,7 @@ const OpportunityTable = ({ onEdit }: OpportunityTableProps) => {
                         onClick={() => onEdit(opportunity)}
                         variant="default"
                         size="icon"
-                        className="bg-blue-500 hover:bg-blue-600"
+                        className="bg-primary hover:bg-primary/90"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>

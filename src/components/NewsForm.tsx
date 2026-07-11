@@ -191,7 +191,7 @@ export function NewsForm({ onSuccess, newsItem }: NewsFormProps) {
           <div className="border-2 border-dashed border-gray-300 rounded-md p-6">
             <div className="flex flex-col items-center">
               <UploadCloud className="h-10 w-10 text-gray-400 mb-2" />
-              <p className="text-sm text-gray-500 mb-2">
+              <p className="text-sm text-muted-foreground mb-2">
                 Upload images or videos for your news
               </p>
               <div className="mt-2">
@@ -205,7 +205,7 @@ export function NewsForm({ onSuccess, newsItem }: NewsFormProps) {
                 />
                 <label
                   htmlFor="file-upload"
-                  className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-background"
                 >
                   Select Files
                 </label>

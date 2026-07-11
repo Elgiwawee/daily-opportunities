@@ -83,13 +83,13 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
       case 'card':
         return (
           <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="bg-background p-4 rounded-lg border border-gray-200">
               <h3 className="font-medium text-gray-700">Credit/Debit Card</h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Secure payment via Stripe. You'll be redirected to complete payment.
               </p>
               <button 
-                className="mt-3 w-full bg-blue-600 text-white py-2 rounded-md"
+                className="mt-3 w-full bg-primary text-white py-2 rounded-md"
                 onClick={() => toast.info("This would connect to Stripe in production")}
               >
                 Pay with Card
@@ -100,7 +100,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
       case 'crypto':
         return (
           <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="bg-background p-4 rounded-lg border border-gray-200">
               <h3 className="font-medium text-gray-700">Cryptocurrency</h3>
               <div className="space-y-3 mt-2">
                 <div>
@@ -151,7 +151,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
       case 'bank':
         return (
           <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="bg-background p-4 rounded-lg border border-gray-200">
               <h3 className="font-medium text-gray-700">Bank Transfer</h3>
               <div className="space-y-2 mt-2">
                 <p className="text-sm">
@@ -164,13 +164,13 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                   <span className="font-medium">Account Name:</span> Zaharaddeen Umar
                 </p>
               </div>
-              <p className="mt-3 text-xs text-gray-500">
+              <p className="mt-3 text-xs text-muted-foreground">
                 Please include your name as reference when making the transfer.
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="bg-background p-4 rounded-lg border border-gray-200">
               <h3 className="font-medium text-gray-700">Generate Remita Payment</h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Generate a Remita payment reference to pay via any bank.
               </p>
               <button 
@@ -185,12 +185,12 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
       case 'mobile':
         return (
           <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="bg-background p-4 rounded-lg border border-gray-200">
               <h3 className="font-medium text-gray-700">Mobile Money</h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Send to this number: +2347040930552
               </p>
-              <p className="mt-3 text-xs text-gray-500">
+              <p className="mt-3 text-xs text-muted-foreground">
                 Available for MTN transfers
               </p>
             </div>
@@ -232,7 +232,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                   </h2>
                   <button 
                     onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700 transition"
+                    className="text-muted-foreground hover:text-gray-700 transition"
                   >
                     <X size={20} />
                   </button>
@@ -264,7 +264,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                               className={`py-2 rounded-md text-center ${
                                 amount === preset.toString()
                                   ? "bg-amber-600 text-white"
-                                  : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+                                  : "bg-gray-100 hover:bg-gray-200 text-foreground"
                               }`}
                             >
                               {getCurrencySymbol(currency)}{preset}
@@ -272,7 +272,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                           ))}
                         </div>
                         <div className="flex rounded-md">
-                          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
+                          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-background text-muted-foreground">
                             {getCurrencyIcon(currency)}
                           </span>
                           <input
@@ -327,7 +327,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                   ) : (
                     <div className="space-y-6">
                       <div>
-                        <h3 className="font-medium text-gray-900 mb-2">Select payment method</h3>
+                        <h3 className="font-medium text-foreground mb-2">Select payment method</h3>
                         <div className="grid grid-cols-2 gap-3">
                           <button
                             type="button"
@@ -335,10 +335,10 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                             className={`flex flex-col items-center p-3 rounded-lg border ${
                               paymentMethod === 'card'
                                 ? "border-amber-600 bg-amber-50"
-                                : "border-gray-200 hover:bg-gray-50"
+                                : "border-gray-200 hover:bg-background"
                             }`}
                           >
-                            <CreditCard className={`h-6 w-6 ${paymentMethod === 'card' ? "text-amber-600" : "text-gray-500"}`} />
+                            <CreditCard className={`h-6 w-6 ${paymentMethod === 'card' ? "text-amber-600" : "text-muted-foreground"}`} />
                             <span className="mt-1 text-sm">Credit Card</span>
                           </button>
                           <button
@@ -347,10 +347,10 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                             className={`flex flex-col items-center p-3 rounded-lg border ${
                               paymentMethod === 'crypto'
                                 ? "border-amber-600 bg-amber-50"
-                                : "border-gray-200 hover:bg-gray-50"
+                                : "border-gray-200 hover:bg-background"
                             }`}
                           >
-                            <Bitcoin className={`h-6 w-6 ${paymentMethod === 'crypto' ? "text-amber-600" : "text-gray-500"}`} />
+                            <Bitcoin className={`h-6 w-6 ${paymentMethod === 'crypto' ? "text-amber-600" : "text-muted-foreground"}`} />
                             <span className="mt-1 text-sm">Crypto</span>
                           </button>
                           <button
@@ -359,10 +359,10 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                             className={`flex flex-col items-center p-3 rounded-lg border ${
                               paymentMethod === 'bank'
                                 ? "border-amber-600 bg-amber-50"
-                                : "border-gray-200 hover:bg-gray-50"
+                                : "border-gray-200 hover:bg-background"
                             }`}
                           >
-                            <Banknote className={`h-6 w-6 ${paymentMethod === 'bank' ? "text-amber-600" : "text-gray-500"}`} />
+                            <Banknote className={`h-6 w-6 ${paymentMethod === 'bank' ? "text-amber-600" : "text-muted-foreground"}`} />
                             <span className="mt-1 text-sm">Bank Transfer</span>
                           </button>
                           <button
@@ -371,10 +371,10 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                             className={`flex flex-col items-center p-3 rounded-lg border ${
                               paymentMethod === 'mobile'
                                 ? "border-amber-600 bg-amber-50"
-                                : "border-gray-200 hover:bg-gray-50"
+                                : "border-gray-200 hover:bg-background"
                             }`}
                           >
-                            <Wallet className={`h-6 w-6 ${paymentMethod === 'mobile' ? "text-amber-600" : "text-gray-500"}`} />
+                            <Wallet className={`h-6 w-6 ${paymentMethod === 'mobile' ? "text-amber-600" : "text-muted-foreground"}`} />
                             <span className="mt-1 text-sm">Mobile Money</span>
                           </button>
                         </div>
@@ -382,7 +382,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                       
                       <div className="border-t pt-4">
                         <div className="flex justify-between mb-2">
-                          <span className="text-gray-600">Amount:</span>
+                          <span className="text-muted-foreground">Amount:</span>
                           <span className="font-medium">{getCurrencySymbol(currency)} {amount}</span>
                         </div>
                         
@@ -408,7 +408,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                     </div>
                   )}
                   
-                  <div className="mt-6 text-center text-xs text-gray-500">
+                  <div className="mt-6 text-center text-xs text-muted-foreground">
                     Your donation helps us maintain and improve our platform
                   </div>
                 </div>
@@ -436,7 +436,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose }) => {
                   </ul>
                 </div>
                 
-                <p className="italic text-gray-600">No matter which currency you choose, your support helps us continue our work.</p>
+                <p className="italic text-muted-foreground">No matter which currency you choose, your support helps us continue our work.</p>
               </div>
             </DialogDescription>
           </DialogHeader>

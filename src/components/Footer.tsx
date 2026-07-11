@@ -192,7 +192,7 @@ const Footer = () => {
                       </h3>
                       <p className="text-sm text-gray-400 mt-1">{opp.organization}</p>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-teal-400 flex-shrink-0" />
+                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-teal-400 flex-shrink-0" />
                   </Link>
                 );
               })
@@ -247,7 +247,7 @@ const Footer = () => {
                         <img src={imageUrl} alt={scholarship.title} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <GraduationCap className="w-6 h-6 text-gray-500" />
+                          <GraduationCap className="w-6 h-6 text-muted-foreground" />
                         </div>
                       )}
                     </div>
@@ -296,7 +296,7 @@ const Footer = () => {
                         <img src={imageUrl} alt={story.subject} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Newspaper className="w-6 h-6 text-gray-500" />
+                          <Newspaper className="w-6 h-6 text-muted-foreground" />
                         </div>
                       )}
                     </div>
@@ -425,7 +425,7 @@ const Footer = () => {
           
           {/* Copyright */}
           <div className="mt-12 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-500 text-sm">
+            <p className="text-muted-foreground text-sm">
               © {new Date().getFullYear()} Daily Opportunities. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm">

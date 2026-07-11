@@ -161,7 +161,7 @@ const OpportunityCard = ({
       viewport={{ once: true }}
       whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
-      className={`overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:shadow-md ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
+      className={`premium-card overflow-hidden ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
     >
       <div className="relative aspect-video w-full overflow-hidden">
         {imageLoading && (
@@ -184,7 +184,7 @@ const OpportunityCard = ({
         </div>
         
         <div className={`absolute top-2 left-2 px-3 py-1 text-xs font-semibold text-white rounded ${
-          type === 'scholarship' ? 'bg-blue-700' : 'bg-green-700'
+          type === 'scholarship' ? 'bg-primary' : 'bg-brand-success'
         }`}>
           {type === 'scholarship' ? t('scholarships.title') : t('jobs.title')}
         </div>
@@ -203,25 +203,25 @@ const OpportunityCard = ({
                 <div className="py-1">
                   <button
                     onClick={() => handleShare('facebook')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                   >
                     {t('opportunity.share.facebook')}
                   </button>
                   <button
                     onClick={() => handleShare('twitter')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                   >
                     {t('opportunity.share.twitter')}
                   </button>
                   <button
                     onClick={() => handleShare('whatsapp')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                   >
                     {t('opportunity.share.whatsapp')}
                   </button>
                   <button
                     onClick={() => handleShare('copy')}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary/10"
                   >
                     {t('opportunity.share.copy')}
                   </button>
@@ -234,20 +234,20 @@ const OpportunityCard = ({
       
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-700">{organization}</span>
-          <span className="text-xs text-gray-500">{formattedDate}</span>
+          <span className="text-sm font-semibold text-primary">{organization}</span>
+          <span className="text-xs text-muted-foreground">{formattedDate}</span>
         </div>
         
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2">{description.replace(/<[^>]*>/g, '')}</p>
+        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{description.replace(/<[^>]*>/g, '')}</p>
         
         <Accordion type="single" collapsible className="w-full" defaultValue={shouldExpand ? "details" : undefined}>
           <AccordionItem value="details" className="border-none">
-            <AccordionTrigger className="text-sm font-medium text-blue-700 hover:underline bg-transparent border-none p-0 h-auto hover:no-underline">
+            <AccordionTrigger className="text-sm font-semibold text-primary hover:underline bg-transparent border-none p-0 h-auto hover:no-underline">
               How to Apply
             </AccordionTrigger>
             <AccordionContent className="pt-4 pb-0">
               <div className="space-y-4">
-                <div className="flex items-center gap-4 text-sm text-gray-500">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   {deadline && (
                     <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
@@ -281,7 +281,7 @@ const OpportunityCard = ({
                   <div className="pt-2">
                     <Button 
                       asChild 
-                      className="bg-olive-600 hover:bg-olive-700 w-full sm:w-auto"
+                      className="bg-gradient-gold text-brand-navy font-semibold shadow-gold hover:opacity-90 w-full sm:w-auto"
                     >
                       <a href={external_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
                         Click here to apply
@@ -298,10 +298,10 @@ const OpportunityCard = ({
                       {normalizedAttachments.map((attachment, index) => (
                         <Card key={index} className="p-3 flex items-center justify-between">
                           <div className="flex items-center">
-                            <Download className="h-4 w-4 text-olive-600 mr-2" />
+                            <Download className="h-4 w-4 text-primary mr-2" />
                             <div>
                               <div className="font-medium text-sm">{attachment.name}</div>
-                              <div className="text-xs text-gray-500">{attachment.type}</div>
+                              <div className="text-xs text-muted-foreground">{attachment.type}</div>
                             </div>
                           </div>
                           <Button 
@@ -334,7 +334,7 @@ const OpportunityCard = ({
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex items-center gap-1 text-blue-700 border-blue-200 hover:bg-blue-50"
+                className="flex items-center gap-1 text-primary border-primary/30 hover:bg-primary/10"
                 asChild
               >
                 <a href={external_url} target="_blank" rel="noopener noreferrer">

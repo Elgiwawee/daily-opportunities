@@ -90,7 +90,7 @@ const JobListings = () => {
         structuredData={generateWebsiteSchema()}
       />
       <Navbar />
-      <div className="pt-36 pb-12 bg-gray-50">
+      <div className="pt-36 pb-12 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={BREADCRUMB_CONFIGS.jobs} />
           <motion.div
@@ -98,8 +98,8 @@ const JobListings = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('jobs.title')}</h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <h1 className="text-3xl font-bold text-foreground mb-4">{t('jobs.title')}</h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               {t('jobs.subtitle')}
             </p>
             <div className="mt-6">
@@ -129,7 +129,7 @@ const JobListings = () => {
 
               {isLoading ? (
                 <div className="flex justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-olive-600"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                 </div>
               ) : error ? (
                 <div className="text-center py-12 text-red-500">
@@ -161,7 +161,7 @@ const JobListings = () => {
                       <Button 
                         onClick={loadMore}
                         variant="outline"
-                        className="border border-olive-600 text-olive-700 hover:bg-olive-50"
+                        className="border border-primary text-primary hover:bg-primary/10"
                       >
                         {t('jobs.loadMore')}
                       </Button>
@@ -170,7 +170,7 @@ const JobListings = () => {
 
                   {jobs.length === 0 && (
                     <div className="text-center py-12">
-                      <p className="text-lg text-gray-500">{t('jobs.empty')}</p>
+                      <p className="text-lg text-muted-foreground">{t('jobs.empty')}</p>
                     </div>
                   )}
                 </>

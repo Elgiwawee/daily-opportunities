@@ -8,7 +8,7 @@ const Disclaimer = () => {
   return (
     <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
-      <div className="pt-36 pb-12 bg-gray-50">
+      <div className="pt-36 pb-12 bg-background">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <AdSenseAd variant="in-feed" />
           <motion.div
@@ -16,10 +16,10 @@ const Disclaimer = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl font-bold text-foreground mb-4">
               Disclaimer
             </h1>
-            <div className="h-1 w-24 bg-olive-500 mx-auto mb-8"></div>
+            <div className="h-1 w-24 bg-primary/100 mx-auto mb-8"></div>
           </motion.div>
 
           <div className="prose prose-lg max-w-none">
@@ -43,10 +43,10 @@ const Disclaimer = () => {
             
             <h2 className="text-xl font-semibold mb-4 mt-8">Contact Us</h2>
             <p className="mb-6">
-              If you have any questions about this disclaimer, please contact us through our <a href="/contact" className="text-blue-600 hover:underline">contact page</a>.
+              If you have any questions about this disclaimer, please contact us through our <a href="/contact" className="text-primary hover:underline">contact page</a>.
             </p>
             
-            <p className="text-sm text-gray-500 mt-8">
+            <p className="text-sm text-muted-foreground mt-8">
               Last updated: May 14, 2025
             </p>
           </div>

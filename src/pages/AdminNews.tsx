@@ -128,7 +128,7 @@ const AdminNews = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
@@ -199,7 +199,7 @@ const AdminNews = () => {
         
         {newsItems.length === 0 ? (
           <div className="bg-white shadow rounded-lg p-6 text-center">
-            <p className="text-gray-500">No news items yet. Create your first one!</p>
+            <p className="text-muted-foreground">No news items yet. Create your first one!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6">
@@ -212,7 +212,7 @@ const AdminNews = () => {
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-xl font-semibold mb-2">{news.subject}</h3>
-                      <p className="text-sm text-gray-500 mb-4">
+                      <p className="text-sm text-muted-foreground mb-4">
                         {format(new Date(news.created_at), "MMMM d, yyyy")}
                       </p>
                       <div className="prose max-w-none mb-4">

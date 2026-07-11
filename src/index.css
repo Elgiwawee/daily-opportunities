@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,59 +7,64 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    --background: 214 41% 98%;
+    --foreground: 224 47% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 224 47% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 224 47% 12%;
 
-    --primary: 221 83% 53%;
+    --primary: 224 64% 33%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 214 32% 94%;
+    --secondary-foreground: 224 47% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 214 32% 94%;
+    --muted-foreground: 222 15% 45%;
 
-    --accent: 45 93% 47%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 39 74% 55%;
+    --accent-foreground: 224 60% 14%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 48%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221 83% 53%;
+    --border: 214 25% 88%;
+    --input: 214 25% 88%;
+    --ring: 224 64% 33%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    /* Custom brand colors */
-    --brand-blue: 221 83% 53%;
-    --brand-navy: 222 47% 11%;
-    --brand-gold: 45 93% 47%;
-    --brand-success: 142 76% 36%;
+    /* Custom brand colors — Royal Sapphire */
+    --brand-navy: 224 60% 14%;
+    --brand-sapphire: 224 64% 33%;
+    --brand-blue: 224 64% 33%;
+    --brand-gold: 39 74% 55%;
+    --brand-gold-soft: 42 78% 62%;
+    --brand-success: 158 64% 32%;
     --brand-warning: 38 92% 50%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 43%));
-    --gradient-header: linear-gradient(180deg, hsl(222 47% 11%), hsl(222 47% 16%));
-    
-    /* Shadows */
-    --shadow-card: 0 2px 8px -2px rgba(0, 0, 0, 0.1), 0 4px 12px -4px rgba(0, 0, 0, 0.08);
-    --shadow-card-hover: 0 8px 24px -6px rgba(0, 0, 0, 0.15), 0 12px 32px -8px rgba(0, 0, 0, 0.12);
+    --gradient-primary: linear-gradient(135deg, hsl(224 64% 33%), hsl(224 60% 20%));
+    --gradient-header: linear-gradient(180deg, hsl(224 60% 14%), hsl(224 58% 19%));
+    --gradient-hero: linear-gradient(135deg, hsl(224 60% 12%) 0%, hsl(224 64% 24%) 55%, hsl(224 58% 16%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(42 82% 64%), hsl(39 74% 52%));
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Shadows */
+    --shadow-card: 0 1px 3px -1px hsl(224 40% 20% / 0.08), 0 6px 16px -8px hsl(224 40% 20% / 0.12);
+    --shadow-card-hover: 0 10px 28px -8px hsl(224 50% 20% / 0.22), 0 16px 40px -12px hsl(224 50% 20% / 0.16);
+    --shadow-gold: 0 8px 24px -8px hsl(39 74% 45% / 0.45);
+
+    --sidebar-background: 224 60% 14%;
+    --sidebar-foreground: 214 30% 90%;
+    --sidebar-primary: 39 74% 55%;
+    --sidebar-primary-foreground: 224 60% 14%;
+    --sidebar-accent: 224 50% 22%;
+    --sidebar-accent-foreground: 214 30% 92%;
+    --sidebar-border: 224 45% 24%;
+    --sidebar-ring: 39 74% 55%;
   }
 
   .dark {
@@ -108,8 +113,78 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Fira Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
 }
+
+@layer components {
+  /* Premium section heading with gold accent underline */
+  .section-title {
+    @apply relative inline-block text-2xl md:text-3xl text-foreground pb-3;
+  }
+  .section-title::after {
+    content: '';
+    @apply absolute left-0 bottom-0 h-1 w-16 rounded-full;
+    background: var(--gradient-gold);
+  }
+
+  /* Premium card surface */
+  .premium-card {
+    @apply bg-card rounded-2xl border border-border/70 transition-all duration-300;
+    box-shadow: var(--shadow-card);
+  }
+  .premium-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    @apply border-primary/25 -translate-y-1;
+  }
+
+  /* Category / type pill */
+  .brand-pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide;
+  }
+
+  /* Premium ad container frame */
+  .ad-frame {
+    @apply relative rounded-2xl border border-border/70 bg-card/60 p-4;
+    box-shadow: var(--shadow-card);
+  }
+  .ad-frame::before {
+    content: 'Advertisement';
+    @apply absolute -top-2.5 left-4 bg-background px-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  .bg-gradient-gold {
+    background: var(--gradient-gold);
+  }
+  .shadow-card-premium {
+    box-shadow: var(--shadow-card);
+  }
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+}
+
 
 /* RTL Support */
 html[dir="rtl"] {

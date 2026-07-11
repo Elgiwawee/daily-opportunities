@@ -107,7 +107,7 @@ const ScholarshipScraper = () => {
           <Button 
             onClick={handleFetchScholarships} 
             disabled={isLoading}
-            className="bg-olive-600 text-white hover:bg-olive-700"
+            className="bg-primary text-white hover:bg-primary/90"
           >
             {isLoading ? (
               <>
@@ -130,7 +130,7 @@ const ScholarshipScraper = () => {
               <Button 
                 onClick={handleSaveScholarships} 
                 disabled={isLoading}
-                className="bg-olive-600 text-white hover:bg-olive-700"
+                className="bg-primary text-white hover:bg-primary/90"
               >
                 {isLoading ? (
                   <>
@@ -150,7 +150,7 @@ const ScholarshipScraper = () => {
                     <CardTitle className="text-lg">{scholarship.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-gray-500 mb-2">
+                    <p className="text-sm text-muted-foreground mb-2">
                       {scholarship.organization} | Deadline: {scholarship.deadline}
                     </p>
                     <p className="text-sm line-clamp-3">{scholarship.description}</p>

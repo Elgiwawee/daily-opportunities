@@ -59,27 +59,27 @@ const PopularScholarships = () => {
           <Link
             key={scholarship.id}
             to={generateOpportunityUrl(scholarship.id, scholarship.title)}
-            className="group flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+            className="group flex items-start gap-3 p-2 rounded-lg hover:bg-background transition-colors"
           >
-            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center mt-0.5">
-              <GraduationCap className="h-4 w-4 text-blue-600" />
+            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5">
+              <GraduationCap className="h-4 w-4 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+              <h4 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                 {scholarship.title}
               </h4>
-              <p className="text-xs text-gray-500 mt-0.5 truncate">
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
                 {scholarship.organization}
               </p>
             </div>
-            <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-blue-600 flex-shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-primary flex-shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
         ))}
       </div>
       <div className="px-3 pb-3">
         <Link
           to="/scholarships"
-          className="block text-center text-sm text-blue-600 hover:text-blue-700 font-medium py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+          className="block text-center text-sm text-primary hover:text-primary font-medium py-2 bg-primary/10 hover:bg-primary/10 rounded-lg transition-colors"
         >
           View All Scholarships
         </Link>

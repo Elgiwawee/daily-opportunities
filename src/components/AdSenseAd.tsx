@@ -141,7 +141,7 @@ const AdSenseAd: React.FC<AdSenseAdProps> = ({
   }, [adLoaded]);
 
   const config = getAdConfig();
-  const containerClasses = `adsense-container ${className}`;
+  const containerClasses = `adsense-container ad-frame ${className}`;
   const appliedStyle = style || getVariantStyles();
 
   return (
@@ -149,10 +149,10 @@ const AdSenseAd: React.FC<AdSenseAdProps> = ({
       ref={adRef}
       className={containerClasses}
       style={{ 
-        margin: '16px 0',
-        backgroundColor: 'transparent'
+        margin: '20px 0'
       }}
     >
+
       <ins
         className="adsbygoogle"
         style={appliedStyle}

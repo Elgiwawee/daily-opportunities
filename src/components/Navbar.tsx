@@ -94,8 +94,8 @@ const Navbar = () => {
               <Button 
                 variant="ghost" 
                 className={cn(
-                  "h-10 px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                  isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                  "h-10 px-3 text-sm font-medium text-primary-foreground/85 transition-colors hover:bg-white/10 hover:text-accent",
+                  isActiveRoute(item.href) && "text-accent"
                 )}
               >
                 {item.label}
@@ -118,8 +118,8 @@ const Navbar = () => {
             variant="ghost"
             asChild
             className={cn(
-              "h-10 px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-              isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+              "h-10 px-3 text-sm font-medium text-primary-foreground/85 transition-colors hover:bg-white/10 hover:text-accent",
+              isActiveRoute(item.href) && "text-accent"
             )}
           >
             <Link to={item.href}>{item.label}</Link>
@@ -189,20 +189,23 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-brand-navy text-primary-foreground shadow-lg">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo and Brand */}
-        <div className="flex items-center">
-          <Link to="/" className="flex items-center">
+        <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2.5">
             <img 
               src="/lovable-uploads/d2e18fd4-e699-4d61-9f78-1c76ece71cb9.png" 
               alt="Daily Opportunities Logo" 
-              className="h-12 w-12 object-contain"
+              className="h-11 w-11 object-contain"
               onError={(e) => {
-                console.error('Logo failed to load:', e);
                 e.currentTarget.style.display = 'none';
               }}
             />
+            <span className="hidden sm:flex flex-col leading-none">
+              <span className="font-serif text-xl text-accent">Daily</span>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-foreground/70">Opportunities</span>
+            </span>
           </Link>
         </div>
 
@@ -214,13 +217,13 @@ const Navbar = () => {
           {/* Search */}
           <form onSubmit={handleSearchSubmit} className="flex items-center space-x-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-primary-foreground/60" />
               <Input
                 type="search"
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 w-64"
+                className="pl-8 w-56 bg-white/10 border-white/20 text-primary-foreground placeholder:text-primary-foreground/50 focus-visible:ring-accent"
               />
             </div>
           </form>
@@ -233,7 +236,7 @@ const Navbar = () => {
             {isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/10 hover:text-accent">
                     <Settings className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -251,7 +254,7 @@ const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild variant="default" size="sm">
+              <Button asChild size="sm" className="bg-gradient-gold text-brand-navy font-semibold shadow-gold hover:opacity-90">
                 <Link to="/auth">Login</Link>
               </Button>
             )}
@@ -263,7 +266,7 @@ const Navbar = () => {
           <LanguageSwitcher />
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/10 hover:text-accent">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>

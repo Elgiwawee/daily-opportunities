@@ -12,7 +12,7 @@ const Explainer = () => {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <div className="pt-36 pb-12 bg-gray-50">
+      <div className="pt-36 pb-12 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AdSenseAd />
           <motion.div
@@ -20,8 +20,8 @@ const Explainer = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Scholarship Explainer</h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <h1 className="text-3xl font-bold text-foreground mb-4">Scholarship Explainer</h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               Everything you need to know about finding and applying for scholarships worldwide.
             </p>
           </motion.div>
@@ -37,7 +37,7 @@ const Explainer = () => {
               
               <TabsContent value="application" className="mt-6 space-y-4">
                 <div className="prose max-w-none">
-                  <h2 className="text-2xl font-bold text-olive-800 mb-4">Scholarship Application Process</h2>
+                  <h2 className="text-2xl font-bold text-primary mb-4">Scholarship Application Process</h2>
                   <p className="mb-4">
                     Applying for scholarships can seem overwhelming, but breaking it down into steps makes it manageable.
                     Below is a general guideline for the application process:
@@ -64,9 +64,9 @@ const Explainer = () => {
                     </li>
                   </ol>
                   
-                  <div className="bg-blue-50 p-4 rounded-md mt-6">
-                    <h3 className="text-lg font-semibold text-blue-800 mb-2">Pro Tip:</h3>
-                    <p className="text-blue-700">
+                  <div className="bg-primary/10 p-4 rounded-md mt-6">
+                    <h3 className="text-lg font-semibold text-primary mb-2">Pro Tip:</h3>
+                    <p className="text-primary">
                       Create a calendar with application deadlines and set reminders at least two weeks in advance to ensure you have enough time to complete all requirements.
                     </p>
                   </div>
@@ -75,7 +75,7 @@ const Explainer = () => {
               
               <TabsContent value="documents" className="mt-6 space-y-4">
                 <div className="prose max-w-none">
-                  <h2 className="text-2xl font-bold text-olive-800 mb-4">Required Documents</h2>
+                  <h2 className="text-2xl font-bold text-primary mb-4">Required Documents</h2>
                   <p className="mb-4">
                     Most scholarship applications require the following documents. Having these prepared in advance will streamline your application process:
                   </p>
@@ -115,49 +115,49 @@ const Explainer = () => {
               
               <TabsContent value="tips" className="mt-6 space-y-4">
                 <div className="prose max-w-none">
-                  <h2 className="text-2xl font-bold text-olive-800 mb-4">Winning Scholarship Tips</h2>
+                  <h2 className="text-2xl font-bold text-primary mb-4">Winning Scholarship Tips</h2>
                   <p className="mb-4">
                     Competition for scholarships can be fierce. Here are some proven strategies to help your application stand out:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-                      <h3 className="text-lg font-semibold text-olive-700 mb-2">Start Early</h3>
+                      <h3 className="text-lg font-semibold text-primary mb-2">Start Early</h3>
                       <p>
                         Begin your scholarship search and application process at least 6-12 months before you need the funding. This gives you ample time to prepare quality applications.
                       </p>
                     </div>
                     
                     <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-                      <h3 className="text-lg font-semibold text-olive-700 mb-2">Tell Your Unique Story</h3>
+                      <h3 className="text-lg font-semibold text-primary mb-2">Tell Your Unique Story</h3>
                       <p>
                         Use your essays to share personal experiences that shaped you. Authentic, compelling stories help scholarship committees remember you.
                       </p>
                     </div>
                     
                     <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-                      <h3 className="text-lg font-semibold text-olive-700 mb-2">Tailor Each Application</h3>
+                      <h3 className="text-lg font-semibold text-primary mb-2">Tailor Each Application</h3>
                       <p>
                         Customize your application materials for each scholarship. Address the specific values and priorities of the organization offering the award.
                       </p>
                     </div>
                     
                     <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-                      <h3 className="text-lg font-semibold text-olive-700 mb-2">Proofread Carefully</h3>
+                      <h3 className="text-lg font-semibold text-primary mb-2">Proofread Carefully</h3>
                       <p>
                         Errors in your application can create a negative impression. Have someone else review your materials before submission.
                       </p>
                     </div>
                     
                     <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-                      <h3 className="text-lg font-semibold text-olive-700 mb-2">Apply for Multiple Scholarships</h3>
+                      <h3 className="text-lg font-semibold text-primary mb-2">Apply for Multiple Scholarships</h3>
                       <p>
                         Don't limit yourself to just a few high-profile scholarships. Apply to many, including smaller, less competitive ones that match your profile.
                       </p>
                     </div>
                     
                     <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-                      <h3 className="text-lg font-semibold text-olive-700 mb-2">Follow Instructions Exactly</h3>
+                      <h3 className="text-lg font-semibold text-primary mb-2">Follow Instructions Exactly</h3>
                       <p>
                         Adhere to all guidelines regarding word counts, formatting, and submission requirements. Failing to follow instructions can disqualify your application.
                       </p>
@@ -175,7 +175,7 @@ const Explainer = () => {
               
               <TabsContent value="faqs" className="mt-6">
                 <div className="prose max-w-none">
-                  <h2 className="text-2xl font-bold text-olive-800 mb-4">Frequently Asked Questions</h2>
+                  <h2 className="text-2xl font-bold text-primary mb-4">Frequently Asked Questions</h2>
                   
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="faq-1">

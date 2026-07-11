@@ -26,8 +26,8 @@ const RegionFilter = ({ selectedRegion, setSelectedRegion }: RegionFilterProps) 
           onClick={() => setSelectedRegion(region.id === 'All' ? null : region.id)}
           variant={selectedRegion === region.id || (region.id === 'All' && selectedRegion === null) ? 'default' : 'outline'}
           className={selectedRegion === region.id || (region.id === 'All' && selectedRegion === null) 
-            ? 'bg-olive-600 hover:bg-olive-700' 
-            : 'border border-olive-600 text-olive-700 hover:bg-olive-50'}
+            ? 'bg-primary hover:bg-primary/90' 
+            : 'border border-primary text-primary hover:bg-primary/10'}
         >
           {region.name}
         </Button>
