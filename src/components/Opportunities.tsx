@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
 import { supabase } from '@/integrations/supabase/client';
