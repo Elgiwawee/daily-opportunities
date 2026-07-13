@@ -50,6 +50,7 @@ const OpportunityCard = ({
 }: OpportunityCardProps) => {
   const { t, i18n } = useTranslation();
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
   const isRtl = i18n.language === 'ar';
