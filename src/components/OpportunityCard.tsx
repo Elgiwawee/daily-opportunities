@@ -4,7 +4,12 @@ import { Image, Video, ExternalLink, Share2, Calendar, Clock, MapPin, Download }
 import { generateShareableLink, copyShareLink } from '../utils/shareLinkGenerator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
