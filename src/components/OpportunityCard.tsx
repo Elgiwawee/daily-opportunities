@@ -4,7 +4,12 @@ import { Image, Video, ExternalLink, Share2, Calendar, Clock, MapPin, Download }
 import { generateShareableLink, copyShareLink } from '../utils/shareLinkGenerator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -45,6 +50,7 @@ const OpportunityCard = ({
 }: OpportunityCardProps) => {
   const { t, i18n } = useTranslation();
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
   const isRtl = i18n.language === 'ar';
@@ -149,10 +155,16 @@ const OpportunityCard = ({
            'url' in attachments[0];
   };
 
-  // Check if this opportunity should be expanded based on URL parameter
+  // Check if this opportunity should be opened based on URL parameter
   const urlParams = new URLSearchParams(window.location.search);
   const expandedOpportunityId = urlParams.get('opportunity');
   const shouldExpand = expandedOpportunityId === id;
+
+  useEffect(() => {
+    if (shouldExpand) {
+      setDetailsOpen(true);
+    }
+  }, [shouldExpand]);
 
   return (
     <motion.div
@@ -240,93 +252,103 @@ const OpportunityCard = ({
         
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{description.replace(/<[^>]*>/g, '')}</p>
         
-        <Accordion type="single" collapsible className="w-full" defaultValue={shouldExpand ? "details" : undefined}>
-          <AccordionItem value="details" className="border-none">
-            <AccordionTrigger className="text-sm font-semibold text-primary hover:underline bg-transparent border-none p-0 h-auto hover:no-underline">
-              How to Apply
-            </AccordionTrigger>
-            <AccordionContent className="pt-4 pb-0">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  {deadline && (
-                    <div className="flex items-center">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      <span>Deadline: {formattedDate}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center">
-                    <MapPin className="mr-2 h-4 w-4" />
-                    <span>{type === 'scholarship' ? 'Scholarship' : 'Job'}</span>
-                  </div>
-                </div>
-                
-                {/* Enhanced image display section */}
-                {imageUrl && (
-                  <div className="mb-4">
-                    <img
-                      src={imageUrl}
-                      alt={title}
-                      className="w-full max-w-md mx-auto rounded-lg shadow-md object-cover"
-                      style={{ maxHeight: '300px' }}
-                    />
-                  </div>
-                )}
-                
-                <div className="prose prose-sm max-w-none">
-                  <h4 className="font-semibold mb-2">Description</h4>
-                  <FormattedDescription description={description} />
-                </div>
-                
-                {external_url && (
-                  <div className="pt-2">
-                    <Button 
-                      asChild 
-                      className="bg-gradient-gold text-brand-navy font-semibold shadow-gold hover:opacity-90 w-full sm:w-auto"
-                    >
-                      <a href={external_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
-                        Click here to apply
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </div>
-                )}
-                
-                {hasAttachments(normalizedAttachments) && normalizedAttachments.length > 0 && (
-                  <div className="pt-2">
-                    <h4 className="font-semibold mb-2">Attachments</h4>
-                    <div className="grid grid-cols-1 gap-2">
-                      {normalizedAttachments.map((attachment, index) => (
-                        <Card key={index} className="p-3 flex items-center justify-between">
-                          <div className="flex items-center">
-                            <Download className="h-4 w-4 text-primary mr-2" />
-                            <div>
-                              <div className="font-medium text-sm">{attachment.name}</div>
-                              <div className="text-xs text-muted-foreground">{attachment.type}</div>
-                            </div>
-                          </div>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            asChild
-                          >
-                            <a 
-                              href={attachment.url} 
-                              download={attachment.name}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Download
-                            </a>
-                          </Button>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
+        <button
+          onClick={() => setDetailsOpen(true)}
+          className="text-sm font-semibold text-primary hover:underline"
+        >
+          How to Apply
+        </button>
+
+        <Sheet open={detailsOpen} onOpenChange={setDetailsOpen}>
+          <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto bg-background">
+            <SheetHeader className="text-left">
+              <SheetTitle className="font-serif text-2xl text-foreground pr-6">{title}</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-primary">{organization}</span>
+                <span className={`px-3 py-1 text-xs font-semibold text-white rounded ${
+                  type === 'scholarship' ? 'bg-primary' : 'bg-brand-success'
+                }`}>
+                  {type === 'scholarship' ? t('scholarships.title') : t('jobs.title')}
+                </span>
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                {deadline && (
+                  <div className="flex items-center">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>Deadline: {formattedDate}</span>
+                  </div>
+                )}
+                <div className="flex items-center">
+                  <MapPin className="mr-2 h-4 w-4" />
+                  <span>{type === 'scholarship' ? 'Scholarship' : 'Job'}</span>
+                </div>
+              </div>
+
+              {/* Enhanced image display section */}
+              {imageUrl && (
+                <div className="mb-4">
+                  <img
+                    src={imageUrl}
+                    alt={title}
+                    className="w-full rounded-lg shadow-md object-cover"
+                    style={{ maxHeight: '300px' }}
+                  />
+                </div>
+              )}
+
+              <div className="prose prose-sm max-w-none">
+                <h4 className="font-semibold mb-2">Description</h4>
+                <FormattedDescription description={description} />
+              </div>
+
+              {external_url && (
+                <div className="pt-2">
+                  <Button
+                    asChild
+                    className="bg-gradient-gold text-brand-navy font-semibold shadow-gold hover:opacity-90 w-full"
+                  >
+                    <a href={external_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                      Click here to apply
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
+                </div>
+              )}
+
+              {hasAttachments(normalizedAttachments) && normalizedAttachments.length > 0 && (
+                <div className="pt-2">
+                  <h4 className="font-semibold mb-2">Attachments</h4>
+                  <div className="grid grid-cols-1 gap-2">
+                    {normalizedAttachments.map((attachment, index) => (
+                      <Card key={index} className="p-3 flex items-center justify-between">
+                        <div className="flex items-center">
+                          <Download className="h-4 w-4 text-primary mr-2" />
+                          <div>
+                            <div className="font-medium text-sm">{attachment.name}</div>
+                            <div className="text-xs text-muted-foreground">{attachment.type}</div>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm" asChild>
+                          <a
+                            href={attachment.url}
+                            download={attachment.name}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Download
+                          </a>
+                        </Button>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
         
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center gap-2">
