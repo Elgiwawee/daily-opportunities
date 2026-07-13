@@ -25,7 +25,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <div className="relative bg-gradient-hero py-16 md:py-24 overflow-hidden">
+    <div className="relative bg-gradient-hero py-12 md:py-16 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-[0.07]">
         <div className="absolute inset-0" style={{
