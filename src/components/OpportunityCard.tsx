@@ -161,7 +161,7 @@ const OpportunityCard = ({
       viewport={{ once: true }}
       whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
-      className={`premium-card overflow-hidden ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
+      className={`group premium-card overflow-hidden ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
     >
       <div className="relative aspect-video w-full overflow-hidden">
         {imageLoading && (
