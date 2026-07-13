@@ -165,7 +165,7 @@ const OpportunityCard = ({
     >
       <div className="relative aspect-video w-full overflow-hidden">
         {imageLoading && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
+          <div className="absolute inset-0 bg-muted animate-pulse"></div>
         )}
         
         {imageUrl && (
