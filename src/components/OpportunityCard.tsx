@@ -155,10 +155,16 @@ const OpportunityCard = ({
            'url' in attachments[0];
   };
 
-  // Check if this opportunity should be expanded based on URL parameter
+  // Check if this opportunity should be opened based on URL parameter
   const urlParams = new URLSearchParams(window.location.search);
   const expandedOpportunityId = urlParams.get('opportunity');
   const shouldExpand = expandedOpportunityId === id;
+
+  useEffect(() => {
+    if (shouldExpand) {
+      setDetailsOpen(true);
+    }
+  }, [shouldExpand]);
 
   return (
     <motion.div
