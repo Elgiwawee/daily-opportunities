@@ -25,7 +25,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <div className="relative bg-gradient-hero py-16 md:py-24 overflow-hidden">
+    <div className="relative bg-gradient-hero py-12 md:py-16 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-[0.07]">
         <div className="absolute inset-0" style={{
@@ -84,7 +84,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-wrap gap-3 justify-center mb-12"
+            className="flex flex-wrap gap-3 justify-center mb-8"
           >
             <Link
               to="/scholarships"

@@ -161,18 +161,18 @@ const OpportunityCard = ({
       viewport={{ once: true }}
       whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
-      className={`premium-card overflow-hidden ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
+      className={`group premium-card overflow-hidden ${featured ? 'col-span-1 md:col-span-2 lg:col-span-1' : ''}`}
     >
       <div className="relative aspect-video w-full overflow-hidden">
         {imageLoading && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
+          <div className="absolute inset-0 bg-muted animate-pulse"></div>
         )}
         
         {imageUrl && (
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={handleImageError}
             onLoad={handleImageLoad}
             loading="lazy"

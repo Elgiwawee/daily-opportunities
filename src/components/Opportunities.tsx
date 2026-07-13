@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import OpportunityCard from './OpportunityCard';
 import { supabase } from '@/integrations/supabase/client';
@@ -397,48 +397,57 @@ const Opportunities = () => {
     // Show ad after every 3 opportunities
     if ((index + 1) % 3 === 0) {
       return (
-        <div key={`ad-${index}`} className="col-span-1 md:col-span-3 bg-gray-100 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
-          <AdSenseAd slot="2585894567" style={{ minHeight: '200px', width: '100%' }} />
+        <div key={`ad-${index}`} className="col-span-1 md:col-span-3 ad-frame flex items-center justify-center min-h-[160px]">
+          <AdSenseAd slot="2585894567" style={{ minHeight: '160px', width: '100%' }} />
         </div>
       );
     }
     return null;
   };
 
+  // Premium magazine-style section header with gold accent bar
+  const SectionHeader = ({ label }: { label: string }) => (
+    <div className="flex items-center gap-3 mb-6">
+      <span className="h-7 w-1.5 rounded-full bg-gradient-gold" />
+      <h2 className="font-serif text-2xl md:text-3xl text-foreground">{label}</h2>
+      <span className="hidden sm:block flex-1 h-px bg-border" />
+    </div>
+  );
+
   return (
     <div className="py-8 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Featured Section */}
-        <div className="mb-12">
-          <div className="bg-gray-800 text-white py-2 px-4 inline-block mb-6">
-            <h2 className="text-lg font-bold">RECOMMENDED</h2>
+        {featuredOpportunities.length > 0 && (
+          <div className="mb-12">
+            <SectionHeader label="Recommended" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredOpportunities.map((opportunity) => (
+                <OpportunityCard 
+                  key={opportunity.id} 
+                  {...opportunity} 
+                  featured={true} 
+                />
+              ))}
+            </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredOpportunities.map((opportunity) => (
-              <OpportunityCard 
-                key={opportunity.id} 
-                {...opportunity} 
-                featured={true} 
-              />
-            ))}
-          </div>
-          
-          {/* Ad banner below featured section */}
-          <div className="my-8 bg-gray-100 rounded-lg p-6 text-center min-h-[120px]">
-            <AdSenseAd slot="2585894567" style={{ minHeight: '120px', width: '100%' }} />
-          </div>
-        </div>
+        )}
 
         {/* Other Opportunities */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {otherOpportunities.slice(0, visibleCount).map((opportunity, index) => (
-            <>
-              <OpportunityCard key={opportunity.id} {...opportunity} />
-              {renderAdPlaceholder(index)}
-            </>
-          ))}
-        </div>
+        {otherOpportunities.length > 0 && (
+          <div className="mb-2">
+            <SectionHeader label="Latest Opportunities" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {otherOpportunities.slice(0, visibleCount).map((opportunity, index) => (
+                <React.Fragment key={opportunity.id}>
+                  <OpportunityCard {...opportunity} />
+                  {renderAdPlaceholder(index)}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Load More Button */}
         {otherOpportunities.length > visibleCount && (
@@ -446,7 +455,7 @@ const Opportunities = () => {
             <Button 
               onClick={() => setVisibleCount(prevCount => prevCount + 6)}
               variant="outline"
-              className="border border-gray-300 hover:bg-gray-100 text-foreground"
+              className="border-primary/30 text-primary font-semibold hover:bg-primary/10"
             >
               Load more <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
