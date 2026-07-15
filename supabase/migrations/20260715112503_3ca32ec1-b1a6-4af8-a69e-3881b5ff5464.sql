@@ -1,0 +1,1 @@
+ALTER TABLE public.opportunities ALTER COLUMN deadline DROP NOT NULL;

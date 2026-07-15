@@ -143,7 +143,7 @@ export type Database = {
           attachments: Json | null
           created_at: string | null
           created_by: string | null
-          deadline: string
+          deadline: string | null
           description: string
           external_links: Json | null
           external_url: string | null
@@ -157,7 +157,7 @@ export type Database = {
           attachments?: Json | null
           created_at?: string | null
           created_by?: string | null
-          deadline: string
+          deadline?: string | null
           description: string
           external_links?: Json | null
           external_url?: string | null
@@ -171,7 +171,7 @@ export type Database = {
           attachments?: Json | null
           created_at?: string | null
           created_by?: string | null
-          deadline?: string
+          deadline?: string | null
           description?: string
           external_links?: Json | null
           external_url?: string | null
